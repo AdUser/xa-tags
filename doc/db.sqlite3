@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS s_files;
+CREATE TABLE IF NOT EXISTS s_files (
+  uuid      INT(12) NOT NULL DEFAULT 0,
+  path_crc  INT(4) NOT NULL DEFAULT 0,
+  name_crc  INT(4) NOT NULL DEFAULT 0,
+  path      TEXT DEFAULT "",
+  name      TEXT DEFAULT "",
+  PRIMARY KEY (uuid, path_crc, name_crc)
+);
+
+DROP TABLE IF EXISTS d_tags;
+CREATE TABLE IF NOT EXISTS d_tags (
+  uuid      INT(12) NOT NULL DEFAULT 0,
+  tags      TEXT DEFAULT "",
+  FOREIGN KEY (uuid) REFERENCES s_files (uuid)
+);
+
