@@ -1,0 +1,61 @@
+%YAML 1.1
+
+# operations:
+#   object: [ add, del, search ]
+#   tag: [ add, set, del, clear, get ]
+#   db: [ check, clear, stat ] # maybe - [ backup, restore ]
+
+# keyword       |   type    | comment
+#---------------+-----------+-------------------------------------------------
+# object        | str/enum  | operation with db object: file or dir
+# tag           | str/enum  | operation with tags of chosen object
+# db            | str/enum  | operation on whole database or it's part
+#---------------+-----------+-------------------------------------------------
+# status        | str/enum  | request status
+# message       | str/text  | should only appears in resp. with status: error
+# data          | assoc arr | should be extendable with new types
+
+# aux keywords:
+#   status: [ success, error ]
+#   message: >
+#   data:
+#     type: [ uuid, ]
+#     [ <key>: <value, ...> ]
+
+# object operations
+---
+object: [ add, del, search ]
+data:
+  <uuid>: <path> # uuid are zeroes in this case - means 'all'
+...
+---
+status: [ success, error ]
+message: <msg>
+data:   # for 'object: search'
+  <uuid>: <path>
+...
+
+# metadata operations
+---
+tag: [ get, add, set, del, clear, search ]
+data: # for 'tag: [ add, set, del, search ]', required
+  <uuid>: <tags>
+...
+---
+status: [ success, error ]
+message: <msg>
+data: # for 'metadata: [ get, search ]'
+  <uuid>: <tags>
+...
+
+# database operations
+---
+db: [ check, clear, stat ]
+data: # optional
+  <uuid>: <path>
+...
+---
+status: [ success, error ]
+message:
+...
+
