@@ -5,12 +5,12 @@ CREATE TABLE IF NOT EXISTS s_info (
 
 DROP TABLE IF EXISTS s_files;
 CREATE TABLE IF NOT EXISTS s_files (
-  uuid      INT(12) NOT NULL DEFAULT 0,
-  path_crc  INT(4) NOT NULL DEFAULT 0,
-  name_crc  INT(4) NOT NULL DEFAULT 0,
+  crc_path  CHAR(8) NOT NULL DEFAULT 0,
+  crc_name  CHAR(8) NOT NULL DEFAULT 0,
+  crc_uniq  CHAR(8) NOT NULL DEFAULT 0,
   path      TEXT DEFAULT "",
   name      TEXT DEFAULT "",
   tags      TEXT DEFAULT "",
-  PRIMARY KEY (uuid, path_crc, name_crc)
+  PRIMARY KEY (crc_path, crc_name, crc_uniq)
 );
 
