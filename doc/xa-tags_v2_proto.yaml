@@ -7,7 +7,7 @@
 
 # keyword       |   type    | comment
 #---------------+-----------+-------------------------------------------------
-# object        | str/enum  | operation with db object: file or dir
+# file          | str/enum  | operation with db object: file or dir
 # tag           | str/enum  | operation with tags of chosen object
 # db            | str/enum  | operation on whole database or it's part
 #---------------+-----------+-------------------------------------------------
@@ -24,7 +24,7 @@
 
 # object operations
 ---
-object: [ add, del, search ]
+file: [ add, del, search ]
 data:
   <uuid>: <path> # uuid are zeroes in this case - means 'all'
 ...
