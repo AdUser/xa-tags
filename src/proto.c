@@ -139,9 +139,30 @@ data_blk_item_add(data_blk_t *blk, char *key, char *val)
     return blk;
   }
 
-/*
-data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
+/* TODO: inspect hardly with debugger */
+data_blk_t *
+data_blk_item_del(data_blk_t *blk, char *key, bool all)
+  {
+    unsigned int i = 0;
 
+    ASSERT(blk != NULL, MSG_M_NULLPTR);
+    ASSERT(key != NULL, MSG_M_NULLPTR);
+
+    for (i = 0; i <= blk->items_used; i += 1)
+      if (strncmp(key, blk->items[i].key, MAX_ITEM_KEY_SIZE) == 0)
+        {
+          blk->items_used -= 1;
+          free(blk->items[i].value);
+          memmove(&blk->items[i], &blk->items[i + 1],
+                  sizeof(data_item_t) * (blk->items_used - i));
+          memset(&blk->items[blk->items_used], 0x0, sizeof(data_item_t));
+          if (all == false) break;
+        }
+
+    return blk;
+  }
+
+/*
 int ipc_data_blk_add(unsigned int *cnt, data_blk_t ***data);
 int ipc_data_blk_del(unsigned int *cnt, char *blk_name);
 */
