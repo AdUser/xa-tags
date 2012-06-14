@@ -1,5 +1,5 @@
-#define MAX_KEY_SIZE   16
-#define MAX_VAL_SIZE 4096
+#define MAX_ITEM_KEY_SIZE   16
+#define MAX_ITEM_VAL_SIZE 4096
 
 typedef struct
   {

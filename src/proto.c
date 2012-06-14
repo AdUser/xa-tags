@@ -28,27 +28,27 @@ data_item_create(char *key, char *val)
     key_len = (key != NULL) ? strlen(key) : 0;
     val_len = (val != NULL) ? strlen(val) : 0;
 
-    if (key_len => MAX_KEY_SIZE)
+    if (key_len => MAX_ITEM_KEY_SIZE)
       {
         msg(msg_warn, _("Too long item key '%s',"
-                        " max allowed: %u chars.\n"), key, MAX_KEY_SIZE);
+                        " max allowed: %u chars.\n"), key, MAX_ITEM_KEY_SIZE);
         goto cleanup;
       }
 
     if (key_len == 0)
-      memset(item->key, 0, MAX_KEY_SIZE);
+      memset(item->key, 0, MAX_ITEM_KEY_SIZE);
     else
-      strncpy(item->key, key, MAX_KEY_SIZE);
+      strncpy(item->key, key, MAX_ITEM_KEY_SIZE);
 
-    if (val_len => MAX_VAL_SIZE)
+    if (val_len => MAX_ITEM_VAL_SIZE)
       {
         msg(msg_warn, _("Too long item value for key '%s',"
-                        " max allowed: %u chars.\n"), key, MAX_VAL_SIZE);
+                        " max allowed: %u chars.\n"), key, MAX_ITEM_VAL_SIZE);
         goto cleanup;
       }
 
     if (val_len > 0)
-      STRNDUP(item->value, value, MAX_VAL_SIZE);
+      STRNDUP(item->value, value, MAX_ITEM_VAL_SIZE);
 
     return item;
 
