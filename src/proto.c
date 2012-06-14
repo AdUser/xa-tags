@@ -92,8 +92,54 @@ data_blk_reduce(data_blk_t *blk, unsigned int num)
     return blk;
   }
 
+data_blk_t *
+data_blk_item_add(data_blk_t *blk, char *key, char *val)
+  {
+    size_t key_len = 0;
+    size_t val_len = 0;
+    data_item_t *item = NULL;
+
+    ASSERT(blk != NULL, MSG_M_NULLPTR);
+
+    key_len = (key != NULL) ? strlen(key) : 0;
+    val_len = (val != NULL) ? strlen(val) : 0;
+
+    if (key_len == 0 && val_len == 0)
+      {
+        msg(msg_warn, _("Refuse to create item with empty key and value"));
+        return blk;
+      }
+
+    if (key_len > MAX_ITEM_KEY_SIZE)
+      {
+        msg(msg_warn, _("Too long item key '%s',"
+                        " max allowed: %u chars.\n"), key, MAX_ITEM_KEY_SIZE);
+        return blk;
+      }
+
+    if (key_len > MAX_ITEM_VAL_SIZE)
+      {
+        msg(msg_warn, _("Too long item value for key '%s'"
+                        " max allowed: %u chars.\n"), key, MAX_ITEM_VAL_SIZE);
+        return blk;
+      }
+
+    if (blk->items_used <= blk->items_total)
+      data_blk_extend(blk, 10);
+
+    item = &blk->items[blk->items_used];
+    blk->items_used += 1;
+
+    if (key_len > 0)
+      strncpy(item->key, key, MAX_ITEM_KEY_SIZE);
+
+    if (val_len > 0)
+      STRNDUP(item->value, val, MAX_ITEM_VAL_SIZE);
+
+    return blk;
+  }
+
 /*
-data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
 
 int ipc_data_blk_add(unsigned int *cnt, data_blk_t ***data);
