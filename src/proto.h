@@ -15,7 +15,7 @@ typedef struct
     char name[MAX_BLK_NAME_SIZE];
     unsigned int items_used;
     unsigned int items_total;
-    data_item_t **items;
+    data_item_t *items; /* (*items)[] */
   }
 data_blk_t;
 
@@ -38,7 +38,7 @@ typedef struct
 ipc_responce_t;
 
 data_blk_t  *data_blk_create(char *name, unsigned int items);
-data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
+data_blk_t  *data_blk_item_add(data_blk_t *blk, char *key, char *val);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
 data_blk_t  *data_blk_gc(data_blk_t *blk);
 

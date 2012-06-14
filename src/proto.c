@@ -16,8 +16,43 @@
 
 #include "common.h"
 
+/* name - required */
+data_blk_t *
+data_blk_create(char *name, unsigned int items)
+  {
+    size_t name_len = 0;
+    data_blk_t *blk = NULL;
+
+    name_len = (name != NULL) ? strlen(name) : 0;
+
+    if (name_len == 0)
+      {
+        msg(msg_warn, _("Attempt to create data block with empty name\n"));
+        return NULL;
+      }
+
+    if (name_len >= MAX_BLK_NAME_SIZE)
+      {
+        msg(msg_warn, _("Too long data blk name '%s',"
+                        " max allowed: %u chars.\n"), name, MAX_BLK_NAME_SIZE);
+        return NULL;
+      }
+
+    CALLOC(blk, 1, sizeof(data_blk_t));
+
+    strncpy(blk->name, name, MAX_BLK_NAME_SIZE);
+
+    if (items > 0)
+      {
+        blk->items_used  = 0;
+        blk->items_total = items;
+        CALLOC(blk->items, items, sizeof(data_item_t));
+      }
+
+    return blk;
+  }
+
 /*
-data_blk_t  *data_blk_create(char *name, unsigned int items);
 data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
 data_blk_t  *data_blk_gc(data_blk_t *blk);
