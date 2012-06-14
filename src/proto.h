@@ -8,7 +8,8 @@ data_item_t;
 typedef struct
   {
     char blk_name[16];
-    unsigned int items_cnt;
+    unsigned int items_used;
+    unsigned int items_total;
     data_item_t **items;
   }
 data_blk_t;
