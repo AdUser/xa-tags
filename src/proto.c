@@ -30,7 +30,7 @@ data_item_create(char *key, char *val)
 
     if (key_len == 0 && val_len == 0)
       {
-        msg(msg_warn, "Attempt to create item with empty key and value.\n");
+        msg(msg_warn, _("Attempt to create item with empty key and value.\n"));
         goto cleanup;
       }
 
