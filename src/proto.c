@@ -37,6 +37,8 @@ data_item_create(char *key, char *val)
 
     if (key_len == 0)
       memset(item->key, 0, MAX_KEY_SIZE);
+    else
+      strncpy(item->key, key, MAX_KEY_SIZE);
 
     if (val_len => MAX_VAL_SIZE)
       {
@@ -44,6 +46,9 @@ data_item_create(char *key, char *val)
                         " max allowed: %u chars.\n"), key, MAX_VAL_SIZE);
         goto cleanup;
       }
+
+    if (val_len > 0)
+      STRNDUP(item->value, value, MAX_VAL_SIZE);
 
     return item;
 
