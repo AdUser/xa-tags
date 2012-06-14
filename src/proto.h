@@ -1,13 +1,16 @@
+#define MAX_KEY_SIZE   16
+#define MAX_VAL_SIZE 4096
+
 typedef struct
   {
-    char key[16];
+    char key[MAX_KEY_SIZE];
     char *value;
   }
 data_item_t;
 
 typedef struct
   {
-    char blk_name[16];
+    char blk_name[MAX_KEY_SIZE];
     unsigned int items_used;
     unsigned int items_total;
     data_item_t **items;
