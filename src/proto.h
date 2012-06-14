@@ -37,9 +37,6 @@ typedef struct
   }
 ipc_responce_t;
 
-data_item_t *data_item_create(char *key, char *value);
-data_item_t *data_item_destroy(data_item_t *item);
-
 data_blk_t  *data_blk_create(char *name, unsigned int items);
 data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);

@@ -16,62 +16,6 @@
 
 #include "common.h"
 
-data_item_t *
-data_item_create(char *key, char *val)
-  {
-    size_t key_len = 0;
-    size_t val_len = 0;
-    data_item_t *item = NULL;
-
-    key_len = (key != NULL) ? strlen(key) : 0;
-    val_len = (val != NULL) ? strlen(val) : 0;
-
-    if (key_len == 0 && val_len == 0)
-      {
-        msg(msg_warn, _("Attempt to create item with empty key and value.\n"));
-        return NULL;
-      }
-
-    if (key_len >= MAX_ITEM_KEY_SIZE)
-      {
-        msg(msg_warn, _("Too long item key '%s',"
-                        " max allowed: %u chars.\n"), key, MAX_ITEM_KEY_SIZE);
-        return NULL;
-      }
-
-    if (val_len >= MAX_ITEM_VAL_SIZE)
-      {
-        msg(msg_warn, _("Too long item value for key '%s',"
-                        " max allowed: %u chars.\n"), key, MAX_ITEM_VAL_SIZE);
-        return NULL;
-      }
-
-    CALLOC(item, 1, sizeof(data_item_t));
-
-    if (key_len == 0)
-      memset(item->key, 0, MAX_ITEM_KEY_SIZE);
-    else
-      strncpy(item->key, key, MAX_ITEM_KEY_SIZE);
-
-    if (val_len > 0)
-      STRNDUP(item->value, val, MAX_ITEM_VAL_SIZE);
-
-    return item;
-  }
-
-/** always return NULL */
-data_item_t *
-data_item_destroy(data_item_t *item)
-  {
-    if (item)
-      {
-        if (item && item->value) free(item->value);
-        if (item)                free(item);
-      }
-
-    return NULL;
-  }
-
 /*
 data_blk_t  *data_blk_create(char *name, unsigned int items);
 data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
