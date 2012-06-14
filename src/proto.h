@@ -40,7 +40,8 @@ ipc_responce_t;
 data_blk_t  *data_blk_create(char *name, unsigned int items);
 data_blk_t  *data_blk_item_add(data_blk_t *blk, char *key, char *val);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
-data_blk_t  *data_blk_gc(data_blk_t *blk);
+data_blk_t  *data_blk_extend(data_blk_t *blk, unsigned int num);
+data_blk_t  *data_blk_reduce(data_blk_t *blk, unsigned int num);
 
 int ipc_data_blk_add(unsigned int *cnt, data_blk_t ***data);
 int ipc_data_blk_del(unsigned int *cnt, char *blk_name);
