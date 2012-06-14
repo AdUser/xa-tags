@@ -28,7 +28,13 @@ data_item_create(char *key, char *val)
     key_len = (key != NULL) ? strlen(key) : 0;
     val_len = (val != NULL) ? strlen(val) : 0;
 
-    if (key_len => MAX_ITEM_KEY_SIZE)
+    if (key_len == 0 && val_len == 0)
+      {
+        msg(msg_warn, "Attempt to create item with empty key and value.\n");
+        goto cleanup;
+      }
+
+    if (key_len >= MAX_ITEM_KEY_SIZE)
       {
         msg(msg_warn, _("Too long item key '%s',"
                         " max allowed: %u chars.\n"), key, MAX_ITEM_KEY_SIZE);
@@ -40,7 +46,7 @@ data_item_create(char *key, char *val)
     else
       strncpy(item->key, key, MAX_ITEM_KEY_SIZE);
 
-    if (val_len => MAX_ITEM_VAL_SIZE)
+    if (val_len >= MAX_ITEM_VAL_SIZE)
       {
         msg(msg_warn, _("Too long item value for key '%s',"
                         " max allowed: %u chars.\n"), key, MAX_ITEM_VAL_SIZE);
@@ -48,7 +54,7 @@ data_item_create(char *key, char *val)
       }
 
     if (val_len > 0)
-      STRNDUP(item->value, value, MAX_ITEM_VAL_SIZE);
+      STRNDUP(item->value, val, MAX_ITEM_VAL_SIZE);
 
     return item;
 

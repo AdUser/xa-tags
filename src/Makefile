@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra -pedantic -lyaml
 
-SOURCES = main.c log.c
+SOURCES = main.c log.c proto.c
 DEFINES = -DHAVE_GETTEXT
 
 all: Makefile $(SOURCES)
