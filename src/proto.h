@@ -21,7 +21,7 @@ typedef struct
     int data_blks_cnt;
     data_blk_t **data;
   }
-rpc_request_t;
+ipc_request_t;
 
 typedef struct
   {
@@ -30,5 +30,5 @@ typedef struct
     int data_blks_cnt;
     data_blk_t **data;
   }
-rpc_responce_t;
+ipc_responce_t;
 
