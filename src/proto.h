@@ -12,7 +12,7 @@ data_item_t;
 
 typedef struct
   {
-    char blk_name[MAX_BLK_NAME_SIZE];
+    char name[MAX_BLK_NAME_SIZE];
     unsigned int items_used;
     unsigned int items_total;
     data_item_t **items;
