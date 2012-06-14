@@ -70,10 +70,31 @@ data_blk_extend(data_blk_t *blk, unsigned int num)
 
     return blk;
   }
+
+data_blk_t *
+data_blk_reduce(data_blk_t *blk, unsigned int num)
+  {
+    data_item_t *items = NULL;
+    unsigned int n = 0;
+
+    n = (blk->items_total >= num) ? num : blk->items_total ;
+
+    ASSERT(blk != NULL, MSG_M_NULLPTR);
+
+    items = realloc(blk->items, sizeof(data_item_t) * \
+                    (blk->items_total - n));
+
+    ASSERT(items != NULL, MSG_M_REALLOC);
+
+    blk->items = items;
+    blk->items_total -= n;
+
+    return blk;
+  }
+
 /*
 data_blk_t  *data_blk_item_add(data_blk_t *blk, data_item_t *item);
 data_blk_t  *data_blk_item_del(data_blk_t *blk, char *key, bool all);
-data_blk_t  *data_blk_reduce(data_blk_t *blk, unsigned int num);
 
 int ipc_data_blk_add(unsigned int *cnt, data_blk_t ***data);
 int ipc_data_blk_del(unsigned int *cnt, char *blk_name);
