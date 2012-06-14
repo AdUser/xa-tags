@@ -59,8 +59,20 @@ data_item_create(char *key, char *val)
     return item;
 
     cleanup:
-    if (item && item->value) free(item->value);
-    if (item)                free(item);
+    data_item_destroy(item);
+
+    return NULL;
+  }
+
+/** always return NULL */
+data_item_t *
+data_item_destroy(data_item_t *item)
+  {
+    if (item)
+      {
+        if (item && item->value) free(item->value);
+        if (item)                free(item);
+      }
 
     return NULL;
   }
