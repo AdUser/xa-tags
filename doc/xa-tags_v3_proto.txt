@@ -1,0 +1,55 @@
+-.----.------------------------------------------------------------------------
+C|>>  |HELLO
+S|  <<|OK INFO:
+S|  <<|Hi! xa-tags v0.00a nice to meet you
+S|  <<|
+-+----+------------------------------------------------------------------------
+C|>>  |FILE ADD ~/.walls/sakura.png
+S|  <<|OK FILES:
+S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|
+C|>>  |FILE SEARCH *
+S|  <<|OK FILES:
+S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|
+C|>>  |FILE DEL ~/.walls/sakura.png
+S|  <<|OK
+C|>>  |FILE DEL ~/.walls/sakura1.png
+S|  <<|ERR No such file
+C|>>  |FILE DEL E6C75E75-42C95059-CC382F07
+S|  <<|ERR No such uuid
+-+----+------------------------------------------------------------------------
+C|>>  |TAG ADD E6C75E75-42C95059-CC382F07 image
+S|  <<|OK
+C|>>  |TAG GET E6C75E75-42C95059-CC382F07
+S|  <<|OK TAGS image
+C|>>  |TAG SET E6C75E75-42C95059-CC382F07 wallpaper
+S|  <<|OK
+C|>>  |TAG ADD E6C75E75-42C95059-CC382F07 sakura
+S|  <<|OK
+C|>>  |TAG GET E6C75E75-42C95059-CC382F07
+S|  <<|OK TAGS wallpaper sakura
+C|>>  |TAG GET ~/.walls/sakura1.png
+S|  <<|ERR No such file
+C|>>  |TAG DEL E6C75E75-42C95059-CC382F07 sakura
+S|  <<|OK
+C|>>  |TAG SEARCH wallpaper
+S|  <<|OK FILES:
+S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|
+C|>>  |TAG SEARCH sakura
+S|  <<|OK FILES:
+S|  <<|
+C|>>  |TAG CLEAR E6C75E75-42C95059-CC382F07
+S|  <<|OK
+-+----+------------------------------------------------------------------------
+C|>>  |DB STAT
+S|  <<|OK INFO:
+S|  <<|     3914 | file records
+S|  <<|      331 | uniq tags
+S|  <<|       45 | requests served
+S|  <<|
+-+----+------------------------------------------------------------------------
+C|>>  |BYE
+S|  <<|SYA
+-'----'------------------------------------------------------------------------
