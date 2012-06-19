@@ -34,46 +34,46 @@ S|  <<|
 -+----+------------------------------------------------------------------------
 C|>>  |FILE ADD : ~/.walls/sakura.png
 S|  <<|OK FILES >
-S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|78062B-BCEC67-F5B709 ~/.walls/sakura.png
 S|  <<|
 C|>>  |FILE SEARCH : *
 S|  <<|OK FILES >
-S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|78062B-BCEC67-F5B709 ~/.walls/sakura.png
 S|  <<|
 C|>>  |FILE DEL : ~/.walls/sakura.png
 S|  <<|OK
 C|>>  |FILE DEL : ~/.walls/sakura1.png
 S|  <<|ERR MSG > No such file
 C|>>  |FILE DEL >
-C|>>  |E6C75E75-42C95059-CC382F07
+C|>>  |78062B-BCEC67-F5B709
 C|>>  |
 S|  <<|ERR MSG : No such uuid
 -+----+------------------------------------------------------------------------
-C|>>  |TAG ADD : E6C75E75-42C95059-CC382F07 image
+C|>>  |TAG ADD : 78062B-BCEC67-F5B709 image
 S|  <<|OK
-C|>>  |TAG GET : E6C75E75-42C95059-CC382F07
-S|  <<|OK TAGS : E6C75E75-42C95059-CC382F07 image
-C|>>  |TAG SET : E6C75E75-42C95059-CC382F07 wallpaper
+C|>>  |TAG GET : 78062B-BCEC67-F5B709
+S|  <<|OK TAGS : 78062B-BCEC67-F5B709 image
+C|>>  |TAG SET : 78062B-BCEC67-F5B709 wallpaper
 S|  <<|ERR MSG : Not allowed, use UUID
-C|>>  |TAG SET : E6C75E75-42C95059-CC382F07 wallpaper
+C|>>  |TAG SET : 78062B-BCEC67-F5B709 wallpaper
 S|  <<|OK
-C|>>  |TAG ADD : E6C75E75-42C95059-CC382F07 sakura
+C|>>  |TAG ADD : 78062B-BCEC67-F5B709 sakura
 S|  <<|OK
-C|>>  |TAG GET : E6C75E75-42C95059-CC382F07
+C|>>  |TAG GET : 78062B-BCEC67-F5B709
 S|  <<|OK TAGS : wallpaper sakura
 C|>>  |TAG GET : ~/.walls/sakura1.png
 S|  <<|ERR MSG : No such file
-C|>>  |TAG DEL : E6C75E75-42C95059-CC382F07 sakura
+C|>>  |TAG DEL : 78062B-BCEC67-F5B709 sakura
 S|  <<|OK
 C|>>  |TAG SEARCH : wallpaper
 S|  <<|OK FILES >
-S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
+S|  <<|78062B-BCEC67-F5B709 ~/.walls/sakura.png
 S|  <<|
 C|>>  |TAG SEARCH sakura
 S|  <<|ERR MSG : Parsing failed ':' or '>' expected
 C|>>  |TAG SEARCH : sakura
 S|  <<|OK FILES :
-C|>>  |TAG CLEAR : E6C75E75-42C95059-CC382F07
+C|>>  |TAG CLEAR : 78062B-BCEC67-F5B709
 S|  <<|OK
 -+----+------------------------------------------------------------------------
 C|>>  |DB STAT
