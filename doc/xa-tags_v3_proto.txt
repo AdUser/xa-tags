@@ -1,55 +1,88 @@
+# request:   <TYPE> <OPERATION> <MARKER> <DATA>
+# responce:  <STATUS> <DATA TYPE> <MARKER> <DATA>
+#
+# <TYPE>
+#  - FILE - manipulate mappings between real files and db records
+#  - TAG - manipulate db record values
+#  - DB - service db operations
+#  - HELLO - connection init (optional, also enables human-friendly view)
+#  - BYE - connection close
+#
+# <OPERATION> - various operatins, depends on <TYPE> context
+#
+# <MARKER>
+#  - ':' - read until end of line
+#  - '>' - read until empty line
+#
+# <DATA> - usefull payload, depends on context
+#
+# <STATUS> - result of previous operation
+#  - OK
+#  - ERR
+#
+# <DATA TYPE> - defines format of following <DATA> block
+#  - FILES - "<UUID> <PATH>" pair
+#  - TAGS  - "<UUID> <TAGS>" pair
+#  - MSG   - text message, no usefull data for machine, only for human
+
+# Here is the sample of session:
 -.----.------------------------------------------------------------------------
 C|>>  |HELLO
-S|  <<|OK INFO:
+S|  <<|OK MSG >
 S|  <<|Hi! xa-tags v0.00a nice to meet you
 S|  <<|
 -+----+------------------------------------------------------------------------
-C|>>  |FILE ADD ~/.walls/sakura.png
-S|  <<|OK FILES:
+C|>>  |FILE ADD : ~/.walls/sakura.png
+S|  <<|OK FILES >
 S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
 S|  <<|
-C|>>  |FILE SEARCH *
-S|  <<|OK FILES:
+C|>>  |FILE SEARCH : *
+S|  <<|OK FILES >
 S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
 S|  <<|
-C|>>  |FILE DEL ~/.walls/sakura.png
+C|>>  |FILE DEL : ~/.walls/sakura.png
 S|  <<|OK
-C|>>  |FILE DEL ~/.walls/sakura1.png
-S|  <<|ERR No such file
-C|>>  |FILE DEL E6C75E75-42C95059-CC382F07
-S|  <<|ERR No such uuid
+C|>>  |FILE DEL : ~/.walls/sakura1.png
+S|  <<|ERR MSG > No such file
+C|>>  |FILE DEL >
+C|>>  |E6C75E75-42C95059-CC382F07
+C|>>  |
+S|  <<|ERR MSG : No such uuid
 -+----+------------------------------------------------------------------------
-C|>>  |TAG ADD E6C75E75-42C95059-CC382F07 image
+C|>>  |TAG ADD : E6C75E75-42C95059-CC382F07 image
 S|  <<|OK
-C|>>  |TAG GET E6C75E75-42C95059-CC382F07
-S|  <<|OK TAGS image
-C|>>  |TAG SET E6C75E75-42C95059-CC382F07 wallpaper
+C|>>  |TAG GET : E6C75E75-42C95059-CC382F07
+S|  <<|OK TAGS : E6C75E75-42C95059-CC382F07 image
+C|>>  |TAG SET : E6C75E75-42C95059-CC382F07 wallpaper
+S|  <<|ERR MSG : Not allowed, use UUID
+C|>>  |TAG SET : E6C75E75-42C95059-CC382F07 wallpaper
 S|  <<|OK
-C|>>  |TAG ADD E6C75E75-42C95059-CC382F07 sakura
+C|>>  |TAG ADD : E6C75E75-42C95059-CC382F07 sakura
 S|  <<|OK
-C|>>  |TAG GET E6C75E75-42C95059-CC382F07
-S|  <<|OK TAGS wallpaper sakura
-C|>>  |TAG GET ~/.walls/sakura1.png
-S|  <<|ERR No such file
-C|>>  |TAG DEL E6C75E75-42C95059-CC382F07 sakura
+C|>>  |TAG GET : E6C75E75-42C95059-CC382F07
+S|  <<|OK TAGS : wallpaper sakura
+C|>>  |TAG GET : ~/.walls/sakura1.png
+S|  <<|ERR MSG : No such file
+C|>>  |TAG DEL : E6C75E75-42C95059-CC382F07 sakura
 S|  <<|OK
-C|>>  |TAG SEARCH wallpaper
-S|  <<|OK FILES:
+C|>>  |TAG SEARCH : wallpaper
+S|  <<|OK FILES >
 S|  <<|E6C75E75-42C95059-CC382F07 ~/.walls/sakura.png
 S|  <<|
 C|>>  |TAG SEARCH sakura
-S|  <<|OK FILES:
-S|  <<|
-C|>>  |TAG CLEAR E6C75E75-42C95059-CC382F07
+S|  <<|ERR MSG : Parsing failed ':' or '>' expected
+C|>>  |TAG SEARCH : sakura
+S|  <<|OK FILES :
+C|>>  |TAG CLEAR : E6C75E75-42C95059-CC382F07
 S|  <<|OK
 -+----+------------------------------------------------------------------------
 C|>>  |DB STAT
-S|  <<|OK INFO:
+S|  <<|OK MSG >
 S|  <<|     3914 | file records
 S|  <<|      331 | uniq tags
 S|  <<|       45 | requests served
 S|  <<|
 -+----+------------------------------------------------------------------------
-C|>>  |BYE
-S|  <<|SYA
+C|>>  |QUIT
+S|  <<|OK MSG : SYA
 -'----'------------------------------------------------------------------------
