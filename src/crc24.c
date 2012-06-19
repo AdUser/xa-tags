@@ -19,27 +19,31 @@
   MaxLen: 268 435 455 байт (2 147 483 647 бит) - обнаружение
    одинарных, двойных, пакетных и всех нечетных ошибок
 */
-uint_least32_t crc32(unsigned char *buf, size_t len)
+
+#define CRC24_INIT 0x00B704CEUL
+#define CRC24_POLY 0x01864CFBUL
+
+/* source: http://www.ietf.org/rfc/rfc2440.txt */
+/* -----------------8<------------------------ */
+typedef uint32_t crc24_t;
+
+crc24_t
+crc24(unsigned char *str, size_t len)
 {
-    uint_least32_t crc_table[256];
-    uint_least32_t crc; int i, j;
+    crc24_t crc = CRC24_INIT;
+    int i;
 
-    for (i = 0; i < 256; i++)
-    {
-        crc = i;
-        for (j = 0; j < 8; j++)
-            crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320UL : crc >> 1;
-
-        crc_table[i] = crc;
-    };
-
-    crc = 0xFFFFFFFFUL;
-
-    while (len--)
-        crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
-
-    return crc ^ 0xFFFFFFFFUL;
+    while (len--) {
+        crc ^= (*str++) << 16;
+        for (i = 0; i < 8; i++) {
+            crc <<= 1;
+            if (crc & 0x1000000)
+                crc ^= CRC24_POLY;
+        }
+    }
+    return crc & 0xFFFFFFL;
 }
+/* -----------------8<------------------------ */
 
 int main(int argc, char **argv)
   {
@@ -49,7 +53,7 @@ int main(int argc, char **argv)
     struct stat st;
     size_t len;
     unsigned char buf[128];
-    struct { uint32_t path; uint32_t name; uint32_t uniq; } uuid;
+    struct { crc24_t path; crc24_t name; crc24_t uniq; } uuid;
 
     if (argc < 2) return 1;
 
@@ -62,20 +66,21 @@ int main(int argc, char **argv)
 
     if (S_ISDIR(st.st_mode))
       {
-        uuid.path = crc32((unsigned char *) rp, len);
+        uuid.path = crc24((unsigned char *) rp, len);
         uuid.name = 0x0;
       }
     else
       {
         p = strrchr(rp, '/');
-        uuid.path = crc32((unsigned char *) rp, p - rp);
-        uuid.name = crc32((unsigned char *) p, strlen(p));
+        uuid.path = crc24((unsigned char *) rp, p - rp);
+        uuid.name = crc24((unsigned char *) p, strlen(p));
       }
 
     fp = open("/dev/urandom", O_RDONLY);
     read(fp, buf, 128);
-    uuid.uniq = crc32(buf, 128);
-    printf("%08X-%08X-%08X\n", uuid.path, uuid.name, uuid.uniq);
+    uuid.uniq = crc24(buf, 128);
+    printf("%06X-%06X-%06X\n", uuid.path, uuid.name, uuid.uniq);
 
     return 0;
   }
+
