@@ -53,7 +53,7 @@ C|>>  |TAG ADD : 78062B-BCEC67-F5B709 image
 S|  <<|OK
 C|>>  |TAG GET : 78062B-BCEC67-F5B709
 S|  <<|OK TAGS : 78062B-BCEC67-F5B709 image
-C|>>  |TAG SET : 78062B-BCEC67-F5B709 wallpaper
+C|>>  |TAG SET : ~/.walls/sakura.png wallpaper
 S|  <<|ERR MSG : Not allowed, use UUID
 C|>>  |TAG SET : 78062B-BCEC67-F5B709 wallpaper
 S|  <<|OK
