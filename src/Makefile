@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra -pedantic
 
-SOURCES = main.c log.c proto.c
+SOURCES = daemon.c log.c proto.c
 DEFINES = -DHAVE_GETTEXT
 
 all: Makefile $(SOURCES)
