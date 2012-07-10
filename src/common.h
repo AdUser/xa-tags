@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <yaml.h>
 
 #ifdef HAVE_GETTEXT
   #include <libintl.h>
