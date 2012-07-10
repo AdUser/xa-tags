@@ -60,7 +60,7 @@ S|  <<|OK
 C|>>  |TAG ADD : 78062B-BCEC67-F5B709 sakura
 S|  <<|OK
 C|>>  |TAG GET : 78062B-BCEC67-F5B709
-S|  <<|OK TAGS : wallpaper sakura
+S|  <<|OK TAGS : 78062B-BCEC67-F5B709 wallpaper sakura
 C|>>  |TAG GET : ~/.walls/sakura1.png
 S|  <<|ERR MSG : No such file
 C|>>  |TAG DEL : 78062B-BCEC67-F5B709 sakura
