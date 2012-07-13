@@ -42,16 +42,6 @@ IF (NOT LIBDIR)
 ENDIF (NOT LIBDIR)
 
 ## checks
-# libyaml
-FIND_LIBRARY(LIB_YAML yaml)
-
-IF    (LIB_YAML)
-  SET (BUILD_LIBS ${BUILD_LIBS} ${LIB_YAML})
-  SET (LIBMATH_STATUS "FOUND")
-ELSE  (LIB_YAML)
-  MESSAGE (FATAL_ERROR "libyaml not found")
-ENDIF (LIB_YAML)
-
 # gettext
 
 IF    (WITHOUT_GETTEXT STREQUAL "ON")
@@ -74,7 +64,6 @@ MESSAGE (STATUS "Install prefix:       ${CMAKE_INSTALL_PREFIX}")
 MESSAGE (STATUS "Binaries directory:   ${INSTALL_BIN}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Required libraries:")
-MESSAGE (STATUS "  libyaml: ${LIBYAML_STATUS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Aux dependencies:")
 MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
