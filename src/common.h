@@ -14,10 +14,11 @@
   #define _(x) (x)
 #endif
 
+#include "conn.h"
+#include "proto.h"
 #include "log.h"
 #include "msg.h"
 #include "options.h"
-#include "proto.h"
 #include "wrappers.h"
 
 #define MAXLINE 4096
