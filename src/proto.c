@@ -213,12 +213,14 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
       case 2 : /* seems like we have request with operation */
         break;
       case 1 : /* short request types without parameters */
+        while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 0; /* request ready for processing */
         break;
       case 0 : /* invalid request type */
       default :
         msg(msg_warn, MSG_I_BADREQ);
+        while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 2; /* malformed request */
         break;
@@ -235,12 +237,14 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
       case 2 : /* sadly, but seems we have a lot of parameters in request */
         break;
       case 1 : /* short request types without parameters */
+        while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 0; /* request ready for processing */
         break;
       case 0 : /* invalid request type */
       default :
         msg(msg_warn, MSG_I_BADOP);
+        while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 2; /* malformed request */
         break;
@@ -261,6 +265,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     {
       e = strchr(s, '\n');
       STRNDUP(req->data, s, e - s);
+      while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
     }
@@ -270,6 +275,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
       if ((e = strstr(s, "\n\n")) == NULL)
         return 1; /* incomplete request */
       STRNDUP(req->data, s, e - s);
+      while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
     }
