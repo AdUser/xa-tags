@@ -261,7 +261,13 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     }
 
   /* ok, extract data, copy it to request and truncate rd_buf */
-  for (s++; isspace(*s); s++); /* skip leading spaces */
+  for (s++; isblank(*s); s++); /* skip leading spaces */
+  if (*s == '\n')
+    { /* no data found */
+      while (isspace(*s)) s++;
+     _rd_buf_reduce(conn, s - conn->rd_buf);
+      return 2;
+    }
 
   if (ret == 1)
     {
