@@ -14,20 +14,22 @@ typedef enum req_type_t
 
 typedef enum req_op_t
   {
+    OP_NONE = 0,
+
     /* FILE operations */
-    OP_F_ADD  = 0,
+    OP_F_ADD  = 1,
     OP_F_DEL,
     OP_F_SEARCH,
 
     /* TAG operations */
-    OP_T_ADD = 10,
+    OP_T_ADD = 11,
     OP_T_DEL,
     OP_T_GET,
     OP_T_SET,
     OP_T_CLR,
 
     /* DB operations */
-    OP_D_STAT = 20,
+    OP_D_STAT = 21,
     OP_D_CHECK
   } req_op_t;
 
