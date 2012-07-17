@@ -75,16 +75,34 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
   * 1 - valid
   * 2 - valid, data expected for this operation
   */
+
+#define CHECK_OP(buf,token,operation,ret) \
+  else if (strncmp((buf), (token), strlen(token)) == 0) \
+    { req->op = (operation); return (ret); }
+
 int
 _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
 {
   switch (req->type)
     {
       case REQ_FILE :
+        if (false) {}
+        CHECK_OP(buf, "ADD",     OP_F_ADD,     2)
+        CHECK_OP(buf, "DEL",     OP_F_DEL,     2)
+        CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  2)
         break;
       case REQ_TAG :
+        if (false) {}
+        CHECK_OP(buf, "ADD",     OP_T_ADD,     2)
+        CHECK_OP(buf, "DEL",     OP_T_DEL,     2)
+        CHECK_OP(buf, "GET",     OP_T_GET,     2)
+        CHECK_OP(buf, "SET",     OP_T_SET,     2)
+        CHECK_OP(buf, "CLR",     OP_T_CLR,     2)
         break;
       case REQ_DB :
+        if (false) {}
+        CHECK_OP(buf, "STAT",    OP_D_STAT,    1)
+        CHECK_OP(buf, "CHECK",   OP_D_CHECK,   1)
         break;
       default :
         break;
