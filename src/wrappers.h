@@ -4,7 +4,7 @@
     /* yes, i know about assert() */
 
 #define FREE(ptr) \
-  free((ptr)); \
+  if (ptr != NULL) free((ptr)); \
   (ptr) = NULL
 
 #define STRNDUP(ptr, str, len) \
