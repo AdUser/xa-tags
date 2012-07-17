@@ -262,6 +262,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     {
       e = strchr(s, '\n');
       STRNDUP(req->data, s, e - s);
+      req->data_len = e - s;
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
@@ -272,6 +273,9 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
       if ((e = strstr(s, "\n\n")) == NULL)
         return 1; /* incomplete request */
       STRNDUP(req->data, s, e - s);
+      req->data_len = e - s;
+      for (s = req->data; *s != '\0'; s++)
+        if (*s == '\n') *s = '\0';
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
