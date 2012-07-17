@@ -53,40 +53,19 @@ make_ipc_resp(ipc_resp_t *resp, resp_status_t st, resp_data_t type, char *data)
   * 1 - valid
   * 2 - valid, operation expected for type
   */
+#define CHECK_REQ(buf,token,req_type,ret) \
+  else if (strncmp((buf), (token), strlen(token)) == 0) \
+    { req->type = (req_type); return (ret); }
 int
 _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 {
   if (false) {}
-  else if (buf_len == 4 && strncmp(buf, "FILE",  4) == 0)
-    {
-      req->type = REQ_FILE;
-      return 2;
-    }
-  else if (buf_len == 3 && strncmp(buf, "TAG",   3) == 0)
-    {
-      req->type = REQ_TAG;
-      return 2;
-    }
-  else if (buf_len == 2 && strncmp(buf, "DB",    2) == 0)
-    {
-      req->type = REQ_DB;
-      return 2;
-    }
-  else if (buf_len == 5 && strncmp(buf, "HELLO", 5) == 0)
-    {
-      req->type = REQ_HELLO;
-      return 1;
-    }
-  else if (buf_len == 3 && strncmp(buf, "BYE",   3) == 0)
-    {
-      req->type = REQ_BYE;
-      return 1;
-    }
-  else if (buf_len == 4 && strncmp(buf, "HELP",  4) == 0)
-    {
-      req->type = REQ_HELLO;
-      return 1;
-    }
+  CHECK_REQ(buf, "FILE",   REQ_FILE,   2)
+  CHECK_REQ(buf, "TAG",    REQ_TAG,    2)
+  CHECK_REQ(buf, "DB",     REQ_DB,     2)
+  CHECK_REQ(buf, "HELLO",  REQ_HELLO,  1)
+  CHECK_REQ(buf, "BYE",    REQ_BYE,    1)
+  CHECK_REQ(buf, "HELP",   REQ_HELP,   1)
 
   return 0;
 }
