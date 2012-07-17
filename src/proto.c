@@ -158,6 +158,13 @@ _rd_buf_reduce(conn_t *conn, size_t len)
   s_del = (conn->rd_buf_len < len) ? conn->rd_buf_len : len ;
   s_keep = conn->rd_buf_len - len;
 
+  if (s_keep == 0)
+    {
+      FREE(conn->rd_buf);
+      conn->rd_buf_len = 0;
+      return;
+    }
+
   t = memmove(conn->rd_buf, &conn->rd_buf[s_del], s_keep);
   ASSERT(t != NULL, MSG_M_NULLPTR);
   conn->rd_buf = realloc(t, s_keep + 1);
