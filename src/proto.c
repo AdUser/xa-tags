@@ -253,7 +253,12 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   ret = _check_delimiter(req, *s);
 
   if (ret == 0)
-    return 2; /* malformed request */
+    {
+      e = strchr(s, '\n');
+      while (isspace(*e)) e++;
+      _rd_buf_reduce(conn, e - conn->rd_buf);
+      return 2; /* malformed request */
+    }
 
   /* ok, extract data, copy it to request and truncate rd_buf */
   for (s++; isspace(*s); s++); /* skip leading spaces */
