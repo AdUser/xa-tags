@@ -186,7 +186,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   char *e = NULL; /* as 'end'   */
   int ret = 0;
 
-  ASSERT(((buf != NULL) && (buf_len != 0)), MSG_M_NULLPTR);
+  ASSERT(!((buf == NULL) && (buf_len != 0)), MSG_M_NULLPTR);
 
   if (conn->rd_buf_len != 0)
     { /* grow read buffer */
