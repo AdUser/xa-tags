@@ -8,7 +8,7 @@
   (ptr) = NULL
 
 #define STRNDUP(ptr, str, len) \
-  ASSERT((((ptr) = strndup((str), (len))) == NULL), MSG_M_OOM)
+  ASSERT((((ptr) = strndup((str), (len))) != NULL), MSG_M_OOM)
 
 #define ASSERT(x, y) \
   if (!(x)) msg(msg_error, (y), __FILE__, __LINE__)
