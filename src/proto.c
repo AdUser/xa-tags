@@ -245,7 +245,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   if (ret == 0)
     return 2; /* malformed request */
 
-  /* ok, extract data, ocpy it to request and truncate rd_buf */
+  /* ok, extract data, copy it to request and truncate rd_buf */
   for (s++; isspace(*s); s++); /* skip leading spaces */
 
   if (ret == 1)
