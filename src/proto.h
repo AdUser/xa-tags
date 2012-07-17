@@ -3,6 +3,7 @@
 /** request */
 typedef enum req_type_t
   {
+    REQ_NONE, /* invalid or missing request */
     REQ_FILE,
     REQ_TAG,
     REQ_DB,
