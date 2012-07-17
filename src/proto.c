@@ -205,7 +205,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   /* so, check & set request type */
   s = conn->rd_buf;
   for (     ;  isspace(*s); s++); /* skip leading spaces */
-  for (e = s; !isspace(*e); e++);
+  for (e = s;  isalpha(*e); e++);
 
   ret = _check_type(req, s, e - s);
   switch (ret)
@@ -225,8 +225,9 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     }
 
   /* check & set operation */
+  e++;
   for (s = e;  isspace(*s); s++); /* skip leading spaces */
-  for (e = s; !isspace(*e); e++);
+  for (e = s;  isalpha(*e); e++);
 
   ret = _check_operation(req, s, e - s);
   switch (ret)
@@ -246,6 +247,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     }
 
   /* check & set delimiter */
+  e++;
   for (s = e;  isspace(*s); s++); /* skip leading spaces */
   ret = _check_delimiter(req, *s);
 
