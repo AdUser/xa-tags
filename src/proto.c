@@ -269,3 +269,47 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   return 2; /* something went wrong */
 }
+
+/** return values:
+  * 0 - all clear
+  * 1 - empty data set
+  * 2 - error
+  */
+int
+validate_data(data_t *data)
+{
+  char *p = NULL;
+  int ret = 0;
+  size_t read = 0;
+  int items = 0;
+
+  ASSERT(data != NULL, MSG_M_NULLPTR);
+
+  if (data->type == DATA_EMPTY)
+    return 0;
+
+  for (p = data->buf; read < data->len && ret == 0; )
+    {
+      read += strlen(p) + 1;
+      switch (data->type)
+        {
+          case DATA_T_MSG :
+            break;
+          case DATA_L_FILES :
+            break;
+          case DATA_L_UUIDS :
+            break;
+          case DATA_M_UUID_TAGS :
+            break;
+          case DATA_M_UUID_FILE :
+            break;
+          default :
+            ret = 2;
+            break;
+        }
+      items++;
+      p = &data->buf[read];
+    }
+
+  return ret;
+}
