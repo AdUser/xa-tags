@@ -6,3 +6,6 @@ ADD_TEST("proto/parse_buf_simple_req" "parse_buf_1")
 
 ADD_EXECUTABLE("parse_buf_2" ${SRC_FILES} "parse_buf_2.c")
 ADD_TEST("proto/parse_buf_req_with_op" "parse_buf_2")
+
+ADD_EXECUTABLE("parse_buf_3" ${SRC_FILES} "parse_buf_3.c")
+ADD_TEST("proto/parse_buf_req_with_data" "parse_buf_3")
