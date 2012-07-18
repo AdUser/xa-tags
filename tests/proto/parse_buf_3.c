@@ -23,9 +23,9 @@ int main()
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert(req->delim == ':');
-  assert(req->data_len == strlen(PATH1));
-  assert(strcmp(req->data, PATH1) == 0);
+  assert((req->data.flags & DATA_MULTIROW) == 0);
+  assert(req->data.len == strlen(PATH1));
+  assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
 
   /* 2: missing space between marker and data */
@@ -36,9 +36,9 @@ int main()
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert(req->delim == ':');
-  assert(req->data_len == strlen(PATH1));
-  assert(strcmp(req->data, PATH1) == 0);
+  assert((req->data.flags & DATA_MULTIROW) == 0);
+  assert(req->data.len == strlen(PATH1));
+  assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
 
   /* 3: wrong delimiter */

@@ -1,5 +1,28 @@
 /** typedefs */
 
+/** data */
+#define DATA_MAX_ITEMS 255
+
+/* data flags */
+#define DATA_MULTIROW       1 <<  0
+
+typedef struct data_t
+{
+  uint8_t flags;
+  uint8_t items;
+  enum
+    {
+      DATA_EMPTY = 0,
+      DATA_T_MSG,
+      DATA_L_FILES,
+      DATA_L_UUIDS,
+      DATA_M_UUID_TAGS,
+      DATA_M_UUID_FILE
+    } type;
+  size_t len;
+  char *buf;
+} data_t;
+
 /** request */
 typedef enum req_type_t
   {
@@ -37,9 +60,7 @@ typedef struct ipc_req_t
   {
     req_type_t type;
     req_op_t op;
-    char delim;
-    size_t data_len;
-    char *data;
+    data_t data;
   } ipc_req_t;
 
 /** response */
@@ -49,21 +70,10 @@ typedef enum resp_status_t
     STATUS_ERR
   } resp_status_t;
 
-typedef enum resp_data_t
-  {
-     NO_DATA = 0,
-     DATA_MSG,
-     DATA_FILES,
-     DATA_TAGS
-  } resp_data_t;
-
 typedef struct ipc_resp_t
   {
     resp_status_t status;
-    resp_data_t data_type;
-    char delim;
-    size_t data_len;
-    char *data;
+    data_t data;
   } ipc_resp_t;
 
 /** API functions */

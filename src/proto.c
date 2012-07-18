@@ -16,38 +16,6 @@
 
 #include "common.h"
 
-ipc_resp_t *
-make_ipc_resp(ipc_resp_t *resp, resp_status_t st, resp_data_t type, char *data)
-{
-  char *p = NULL;
-
-  ASSERT(resp != NULL, MSG_M_NULLPTR);
-
-  resp->status = st;
-  resp->data_type = type;
-  resp->data_len = strlen(data);
-
-  if (resp->data_len <= 0)
-    {
-      resp->data_type = NO_DATA;
-      return resp;
-    }
-
-  resp->delim = (strchr(data, '\n')) ? '>' : ':';
-
-  CALLOC(resp->data, resp->data_len + 1, sizeof(char));
-  memcpy(resp->data, data, resp->data_len);
-  /* assert(data_len > 0) */
-  p = &resp->data[resp->data_len - 1];
-  if (*p != '\n')
-    {
-      *p = '\n';
-      *(p + 1) = '\0';
-    }
-
-  return resp;
-}
-
 /** return values:
   * 0 - invalid type
   * 1 - valid
@@ -76,9 +44,9 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
   * 2 - valid, data expected for this operation
   */
 
-#define CHECK_OP(buf,token,operation,ret) \
+#define CHECK_OP(buf,token,operation,data_type,ret) \
   else if (strncmp((buf), (token), strlen(token)) == 0) \
-    { req->op = (operation); return (ret); }
+    { req->op = (operation); req->data.type = data_type; return (ret); }
 
 int
 _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
@@ -87,22 +55,22 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
     {
       case REQ_FILE :
         if (false) {}
-        CHECK_OP(buf, "ADD",     OP_F_ADD,     2)
-        CHECK_OP(buf, "DEL",     OP_F_DEL,     2)
-        CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  2)
+        CHECK_OP(buf, "ADD",     OP_F_ADD,     DATA_L_FILES, 2)
+        CHECK_OP(buf, "DEL",     OP_F_DEL,     DATA_L_FILES, 2)
+        CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  DATA_L_FILES, 2)
         break;
       case REQ_TAG :
         if (false) {}
-        CHECK_OP(buf, "ADD",     OP_T_ADD,     2)
-        CHECK_OP(buf, "DEL",     OP_T_DEL,     2)
-        CHECK_OP(buf, "GET",     OP_T_GET,     2)
-        CHECK_OP(buf, "SET",     OP_T_SET,     2)
-        CHECK_OP(buf, "CLR",     OP_T_CLR,     2)
+        CHECK_OP(buf, "ADD",     OP_T_ADD,     DATA_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "DEL",     OP_T_DEL,     DATA_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "GET",     OP_T_GET,     DATA_L_UUIDS,     2)
+        CHECK_OP(buf, "SET",     OP_T_SET,     DATA_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "CLR",     OP_T_CLR,     DATA_L_UUIDS,     2)
         break;
       case REQ_DB :
         if (false) {}
-        CHECK_OP(buf, "STAT",    OP_D_STAT,    1)
-        CHECK_OP(buf, "CHECK",   OP_D_CHECK,   1)
+        CHECK_OP(buf, "STAT",    OP_D_STAT,    DATA_EMPTY, 1)
+        CHECK_OP(buf, "CHECK",   OP_D_CHECK,   DATA_EMPTY, 1)
         break;
       default :
         break;
@@ -121,9 +89,16 @@ _check_delimiter(ipc_req_t *req, char c)
 {
   switch (c)
     {
-      case ':' : req->delim = ':';  return 1; break;
-      case '>' : req->delim = '>';  return 2; break;
-      default  : req->delim = '\0'; return 0; break;
+      case '>' :
+        req->data.flags |=  DATA_MULTIROW;
+        return 2;
+        break;
+      case ':' :
+        req->data.flags &= ~DATA_MULTIROW;
+        return 1;
+        break;
+      default  :
+        break;
     }
 
   return 0;
@@ -272,8 +247,8 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   if (ret == 1)
     {
       e = strchr(s, '\n');
-      STRNDUP(req->data, s, e - s);
-      req->data_len = e - s;
+      STRNDUP(req->data.buf, s, e - s);
+      req->data.len = e - s;
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
@@ -283,9 +258,9 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
     {
       if ((e = strstr(s, "\n\n")) == NULL)
         return 1; /* incomplete request */
-      STRNDUP(req->data, s, e - s);
-      req->data_len = e - s;
-      for (s = req->data; *s != '\0'; s++)
+      STRNDUP(req->data.buf, s, e - s);
+      req->data.len = e - s;
+      for (s = req->data.buf; *s != '\0'; s++)
         if (*s == '\n') *s = '\0';
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
