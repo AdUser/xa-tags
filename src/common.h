@@ -14,6 +14,7 @@
   #define _(x) (x)
 #endif
 
+#include "data.h"
 #include "conn.h"
 #include "proto.h"
 #include "log.h"
