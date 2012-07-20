@@ -260,8 +260,9 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
         return 1; /* incomplete request */
       STRNDUP(req->data.buf, s, e - s);
       req->data.len = e - s;
-      for (s = req->data.buf; *s != '\0'; s++)
-        if (*s == '\n') *s = '\0';
+      if (req->data.type != DATA_T_MSG)
+        for (s = req->data.buf; *s != '\0'; s++)
+          if (*s == '\n') *s = '\0';
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
       return 0; /* request ready for processing */
