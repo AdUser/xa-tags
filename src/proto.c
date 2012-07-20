@@ -333,39 +333,75 @@ _validate_path(char *path)
   */
 int
 validate_data(data_t *data)
-{
-  char *p = NULL;
-  int ret = 0;
+ {
+  char *t = NULL;
+  char *item = NULL;
+  size_t item_len = 0;
+  int skip_item = 0;
   size_t read = 0;
-  int items = 0;
 
   ASSERT(data != NULL, MSG_M_NULLPTR);
 
   if (data->type == DATA_EMPTY)
-    return 0;
-
-  for (p = data->buf; read < data->len && ret == 0; )
     {
-      read += strlen(p) + 1;
+      FREE(data->buf);
+      data->len = 0;
+      return 0;
+    }
+
+  item = data->buf;
+  while(read < data->len)
+    {
+      item_len = strlen(item) + 1;
       switch (data->type)
         {
           case DATA_T_MSG :
             break;
           case DATA_L_FILES :
+            if (_validate_path(item)) skip_item = 1;
             break;
           case DATA_L_UUIDS :
+            if (_validate_uuid(item)) skip_item = 1;
             break;
           case DATA_M_UUID_TAGS :
+            if (_validate_uuid(item) ||
+             /* _validate_tags(&item[21]) || */
+                !isblank(item[20]))
+                  skip_item = 1;
             break;
           case DATA_M_UUID_FILE :
+            if (_validate_uuid(item) ||
+                _validate_path(&item[21]) ||
+                !isblank(item[20]))
+                  skip_item = 1;
             break;
           default :
-            ret = 2;
+            skip_item = 1;
             break;
         }
-      items++;
-      p = &data->buf[read];
+      if (skip_item)
+        {
+          data->len -= item_len;
+          memmove(item, item + item_len, data->len - read);
+          t = realloc(data->buf, data->len);
+          if (t == NULL)
+            {
+              if (data->len == 0)
+                {
+                  data->type = DATA_EMPTY;
+                  return 1;
+                }
+              /* TODO */
+            }
+          data->buf = t;
+          item = &data->buf[read]; /* reset pointer after realloc() */
+          skip_item = 0;
+          continue;
+        }
+      data->items += 1;
+      read += item_len;
+      item = &data->buf[read];
     }
 
-  return ret;
+  return (data->items > 0) ? 0 : 1;
 }

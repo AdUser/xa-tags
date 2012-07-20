@@ -78,3 +78,4 @@ typedef struct ipc_resp_t
 
 /** API functions */
 int parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len);
+int validate_data(data_t *data);
