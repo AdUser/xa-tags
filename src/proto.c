@@ -317,8 +317,11 @@ _validate_path(char *path)
   p = path;
   while (isblank(*p)) p++;
 
+  if (*p == '\0')
+    return 1; /* empty string */
+
   if (*p != '/' && strncmp("~/", p, 2) != 0)
-    return 1;
+    return 1; /* allowed paths must begin with '/' or '~/' */
 
   return 0;
 }
