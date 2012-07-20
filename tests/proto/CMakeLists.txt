@@ -10,5 +10,8 @@ ADD_TEST("proto/parse_buf_req_with_op" "parse_buf_2")
 ADD_EXECUTABLE("parse_buf_3" ${SRC_FILES} "parse_buf_3.c")
 ADD_TEST("proto/parse_buf_req_with_data" "parse_buf_3")
 
+ADD_EXECUTABLE("parse_buf_4" ${SRC_FILES} "parse_buf_4.c")
+ADD_TEST("proto/parse_buf_req_with_mdata" "parse_buf_4")
+
 ADD_EXECUTABLE("validate_data" ${SRC_FILES} "validate_data.c")
 ADD_TEST("proto/validate_data" "validate_data")
