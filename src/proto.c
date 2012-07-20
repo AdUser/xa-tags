@@ -265,6 +265,7 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
           if (*s == '\n') *s = '\0';
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
+      req->data.flags |= DATA_MULTIROW;
       return 0; /* request ready for processing */
     }
 
@@ -402,6 +403,9 @@ validate_data(data_t *data)
       read += item_len;
       item = &data->buf[read];
     }
+
+  if (data->items < 2 && data->flags & DATA_MULTIROW)
+    data->flags &= ~DATA_MULTIROW;
 
   return (data->items > 0) ? 0 : 1;
 }
