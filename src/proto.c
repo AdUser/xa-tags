@@ -329,6 +329,31 @@ _validate_path(char *path)
 
 /** return values:
   * 0 - all clear
+  * 1 - general error
+  * 2 - unallowed symbol in tags
+  */
+int
+_validate_tags(char *tags)
+{
+  char  *p = NULL;
+
+  ASSERT(tags != NULL, MSG_M_NULLPTR);
+
+  for (p = tags; *p != '\0'; p++)
+    if (*p == '\"')
+      return 2;
+
+  if (p > tags) p--;
+
+  while (isspace(*p) || p >= tags) p--;
+
+  if (*p == '\\') return 2;
+
+  return 0;
+}
+
+/** return values:
+  * 0 - all clear
   * 1 - empty data set
   * 2 - error
   */
@@ -366,7 +391,7 @@ validate_data(data_t *data)
             break;
           case DATA_M_UUID_TAGS :
             if (_validate_uuid(item) ||
-             /* _validate_tags(&item[21]) || */
+                _validate_tags(&item[21]) ||
                 !isblank(item[20]))
                   skip_item = 1;
             break;
