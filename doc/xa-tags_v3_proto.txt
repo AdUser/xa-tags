@@ -33,17 +33,18 @@ S|  <<|Hi! xa-tags v0.00a nice to meet you
 S|  <<|
 -+----+------------------------------------------------------------------------
 C|>>  |FILE ADD : ~/.walls/sakura.png
-S|  <<|OK FILES >
-S|  <<|78062B-BCEC67-F5B709 ~/.walls/sakura.png
-S|  <<|
+S|  <<|OK FILES : 78062B-BCEC67-F5B709 ~/.walls/sakura.png
+C|>>  |FILE ADD : ~/.walls/1234.jpg
+S|  <<|OK FILES : 78062B-C71527-9BC445 ~/.walls/1234.jpg
 C|>>  |FILE SEARCH : *
 S|  <<|OK FILES >
 S|  <<|78062B-BCEC67-F5B709 ~/.walls/sakura.png
+S|  <<|78062B-C71527-9BC445 ~/.walls/1234.jpg
 S|  <<|
 C|>>  |FILE DEL : ~/.walls/sakura.png
 S|  <<|OK
 C|>>  |FILE DEL : ~/.walls/sakura1.png
-S|  <<|ERR MSG > No such file
+S|  <<|ERR MSG : No such file
 C|>>  |FILE DEL >
 C|>>  |78062B-BCEC67-F5B709
 C|>>  |
