@@ -272,6 +272,58 @@ parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 }
 
 /** return values:
+  * 0 - ok
+  * 1 - error
+  */
+int
+_validate_uuid(char *uuid)
+{
+  int i = 0;
+  char c = '\0';
+
+  ASSERT(uuid != NULL, MSG_M_NULLPTR);
+
+  for (i = 0; i < 20; i++)
+    {
+      c = (isxdigit(uuid[i])) ? '0' : uuid[i];
+      switch (c)
+        {
+          case '0' :
+            if (i == 6 || i == 13) return 1;
+            break;
+          case '-' :
+            if (i != 6 && i != 13) return 1;
+            break;
+          case 0x0 :
+          default :
+            return 1;
+            break;
+        }
+    }
+
+  return 0;
+}
+
+/** return values:
+  * 0 - ok
+  * 1 - error
+  */
+int
+_validate_path(char *path)
+{
+  char *p = NULL;
+
+  ASSERT(path != NULL, MSG_M_NULLPTR);
+  p = path;
+  while (isblank(*p)) p++;
+
+  if (*p != '/' && strncmp("~/", p, 2) != 0)
+    return 1;
+
+  return 0;
+}
+
+/** return values:
   * 0 - all clear
   * 1 - empty data set
   * 2 - error
