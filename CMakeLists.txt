@@ -69,7 +69,7 @@ MESSAGE (STATUS "Aux dependencies:")
 MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
 MESSAGE (STATUS "------------------------------------------")
 
-#ADD_SUBDIRECTORY (src)
+ADD_SUBDIRECTORY (src)
 
 #IF    (GETTEXT_STATUS STREQUAL "FOUND")
 #  ADD_SUBDIRECTORY (po)
