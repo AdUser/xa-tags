@@ -114,9 +114,9 @@ _rd_buf_extend(conn_t *conn, char *buf, size_t buf_len)
 
   t = realloc(conn->rd_buf, s_new + 1);
   ASSERT(t != NULL, MSG_M_REALLOC);
-  memcpy(&conn->rd_buf[conn->rd_buf_len], buf, buf_len);
-  conn->rd_buf[s_new + 1] = '\0';
   conn->rd_buf = t;
+  memcpy(&conn->rd_buf[conn->rd_buf_len], buf, buf_len);
+  conn->rd_buf[s_new] = '\0';
   conn->rd_buf_len = s_new;
 }
 
