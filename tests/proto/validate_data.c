@@ -69,5 +69,32 @@ TWO-LINE TEXT\n";
   assert(data->items == 4);
   FREE(data);
 
+  /* DATA_M_UUID_FILE */
+  CALLOC(data, 1, sizeof(data_t));
+  data->type = DATA_M_UUID_FILE;
+  test = \
+  "    \n"                                                   /* fail */ \
+  "1EE79B-889A3A-2A40CD /home/user/.walls/lxde_green.jpg\n"  /* pass */ \
+  "1EE79B-135B85-DE5620 \t/home/user/.walls/77156662.jpg\n"  /* pass */ \
+  "\t\t\t\n"                                                 /* fail */ \
+  " 1EE79B-F314F1-22134C ~/.walls/roz_5_1024.jpg\n"          /* fail */ \
+  "1EE79B-C71527-9BC445 ~/.walls/1133-2.jpg   \n"            /* pass */ \
+  "1EE79B-A8782C-E286F0 ~/.walls/amg_4t_1532.jpg\n"          /* pass */ \
+  "1EE79B-4171A7-2250BA ~/.walls/01331 trajectory.jpg\n"     /* pass */ \
+  "1EE79B-35F304-DDC9DA ~/.walls/ lain_rz_6591.jpg\n"        /* pass */ ;
+
+  data->len = strlen(test) + 1;
+  STRNDUP(data->buf, test, 4096);
+  for (i = 0; i < data->len; i++)
+    if (data->buf[i] == '\n')
+      data->buf[i] = '\0';
+
+  ret = validate_data(data);
+  assert(ret == 0);
+  assert(data->items == 6);
+  FREE(data);
+
+  /* DATA_M_UUID_TAGS */
+
   return 0;
 }
