@@ -2,7 +2,7 @@
 #define DATA_MAX_ITEMS 255
 
 /* data flags */
-#define DATA_MULTIROW       1 <<  0
+#define DATA_MULTI          1 <<  0
 
 typedef struct data_t
 {
