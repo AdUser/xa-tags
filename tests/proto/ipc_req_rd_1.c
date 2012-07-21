@@ -16,7 +16,7 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "HELLO\n";
 
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 0);
   assert(req->type == REQ_HELLO && req->op == OP_NONE);
   assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
@@ -26,17 +26,17 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "\n  \t   HELLO";
 
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 2);
 
   /* 3: continue processing the same buffer */
   /* buf = "  \t   HELLO"; */
-  ret = parse_buf(conn, req, NULL, 0);
+  ret = ipc_request_read(conn, req, NULL, 0);
   assert(ret == 1);
 
   /* add terminating '\n' to input buffer  */
   /* now request should be processed completely */
-  ret = parse_buf(conn, req, "\n", 1);
+  ret = ipc_request_read(conn, req, "\n", 1);
   assert(ret == 0);
   assert(req->type == REQ_HELLO && req->op == OP_NONE);
   assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
@@ -46,7 +46,7 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "QUIT\n";
 
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 2);
   assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
   FREE(req);

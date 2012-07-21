@@ -5,17 +5,15 @@ SET(SRC_FILES
     "${SRC_DIR}/data.c"
     )
 
-ADD_EXECUTABLE("parse_buf_1" ${SRC_FILES} "parse_buf_1.c")
-ADD_TEST("proto/parse_buf_simple_req" "parse_buf_1")
+ADD_EXECUTABLE("ipc_req_rd_1" ${SRC_FILES} "ipc_req_rd_1.c")
+ADD_EXECUTABLE("ipc_req_rd_2" ${SRC_FILES} "ipc_req_rd_2.c")
+ADD_EXECUTABLE("ipc_req_rd_3" ${SRC_FILES} "ipc_req_rd_3.c")
+ADD_EXECUTABLE("ipc_req_rd_4" ${SRC_FILES} "ipc_req_rd_4.c")
 
-ADD_EXECUTABLE("parse_buf_2" ${SRC_FILES} "parse_buf_2.c")
-ADD_TEST("proto/parse_buf_req_with_op" "parse_buf_2")
-
-ADD_EXECUTABLE("parse_buf_3" ${SRC_FILES} "parse_buf_3.c")
-ADD_TEST("proto/parse_buf_req_with_data" "parse_buf_3")
-
-ADD_EXECUTABLE("parse_buf_4" ${SRC_FILES} "parse_buf_4.c")
-ADD_TEST("proto/parse_buf_req_with_mdata" "parse_buf_4")
+ADD_TEST("proto/ipc_request_read_1" "ipc_req_rd_1")
+ADD_TEST("proto/ipc_request_read_2" "ipc_req_rd_2")
+ADD_TEST("proto/ipc_request_read_3" "ipc_req_rd_3")
+ADD_TEST("proto/ipc_request_read_4" "ipc_req_rd_4")
 
 ADD_EXECUTABLE("validate_data" ${SRC_FILES} "validate_data.c")
 ADD_TEST("proto/validate_data" "validate_data")

@@ -151,7 +151,7 @@ _rd_buf_reduce(conn_t *conn, size_t len)
   * 2 - malformed request
   */
 int
-parse_buf(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
+ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 {
   /* local variables */
   char *s = NULL; /* as 'start' */

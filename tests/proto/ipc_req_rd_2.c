@@ -16,7 +16,7 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "DB STAT\n";
 
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_DB && req->op == OP_D_STAT);
@@ -26,16 +26,16 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "DB TEST\n";
 
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 2);
   assert(conn->rd_buf_len == 0);
 
   /* 3: valid operation without '\n' */
   buf = "DB \t\t\t CHECK";
-  ret = parse_buf(conn, req, buf, strlen(buf));
+  ret = ipc_request_read(conn, req, buf, strlen(buf));
   assert(ret == 1);
 
-  ret = parse_buf(conn, req, "\n", 1);
+  ret = ipc_request_read(conn, req, "\n", 1);
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_DB && req->op == OP_D_CHECK);
