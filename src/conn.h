@@ -9,6 +9,8 @@ typedef struct conn_t
     char        *wr_buf;
     unsigned int rd_buf_len;
     unsigned int wr_buf_len;
+
+    /* used only by server */
     uint16_t flags;
     data_t errors;
   } conn_t;
