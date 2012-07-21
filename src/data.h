@@ -20,3 +20,6 @@ typedef struct data_t
   size_t len;
   char *buf;
 } data_t;
+
+/** API functions */
+int data_item_add(data_t *data, char *item, size_t item_len);
