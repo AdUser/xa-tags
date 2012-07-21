@@ -28,7 +28,7 @@ int main()
   ret = ipc_request_read(conn, req, "\n\n", 2);
   assert(ret == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert((req->data.flags & DATA_MULTI) == 0);
+  assert((req->data.flags & DATA_MULTI) == 1);
   FREE(req);
 
   return 0;
