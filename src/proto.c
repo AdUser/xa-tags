@@ -271,3 +271,94 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   return 2; /* something went wrong */
 }
+
+/** return values:
+  */
+/*
+int
+ipc_request_write(conn_t *conn, ipc_req_t *req)
+*/
+
+/** return values:
+  * 0 - responce ready
+  * 1 - incomplete responce, saved in buf
+  * 2 - malformed responce
+  */
+/*
+int
+ipc_responce_read(conn_t *conn, ipc_resp_t *resp, char *buf, size_t buf_len)
+*/
+
+/** return values:
+  */
+int
+ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
+{
+  char *buf = NULL;
+  size_t buf_len = 1024;
+  char *t = NULL;
+  int i = 1;
+  int ret = 0;
+  const char *status = NULL;
+  const char *type = NULL;
+
+  ASSERT(conn != NULL, MSG_M_NULLPTR);
+  ASSERT(resp != NULL, MSG_M_NULLPTR);
+
+  for (i = 0; i < resp->data.len; i++)
+    if (resp->data.buf[i] == '\0')
+      resp->data.buf[i] = '\n';
+
+  switch (resp->status)
+    {
+      case STATUS_OK  : status = "OK";  break;
+      case STATUS_ERR : status = "ERR"; break;
+      default : return 1;               break;
+    }
+
+  switch (resp->data.type)
+    {
+      case DATA_EMPTY       : type = "";      break;
+      case DATA_T_MSG       : type = "MSG";   break;
+      case DATA_M_UUID_FILE : type = "FILES"; break;
+      case DATA_M_UUID_TAGS : type = "TAGS";  break;
+      case DATA_L_FILES     : /* we should responce */
+      case DATA_L_UUIDS     : /* only with mappings */
+      default               : return 1;        break;
+    }
+
+  again:
+  FREE(buf);
+  CALLOC(buf, buf_len, sizeof(char));
+
+  if (resp->data.type != DATA_EMPTY)
+    {
+      ret = snprintf(buf, buf_len, "%s %s %s%s", \
+                     status, type, \
+                     (resp->data.items > 1) ? ">\n" : ": ",
+                     resp->data.buf);
+    }
+  else ret = snprintf(buf, buf_len, "%s\n", status);
+
+  if (ret > buf_len)
+    {
+      buf_len = ret + 1;
+      goto again;
+    }
+
+  if (conn->wr_buf_len == 0)
+    {
+      conn->wr_buf = buf;
+      conn->wr_buf_len = ret + 1;
+    }
+  else
+    {
+      t = realloc(conn->wr_buf, conn->wr_buf_len + ret);
+      ASSERT(t != NULL, MSG_M_REALLOC);
+      conn->wr_buf = t;
+      memcpy(&conn->wr_buf[conn->wr_buf_len - 1], buf, ret);
+      conn->wr_buf_len += ret;
+    }
+
+  return 0;
+}

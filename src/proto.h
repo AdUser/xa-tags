@@ -55,3 +55,8 @@ typedef struct ipc_resp_t
 
 /** API functions */
 int ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len);
+/*
+int ipc_request_write(conn_t *conn, ipc_req_t *req)
+int ipc_responce_read(conn_t *conn, ipc_resp_t *resp, char *buf, size_t buf_len)
+*/
+int ipc_responce_write(conn_t *conn, ipc_resp_t *resp);
