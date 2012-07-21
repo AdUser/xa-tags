@@ -432,5 +432,8 @@ validate_data(data_t *data)
   if (data->items < 2 && data->flags & DATA_MULTI)
     data->flags &= ~DATA_MULTI;
 
+  if (data->items > 1 && !(data->flags & DATA_MULTI))
+    data->flags |= DATA_MULTI;
+
   return (data->items > 0) ? 0 : 1;
 }
