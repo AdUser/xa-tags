@@ -17,7 +17,7 @@ THIS IS SAMPLE\n\
 TWO-LINE TEXT\n";
   data->len = strlen(data->buf);
 
-  ret = validate_data(data);
+  ret = data_validate(data);
   assert(ret == 0);
   FREE(data);
 
@@ -25,7 +25,7 @@ TWO-LINE TEXT\n";
   CALLOC(data, 1, sizeof(data_t));
   data->type = DATA_L_FILES;
   test =
-#include "test_list_of_files.inc"
+#include "../samples/test_list_of_files.inc"
 
   data->len = strlen(test) + 1;
   STRNDUP(data->buf, test, 4096);
@@ -33,7 +33,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = validate_data(data);
+  ret = data_validate(data);
   assert(ret == 0);
   assert(data->items == 5);
   FREE(data);
@@ -42,7 +42,7 @@ TWO-LINE TEXT\n";
   CALLOC(data, 1, sizeof(data_t));
   data->type = DATA_L_UUIDS;
   test =
-#include "test_list_of_uuids.inc"
+#include "../samples/test_list_of_uuids.inc"
 
   data->len = strlen(test) + 1;
   STRNDUP(data->buf, test, 4096);
@@ -50,7 +50,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = validate_data(data);
+  ret = data_validate(data);
   assert(ret == 0);
   assert(data->items == 4);
   FREE(data);
@@ -59,7 +59,7 @@ TWO-LINE TEXT\n";
   CALLOC(data, 1, sizeof(data_t));
   data->type = DATA_M_UUID_FILE;
   test =
-#include "test_map_of_uuid_and_file.inc"
+#include "../samples/test_map_of_uuid_and_file.inc"
 
   data->len = strlen(test) + 1;
   STRNDUP(data->buf, test, 4096);
@@ -67,7 +67,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = validate_data(data);
+  ret = data_validate(data);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);
@@ -76,7 +76,7 @@ TWO-LINE TEXT\n";
   CALLOC(data, 1, sizeof(data_t));
   data->type = DATA_M_UUID_TAGS;
   test =
-#include "test_map_of_uuid_and_tags.inc"
+#include "../samples/test_map_of_uuid_and_tags.inc"
 
   data->len = strlen(test) + 1;
   STRNDUP(data->buf, test, 4096);
@@ -84,7 +84,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = validate_data(data);
+  ret = data_validate(data);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);

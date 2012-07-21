@@ -22,5 +22,6 @@ typedef struct data_t
 } data_t;
 
 /** API functions */
+int data_validate(data_t *data);
 int data_item_add(data_t *data, char *item, size_t item_len);
 void data_clear(data_t *data);

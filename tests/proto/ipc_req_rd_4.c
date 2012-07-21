@@ -19,7 +19,7 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
 
   test = "FILE ADD >"
-#include "test_list_of_files.inc"
+#include "../samples/test_list_of_files.inc"
 
   STRNDUP(buf, test, 4096);
 
