@@ -50,3 +50,11 @@ data_item_add(data_t *data, char *item, size_t item_len)
     }
   return 1;
 }
+
+void
+data_clear(data_t *data)
+{
+  ASSERT(data != NULL, MSG_M_NULLPTR);
+  FREE(data->buf);
+  memset(data, 0x0, sizeof(data_t));
+}
