@@ -10,6 +10,9 @@
 #define STRNDUP(ptr, str, len) \
   ASSERT((((ptr) = strndup((str), (len))) != NULL), MSG_M_OOM)
 
-#define ASSERT(x, y) \
-  if (!(x)) msg(msg_error, (y), __FILE__, __LINE__)
-
+#ifdef DEBUG
+  #define ASSERT(x, y) \
+    if (!(x)) msg(msg_error, (y), __FILE__, __LINE__)
+#else
+  #define ASSERT(x, y) (x)
+#endif
