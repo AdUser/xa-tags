@@ -7,10 +7,11 @@ typedef struct conn_t
   {
     int fd;
     int timeout;
-    char        *rd_buf;
-    char        *wr_buf;
-    unsigned int rd_buf_len;
-    unsigned int wr_buf_len;
+
+    char        *rd_buf;     /* these buffers should contain   */
+    char        *wr_buf;     /* null-terminated string, but    */
+    unsigned int rd_buf_len; /* *_buf_len assumes only usefull */
+    unsigned int wr_buf_len; /* bytes, without '\0' */
 
     /* used only by server */
     uint16_t flags;
