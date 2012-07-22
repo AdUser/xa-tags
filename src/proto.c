@@ -28,6 +28,9 @@
 int
 _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 {
+
+  ASSERT(req != NULL && buf != NULL, MSG_M_NULLPTR);
+
   if (buf_len == 0)
     return 0;
 
