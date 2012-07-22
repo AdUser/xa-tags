@@ -21,7 +21,7 @@
   * 1 - error
   */
 int
-_validate_uuid(char *uuid)
+_validate_uuid(char *uuid, data_t *errors)
 {
   int i = 0;
   char c = '\0';
@@ -54,7 +54,7 @@ _validate_uuid(char *uuid)
   * 1 - error
   */
 int
-_validate_path(char *path)
+_validate_path(char *path, data_t *errors)
 {
   char *p = NULL;
 
@@ -77,7 +77,7 @@ _validate_path(char *path)
   * 2 - unallowed symbol in tags
   */
 int
-_validate_tags(char *tags)
+_validate_tags(char *tags, data_t *errors)
 {
   char  *p = NULL;
 
@@ -128,20 +128,20 @@ data_validate(data_t *data, data_t *errors, int strict)
           case DATA_T_MSG :
             break;
           case DATA_L_FILES :
-            if (_validate_path(item)) skip_item = 1;
+            if (_validate_path(item, errors)) skip_item = 1;
             break;
           case DATA_L_UUIDS :
-            if (_validate_uuid(item)) skip_item = 1;
+            if (_validate_uuid(item, errors)) skip_item = 1;
             break;
           case DATA_M_UUID_TAGS :
-            if (_validate_uuid(item) ||
-                _validate_tags(&item[21]) ||
+            if (_validate_uuid(item, errors) ||
+                _validate_tags(&item[21], errors) ||
                 !isblank(item[20]))
                   skip_item = 1;
             break;
           case DATA_M_UUID_FILE :
-            if (_validate_uuid(item) ||
-                _validate_path(&item[21]) ||
+            if (_validate_uuid(item, errors) ||
+                _validate_path(&item[21], errors) ||
                 !isblank(item[20]))
                   skip_item = 1;
             break;
