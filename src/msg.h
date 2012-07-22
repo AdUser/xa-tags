@@ -5,17 +5,36 @@
 #define MSG_M_REALLOC    _("%s:%i -- realoc() failed.\n")
 
 /** IPC messages */
+/*  no trailing '\n', please */
+
+/** parsing errors */
 #define MSG_I_BADREQ     \
-  _("Parsing failed, unknown request type.\n")
+  _("Parsing failed, unknown request type.")
 #define MSG_I_BADOP      \
-  _("Parsing failed, unknown operation for this type.\n")
+  _("Parsing failed, unknown operation for this type.")
 #define MSG_I_BADMARKER  \
-  _("Parsing failed, expected ':', '>' or '\\n' char.\n")
+  _("Parsing failed, expected ':', '>' or '\\n' char.")
 #define MSG_I_EXPOP      \
-  _("Parsing failed, operation expected.\n")
+  _("Parsing failed, operation expected.")
 #define MSG_I_EXPDATA    \
-  _("Parsing failed, expected data.\n")
+  _("Parsing failed, data expected.")
+#define MSG_I_PARTREQ    \
+  _("Request processed partly.")
+
+/** request processing errors */
+#define MSG_I_NOBATCH    \
+  _("No batch reqests allowed.")
+#define MSG_I_ABORTREQ   \
+  _("Request discarded.")
+
+/** connection errors */
 #define MSG_I_TIMEOUT    \
-  _("Connection timeout.\n")
+  _("Connection timeout.")
+
+/** database errors */
+#define MSG_I_DBRDONLY   \
+  _("Database readonly.")
+
+/** other errors */
 #define MSG_I_UNKNERR    \
-  _("Internal error occured. Request aborted.\n")
+  _("Internal error occured. Request aborted.")
