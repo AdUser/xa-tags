@@ -96,3 +96,55 @@ conn_on_errors(conn_t *conn)
   conn->errors.type = DATA_T_MSG;
   FREE(resp);
 }
+
+void
+conn_on_read(conn_t *conn)
+{
+  int ret = 0;
+  ipc_req_t *req = NULL;
+
+  CALLOC(req, 1, sizeof(ipc_req_t));
+
+  ret = ipc_request_read(conn, req);
+  
+  if (ret == 1)
+    {
+      FREE(req);
+      return; /* more data needed */
+    }
+  
+  if (ret == 2 && conn->errors.items > 0)
+    goto abort_req;
+
+  ret = data_validate(&req->data, &conn->errors,
+                      conn->flags & CONN_F_STRICT);
+  if (ret > 0)
+    goto abort_req;
+
+  if ((conn->flags & CONN_F_NOBATCH) && \
+      (req->data.items > 1))
+    {
+      FREE(req);
+      data_item_add(&conn->errors, MSG_I_NOBATCH, 0);
+      conn_on_errors(conn);
+      return;
+    }
+
+  if (req->data.items > 0 &&
+      conn->errors.items > 0)
+    {
+      data_item_add(&conn->errors, MSG_I_PARTREQ, 0);
+      conn_on_errors(conn);
+      /* but continue */
+    }
+
+  /* TODO: request handle */
+
+  return;
+
+  abort_req: 
+  FREE(req);
+  data_item_add(&conn->errors, MSG_I_ABORTREQ, 0);
+  conn_on_errors(conn);
+  return;
+}

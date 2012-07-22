@@ -23,3 +23,4 @@ typedef struct conn_t
 void conn_buf_extend(conn_t *conn, char b, char *buf, size_t buf_len);
 void conn_buf_reduce(conn_t *conn, char b, size_t len);
 void conn_on_errors(conn_t *conn);
+void conn_on_read(conn_t *conn);
