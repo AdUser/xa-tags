@@ -43,9 +43,10 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 }
 
 /** return values:
-  * 0 - invalid operation
-  * 1 - valid
-  * 2 - valid, data expected for this operation
+  * -1 - invalid operation
+  *  0 - empty operation
+  *  1 - valid
+  *  2 - valid, data expected for this operation
   */
 
 #define CHECK_OP(buf,token,operation,data_type,ret) \
@@ -55,6 +56,9 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 int
 _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
 {
+  if (buf_len == 0)
+    return 0;
+
   switch (req->type)
     {
       case REQ_FILE :
@@ -80,7 +84,7 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
         break;
     }
 
-  return 0;
+  return -1;
 }
 
 /** return values:
@@ -218,7 +222,13 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 0; /* request ready for processing */
         break;
-      case 0 : /* invalid request type */
+      case  0 : /* empty operation */
+        data_item_add(&conn->errors, MSG_I_EXPOP, 0);
+        while (isspace(*e)) e++;
+        _rd_buf_reduce(conn, e - conn->rd_buf);
+        return 2; /* malformed request */
+        break;
+      case -1 : /* invalid operation fo this request */
       default :
         data_item_add(&conn->errors, MSG_I_BADOP, 0);
         while (isspace(*e)) e++;
