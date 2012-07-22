@@ -12,18 +12,20 @@
   _("Parsing failed, unknown request type.")
 #define MSG_I_BADOP      \
   _("Parsing failed, unknown operation for this type.")
-#define MSG_I_BADMARKER  \
-  _("Parsing failed, expected ':', '>' or '\\n' char.")
+#define MSG_I_EXPREQ     \
+  _("Parsing failed, request expected.")
 #define MSG_I_EXPOP      \
   _("Parsing failed, operation expected.")
+#define MSG_I_EXPDELIM   \
+  _("Parsing failed, expected ':', '>' char.")
 #define MSG_I_EXPDATA    \
   _("Parsing failed, data expected.")
-#define MSG_I_PARTREQ    \
-  _("Request processed partly.")
 
 /** request processing errors */
 #define MSG_I_NOBATCH    \
   _("No batch reqests allowed.")
+#define MSG_I_PARTREQ    \
+  _("Request processed partly.")
 #define MSG_I_ABORTREQ   \
   _("Request discarded.")
 
