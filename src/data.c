@@ -208,7 +208,7 @@ data_item_add(data_t *data, char *item, size_t item_len)
       t = realloc(data->buf, data->len + len + 1);
       ASSERT(t != NULL, MSG_M_REALLOC);
       data->buf = t;
-      memcpy(&data->buf[data->len + 1], item, len);
+      memcpy(&data->buf[data->len], item, len);
       data->buf[data->len + len] = '\0';
       data->len += len + 1;
       data->items++;
