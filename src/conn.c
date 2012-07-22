@@ -81,3 +81,18 @@ conn_buf_reduce(conn_t *conn, char b, size_t len)
   (*sel)[s_keep] = '\0';
   *sel_len = s_keep;
 }
+
+void
+conn_on_errors(conn_t *conn)
+{
+  ipc_resp_t *resp = NULL;
+
+  CALLOC(resp, 1, sizeof(ipc_resp_t));
+  resp->status = STATUS_ERR;
+  resp->data = conn->errors;
+  ipc_responce_write(conn, resp);
+
+  data_clear(&conn->errors);
+  conn->errors.type = DATA_T_MSG;
+  FREE(resp);
+}
