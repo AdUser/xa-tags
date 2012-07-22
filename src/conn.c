@@ -148,3 +148,9 @@ conn_on_read(conn_t *conn)
   conn_on_errors(conn);
   return;
 }
+
+void
+conn_on_write(conn_t *conn)
+{
+  ;
+}
