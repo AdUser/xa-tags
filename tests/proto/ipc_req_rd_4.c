@@ -23,9 +23,11 @@ int main()
 
   STRNDUP(buf, test, 4096);
 
-  ret = ipc_request_read(conn, req, buf, strlen(buf));
+  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  ret = ipc_request_read(conn, req);
   assert(ret == 1);
-  ret = ipc_request_read(conn, req, "\n\n", 2);
+  conn_buf_extend(conn, 'r', "\n\n", 2);
+  ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
   assert((req->data.flags & DATA_MULTI) == 1);

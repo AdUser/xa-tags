@@ -126,25 +126,13 @@ _check_delimiter(ipc_req_t *req, char c)
   * 2 - malformed request
   */
 int
-ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
+ipc_request_read(conn_t *conn, ipc_req_t *req)
 {
   /* local variables */
   char *s = NULL; /* as 'start' */
   char *e = NULL; /* as 'end'   */
 
-  ASSERT(!((buf == NULL) && (buf_len != 0)), MSG_M_NULLPTR);
-
   memset(req, 0x0, sizeof(ipc_req_t));
-
-  if (conn->rd_buf_len != 0)
-    { /* grow read buffer */
-      conn_buf_extend(conn, 'r', buf, buf_len);
-    }
-  else
-    { /* save in read buffer */
-      STRNDUP(conn->rd_buf, buf, buf_len);
-      conn->rd_buf_len = buf_len;
-    }
 
   if (memchr(conn->rd_buf, '\n', conn->rd_buf_len) == NULL)
     return 1; /* incomplete request */

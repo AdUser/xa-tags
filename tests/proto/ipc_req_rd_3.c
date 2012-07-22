@@ -19,7 +19,8 @@ int main()
 
   buf = "FILE ADD : " PATH1 "\n";
 
-  ret = ipc_request_read(conn, req, buf, strlen(buf));
+  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
@@ -32,7 +33,8 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD :" PATH1 "\n";
 
-  ret = ipc_request_read(conn, req, buf, strlen(buf));
+  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(conn->rd_buf_len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
@@ -45,7 +47,8 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD ; " PATH1 "\n";
 
-  ret = ipc_request_read(conn, req, buf, strlen(buf));
+  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  ret = ipc_request_read(conn, req);
   assert(ret == 2);
   assert(conn->rd_buf_len == 0);
 
@@ -55,7 +58,8 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD : \n";
 
-  ret = ipc_request_read(conn, req, buf, strlen(buf));
+  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  ret = ipc_request_read(conn, req);
   assert(ret == 2);
   assert(conn->rd_buf_len == 0);
 
