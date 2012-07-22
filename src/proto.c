@@ -120,47 +120,6 @@ _check_delimiter(ipc_req_t *req, char c)
   return -1;
 }
 
-void
-_rd_buf_extend(conn_t *conn, char *buf, size_t buf_len)
-{
-  char *t = NULL;
-  size_t s_new = 0;
-
-  s_new = conn->rd_buf_len + buf_len;
-
-  t = realloc(conn->rd_buf, s_new + 1);
-  ASSERT(t != NULL, MSG_M_REALLOC);
-  conn->rd_buf = t;
-  memcpy(&conn->rd_buf[conn->rd_buf_len], buf, buf_len);
-  conn->rd_buf[s_new] = '\0';
-  conn->rd_buf_len = s_new;
-}
-
-void
-_rd_buf_reduce(conn_t *conn, size_t len)
-{
-  char *t = NULL;
-  size_t s_del  = 0; /* [abcdefghij\nklmnopqrstuvwxyz\0] */
-  size_t s_keep = 0; /* |<  s_del >||<    s_keep     >|  */
-
-  s_del = (conn->rd_buf_len < len) ? conn->rd_buf_len : len ;
-  s_keep = conn->rd_buf_len - len;
-
-  if (s_keep == 0)
-    {
-      FREE(conn->rd_buf);
-      conn->rd_buf_len = 0;
-      return;
-    }
-
-  t = memmove(conn->rd_buf, &conn->rd_buf[s_del], s_keep);
-  ASSERT(t != NULL, MSG_M_NULLPTR);
-  conn->rd_buf = realloc(t, s_keep + 1);
-  ASSERT(conn->rd_buf != NULL, MSG_M_REALLOC);
-  conn->rd_buf[s_keep] = '\0';
-  conn->rd_buf_len = s_keep;
-}
-
 /** return values:
   * 0 - request ready for processing
   * 1 - incomplete request, saved in buf
@@ -179,7 +138,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   if (conn->rd_buf_len != 0)
     { /* grow read buffer */
-      _rd_buf_extend(conn, buf, buf_len);
+      conn_buf_extend(conn, 'r', buf, buf_len);
     }
   else
     { /* save in read buffer */
@@ -249,7 +208,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   skip:
     e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
-    _rd_buf_reduce(conn, (e + 1) - conn->rd_buf);
+    conn_buf_reduce(conn, 'r', (e + 1) - conn->rd_buf);
     return 2; /* this return will also used, if anything goes wrong */
 
   extract_data:
@@ -267,7 +226,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   ready:
     e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
-    _rd_buf_reduce(conn, (e + 1) - conn->rd_buf);
+    conn_buf_reduce(conn, 'r', (e + 1) - conn->rd_buf);
     return 0;
 
 }

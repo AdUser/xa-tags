@@ -3,6 +3,7 @@ SET(SRC_FILES
     "${SRC_DIR}/proto.c"
     "${SRC_DIR}/log.c"
     "${SRC_DIR}/data.c"
+    "${SRC_DIR}/conn.c"
     )
 
 ADD_EXECUTABLE("ipc_req_rd_1" ${SRC_FILES} "ipc_req_rd_1.c")

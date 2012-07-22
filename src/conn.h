@@ -16,3 +16,8 @@ typedef struct conn_t
     uint16_t flags;
     data_t errors;
   } conn_t;
+
+/** API functions */
+
+void conn_buf_extend(conn_t *conn, char b, char *buf, size_t buf_len);
+void conn_buf_reduce(conn_t *conn, char b, size_t len);
