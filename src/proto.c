@@ -252,9 +252,10 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
   ASSERT(conn != NULL, MSG_M_NULLPTR);
   ASSERT(resp != NULL, MSG_M_NULLPTR);
 
-  for (i = 0; i < resp->data.len; i++)
-    if (resp->data.buf[i] == '\0')
-      resp->data.buf[i] = '\n';
+  if (resp->data.items > 1)
+    for (i = 0; i < resp->data.len; i++)
+      if (resp->data.buf[i] == '\0')
+        resp->data.buf[i] = '\n';
 
   switch (resp->status)
     {
@@ -280,7 +281,7 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
 
   if (resp->data.type != DATA_EMPTY)
     {
-      ret = snprintf(buf, buf_len, "%s %s %s%s", \
+      ret = snprintf(buf, buf_len, "%s %s %s%s\n", \
                      status, type, \
                      (resp->data.items > 1) ? ">\n" : ": ",
                      resp->data.buf);
