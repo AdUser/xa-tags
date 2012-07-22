@@ -49,23 +49,35 @@ void
 conn_buf_reduce(conn_t *conn, char b, size_t len)
 {
   char *t = NULL;
+  char **sel = NULL;
+  size_t *sel_len = NULL;
   size_t s_del  = 0; /* [abcdefghij\nklmnopqrstuvwxyz\0] */
   size_t s_keep = 0; /* |<  s_del >||<    s_keep     >|  */
 
-  s_del = (conn->rd_buf_len < len) ? conn->rd_buf_len : len ;
-  s_keep = conn->rd_buf_len - len;
+  switch (b)
+    {
+      case 'r' : sel = &conn->rd_buf; sel_len = &conn->rd_buf_len; break;
+      case 'w' : sel = &conn->wr_buf; sel_len = &conn->wr_buf_len; break;
+      default  :
+        assert(0);
+        break;
+    }
+
+
+  s_del = (*sel_len < len) ? *sel_len : len ;
+  s_keep = *sel_len - s_del;
 
   if (s_keep == 0)
     {
-      FREE(conn->rd_buf);
-      conn->rd_buf_len = 0;
+      FREE(*sel);
+      *sel_len = 0;
       return;
     }
 
-  t = memmove(conn->rd_buf, &conn->rd_buf[s_del], s_keep);
-  ASSERT(t != NULL, MSG_M_NULLPTR);
-  conn->rd_buf = realloc(t, s_keep + 1);
-  ASSERT(conn->rd_buf != NULL, MSG_M_REALLOC);
-  conn->rd_buf[s_keep] = '\0';
-  conn->rd_buf_len = s_keep;
+  memmove(*sel, &(*sel)[s_del], s_keep);
+  t = realloc(*sel, s_keep + 1);
+  ASSERT(t != NULL, MSG_M_REALLOC);
+  *sel = t;
+  (*sel)[s_keep] = '\0';
+  *sel_len = s_keep;
 }
