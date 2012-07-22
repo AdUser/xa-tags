@@ -172,9 +172,10 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   /* local variables */
   char *s = NULL; /* as 'start' */
   char *e = NULL; /* as 'end'   */
-  int ret = 0;
 
   ASSERT(!((buf == NULL) && (buf_len != 0)), MSG_M_NULLPTR);
+
+  memset(req, 0x0, sizeof(ipc_req_t));
 
   if (conn->rd_buf_len != 0)
     { /* grow read buffer */
@@ -195,105 +196,80 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   for (     ;  isblank(*s); s++); /* skip leading spaces */
   for (e = s;  isalpha(*e); e++);
 
-  ret = _check_type(req, s, e - s);
-  switch (ret)
+  switch(_check_type(req, s, e - s))
     {
-      case 2 : /* seems like we have request with operation */
+      case  2 : /* seems like we have request with operation */
         break;
-      case 1 : /* short request types without parameters */
-        while (isspace(*e)) e++;
-        _rd_buf_reduce(conn, e - conn->rd_buf);
-        return 0; /* request ready for processing */
-        break;
+      case  1 : /* short request types without parameters */
+        goto ready;   break;
       case  0 : /* empty request type */
+        data_item_add(&conn->errors, MSG_I_EXPREQ, 0);
+        goto skip;    break;
       case -1 : /* invalid request type */
       default :
         data_item_add(&conn->errors, MSG_I_BADREQ, 0);
-        while (isspace(*e)) e++;
-        _rd_buf_reduce(conn, e - conn->rd_buf);
-        return 2; /* malformed request */
-        break;
+        goto skip;    break;
     }
 
   /* check & set operation */
-  e++;
   for (s = e;  isblank(*s); s++); /* skip leading spaces */
   for (e = s;  isalpha(*e); e++);
 
-  ret = _check_operation(req, s, e - s);
-  switch (ret)
+  switch(_check_operation(req, s, e - s))
     {
-      case 2 : /* sadly, but seems we have a lot of parameters in request */
+      case  2 : /* sadly, but seems we have a lot of parameters in request */
         break;
-      case 1 : /* short request types without parameters */
-        while (isspace(*e)) e++;
-        _rd_buf_reduce(conn, e - conn->rd_buf);
-        return 0; /* request ready for processing */
-        break;
+      case  1 : /* short request types without parameters */
+        goto ready;   break;
       case  0 : /* empty operation */
         data_item_add(&conn->errors, MSG_I_EXPOP, 0);
-        while (isspace(*e)) e++;
-        _rd_buf_reduce(conn, e - conn->rd_buf);
-        return 2; /* malformed request */
-        break;
+        goto skip;    break;
       case -1 : /* invalid operation fo this request */
       default :
         data_item_add(&conn->errors, MSG_I_BADOP, 0);
-        while (isspace(*e)) e++;
-        _rd_buf_reduce(conn, e - conn->rd_buf);
-        return 2; /* malformed request */
-        break;
+        goto skip;    break;
     }
 
   /* check & set delimiter */
   e++;
   for (s = e;  isblank(*s); s++); /* skip leading spaces */
-  ret = _check_delimiter(req, *s);
-
-  if (ret <= 0)
+  switch(_check_delimiter(req, *s))
     {
-      data_item_add(&conn->errors, MSG_I_BADMARKER, 0);
-      e = strchr(s, '\n');
-      while (isspace(*e)) e++;
-      _rd_buf_reduce(conn, e - conn->rd_buf);
-      return 2; /* malformed request */
+      case  2 :
+        if ((e = strstr(s, "\n\n")) == NULL)
+          return 1; /* incomplete request */
+        req->data.flags |= DATA_MULTI;
+      case  1 :
+        goto extract_data; break;
+      case  0 :
+      case -1 :
+        data_item_add(&conn->errors, MSG_I_EXPDELIM, 0);
+        goto skip; break;
     }
 
-  /* ok, extract data, copy it to request and truncate rd_buf */
-  for (s++; isblank(*s); s++); /* skip leading spaces */
-  if (*s == '\n')
-    { /* no data found */
-      while (isspace(*s)) s++;
-     _rd_buf_reduce(conn, s - conn->rd_buf);
-      return 2;
-    }
+  skip:
+    e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
+    _rd_buf_reduce(conn, (e + 1) - conn->rd_buf);
+    return 2; /* this return will also used, if anything goes wrong */
 
-  if (ret == 1)
-    {
-      e = strchr(s, '\n');
-      STRNDUP(req->data.buf, s, e - s);
-      req->data.len = e - s;
-      while (isspace(*e)) e++;
-      _rd_buf_reduce(conn, e - conn->rd_buf);
-      return 0; /* request ready for processing */
-    }
+  extract_data:
+    for (s++; isblank(*s); s++); /* skip leading spaces */
+    if (*s == '\n' && (req->data.flags & DATA_MULTI) == 0)
+      {
+        data_item_add(&conn->errors, MSG_I_EXPDATA, 0);
+        goto skip;
+      }
+    e = strstr(s, req->data.flags & DATA_MULTI ? "\n\n" : "\n");
+    STRNDUP(req->data.buf, s, e - s);
+    req->data.len = e - s;
+    for (s = req->data.buf; *s != '\0'; s++)
+      if (*s == '\n') *s = '\0';
 
-  if (ret == 2)
-    {
-      if ((e = strstr(s, "\n\n")) == NULL)
-        return 1; /* incomplete request */
-      STRNDUP(req->data.buf, s, e - s);
-      req->data.len = e - s;
-      if (req->data.type != DATA_T_MSG)
-        for (s = req->data.buf; *s != '\0'; s++)
-          if (*s == '\n') *s = '\0';
-      while (isspace(*e)) e++;
-      _rd_buf_reduce(conn, e - conn->rd_buf);
-      req->data.flags |= DATA_MULTI;
-      return 0; /* request ready for processing */
-    }
+  ready:
+    e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
+    _rd_buf_reduce(conn, (e + 1) - conn->rd_buf);
+    return 0;
 
-  return 2; /* something went wrong */
 }
 
 /** return values:
