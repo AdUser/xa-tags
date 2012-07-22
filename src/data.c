@@ -16,6 +16,40 @@
 
 #include "common.h"
 
+/** return value:
+  * must always return 1
+  */
+int
+_add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
+{
+  char *t1 = NULL;
+  char *t2 = NULL;
+  size_t len = 0;
+  int ret = 0;
+
+  len = 1 + (buf_len > 0) ? buf_len : strlen(buf);
+  CALLOC(t1, len, sizeof(char));
+  snprintf(t1, len, "%s", buf);
+
+  len = 1024;
+
+  again:
+  FREE(t2);
+  CALLOC(t2, len, sizeof(char));
+
+  if ((ret = snprintf(t2, len, "%s -- %s", error, t1)) > len)
+    {
+      len = ret + 1;
+      goto again;
+    }
+
+  data_item_add(errors, t2, len - 1);
+  FREE(t1);
+  FREE(t2);
+
+  return 1;
+}
+
 /** return values:
   * 0 - ok
   * 1 - error
