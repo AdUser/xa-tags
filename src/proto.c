@@ -88,9 +88,10 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
 }
 
 /** return values:
-  * 0 - invalid
-  * 1 - valid, parameters until "\n"
-  * 2 - valid, parameters until "\n\n"
+  * -1 - invalid
+  *  0 - empty
+  *  1 - valid, parameters until "\n"
+  *  2 - valid, parameters until "\n\n"
   */
 int
 _check_delimiter(ipc_req_t *req, char c)
@@ -105,11 +106,15 @@ _check_delimiter(ipc_req_t *req, char c)
         req->data.flags &= ~DATA_MULTI;
         return 1;
         break;
+      case '\n' :
+      case '\0' :
+        return 0;
+        break;
       default  :
         break;
     }
 
-  return 0;
+  return -1;
 }
 
 void
@@ -242,7 +247,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
   for (s = e;  isblank(*s); s++); /* skip leading spaces */
   ret = _check_delimiter(req, *s);
 
-  if (ret == 0)
+  if (ret <= 0)
     {
       data_item_add(&conn->errors, MSG_I_BADMARKER, 0);
       e = strchr(s, '\n');
