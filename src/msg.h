@@ -21,6 +21,18 @@
 #define MSG_I_EXPDATA    \
   _("Parsing failed, data expected.")
 
+/** data validation errors */
+#define MSG_I_BADPATH    \
+  _("Malformed path")
+#define MSG_I_BADUUID    \
+  _("Malformed UUID")
+#define MSG_I_BADCHARS   \
+  _("Unallowed chars")
+#define MSG_I_EXPPATH    \
+  _("Empty data, expected path")
+#define MSG_I_EXPTAGS    \
+  _("Empty data, expected one or more tags")
+
 /** request processing errors */
 #define MSG_I_NOBATCH    \
   _("No batch reqests allowed.")
