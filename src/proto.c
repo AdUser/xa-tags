@@ -191,7 +191,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
         break;
       case 0 : /* invalid request type */
       default :
-        msg(msg_warn, MSG_I_BADREQ);
+        data_item_add(&conn->errors, MSG_I_BADREQ, 0);
         while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 2; /* malformed request */
@@ -215,7 +215,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
         break;
       case 0 : /* invalid request type */
       default :
-        msg(msg_warn, MSG_I_BADOP);
+        data_item_add(&conn->errors, MSG_I_BADOP, 0);
         while (isspace(*e)) e++;
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 2; /* malformed request */
@@ -229,6 +229,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
 
   if (ret == 0)
     {
+      data_item_add(&conn->errors, MSG_I_BADMARKER, 0);
       e = strchr(s, '\n');
       while (isspace(*e)) e++;
       _rd_buf_reduce(conn, e - conn->rd_buf);
