@@ -17,9 +17,10 @@
 #include "common.h"
 
 /** return values:
-  * 0 - invalid type
-  * 1 - valid
-  * 2 - valid, operation expected for type
+  * -1 - invalid type
+  *  0 - empty
+  *  1 - valid
+  *  2 - valid, operation expected for type
   */
 #define CHECK_REQ(buf,token,req_type,ret) \
   else if (strncmp((buf), (token), strlen(token)) == 0) \
@@ -27,6 +28,9 @@
 int
 _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 {
+  if (buf_len == 0)
+    return 0;
+
   if (false) {}
   CHECK_REQ(buf, "FILE",   REQ_FILE,   2)
   CHECK_REQ(buf, "TAG",    REQ_TAG,    2)
@@ -35,7 +39,7 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
   CHECK_REQ(buf, "BYE",    REQ_BYE,    1)
   CHECK_REQ(buf, "HELP",   REQ_HELP,   1)
 
-  return 0;
+  return -1;
 }
 
 /** return values:
@@ -189,7 +193,8 @@ ipc_request_read(conn_t *conn, ipc_req_t *req, char *buf, size_t buf_len)
         _rd_buf_reduce(conn, e - conn->rd_buf);
         return 0; /* request ready for processing */
         break;
-      case 0 : /* invalid request type */
+      case  0 : /* empty request type */
+      case -1 : /* invalid request type */
       default :
         data_item_add(&conn->errors, MSG_I_BADREQ, 0);
         while (isspace(*e)) e++;
