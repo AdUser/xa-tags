@@ -67,20 +67,17 @@ _validate_uuid(char *uuid, data_t *errors)
       c = (isxdigit(uuid[i])) ? '0' : uuid[i];
       switch (c)
         {
-          case '0' :
-            if (i == 6 || i == 13) return 1;
-            break;
-          case '-' :
-            if (i != 6 && i != 13) return 1;
-            break;
-          case 0x0 :
-          default :
-            return 1;
-            break;
+          case '0' : if (i == 6 || i == 13) goto fail; break;
+          case '-' : if (i != 6 && i != 13) goto fail; break;
+          default  : /* and '\0' also */    goto fail; break;
         }
     }
 
   return 0;
+
+  fail:
+  _add_val_error(errors, MSG_I_BADUUID, uuid, 20);
+  return 1;
 }
 
 /** return values:
@@ -93,14 +90,25 @@ _validate_path(char *path, data_t *errors)
   char *p = NULL;
 
   ASSERT(path != NULL, MSG_M_NULLPTR);
-  p = path;
-  while (isblank(*p)) p++;
 
+  /* empty string */
+  for (p = path; isblank(*p); p++);
   if (*p == '\0')
-    return 1; /* empty string */
+    {
+      data_item_add(errors, MSG_I_EXPPATH, 0);
+      return 1;
+    }
 
+  /* allowed paths must begin with '/' or '~/' */
   if (*p != '/' && strncmp("~/", p, 2) != 0)
-    return 1; /* allowed paths must begin with '/' or '~/' */
+    return _add_val_error(errors, MSG_I_BADPATH, path, 0);
+
+  /* last char is '\' */
+  p = strchr(p, '\0');
+  if (p > path) p--;
+  while (isspace(*p) && p > path) p--;
+  if (*p == '\\')
+    return _add_val_error(errors, MSG_I_BADCHARS, path, 0);
 
   return 0;
 }
@@ -117,15 +125,24 @@ _validate_tags(char *tags, data_t *errors)
 
   ASSERT(tags != NULL, MSG_M_NULLPTR);
 
+  /* empty string */
+  for (p = tags; isblank(*p); p++);
+  if (*p == '\0')
+    {
+      data_item_add(errors, MSG_I_EXPTAGS, 0);
+      return 1;
+    }
+
+  /* quote in tags */
   for (p = tags; *p != '\0'; p++)
     if (*p == '\"')
-      return 2;
+      *p = '\''; /* silently fix it */
 
+  /* last char is '\' */
   if (p > tags) p--;
-
-  while (isspace(*p) || p >= tags) p--;
-
-  if (*p == '\\') return 2;
+  while (isspace(*p) && p > tags) p--;
+  if (*p == '\\')
+    return _add_val_error(errors, MSG_I_BADCHARS, tags, 0) + 1;
 
   return 0;
 }
@@ -237,7 +254,7 @@ data_item_add(data_t *data, char *item, size_t item_len)
       data->len += len + 1;
       data->items++;
       return 0;
-    } 
+    }
   else
     {
       t = realloc(data->buf, data->len + len + 1 + 1);
