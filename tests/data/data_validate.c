@@ -3,11 +3,14 @@
 int main()
 {
   data_t *data = NULL;
+  data_t *errors = NULL;
   int ret = 0;
   int i = 0;
   char *test = NULL;
 
   SIGCATCH_INIT
+
+  CALLOC(errors, 1, sizeof(data_t));
 
   /* DATA_T_MSG */
   CALLOC(data, 1, sizeof(data_t));
@@ -17,7 +20,7 @@ THIS IS SAMPLE\n\
 TWO-LINE TEXT\n";
   data->len = strlen(data->buf);
 
-  ret = data_validate(data);
+  ret = data_validate(data, errors, 0);
   assert(ret == 0);
   FREE(data);
 
@@ -33,7 +36,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = data_validate(data);
+  ret = data_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 5);
   FREE(data);
@@ -50,7 +53,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = data_validate(data);
+  ret = data_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 4);
   FREE(data);
@@ -67,7 +70,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = data_validate(data);
+  ret = data_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);
@@ -84,7 +87,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0';
 
-  ret = data_validate(data);
+  ret = data_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);

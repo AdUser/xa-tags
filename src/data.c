@@ -102,7 +102,7 @@ _validate_tags(char *tags)
   * 2 - error
   */
 int
-data_validate(data_t *data)
+data_validate(data_t *data, data_t *errors, int strict)
  {
   char *t = NULL;
   char *item = NULL;
