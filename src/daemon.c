@@ -39,11 +39,30 @@ usage(int exitcode)
     exit(exitcode);
   }
 
+void
+cleanup(void)
+{
+  unlink(opts.daemon.socket);
+}
+
+static void
+sigterm_handler(int sig, siginfo_t *siginfo, void *context)
+{
+  cleanup();
+  exit(EXIT_FAILURE);
+}
+
 int
 main(int argc, char *argv[])
   {
     char opt;
-    FILE *fh = stdin;
+    int sock_listen = 0;
+    conn_t *conn = NULL;
+    struct sigaction act;
+    struct sockaddr_un sa;
+    int sa_len = 0;
+    char buf[4096];
+    size_t buf_len = 0;
 
     while ((opt = getopt(argc, argv, "hcDp:s:" "dr")) != -1)
       switch (opt)
@@ -74,8 +93,47 @@ main(int argc, char *argv[])
             break;
         }
 
+    if (!opts.daemon.socket)
+      opts.daemon.socket = "./xa-tags-daemon.sock";
 
-    fclose(fh);
+    /* set cleanup actions on SIGTERM */
+    memset(&act, 0x0, sizeof(struct sigaction));
+    act.sa_sigaction = &sigterm_handler;
+    sigaction(SIGTERM, &act, NULL);
+
+    CALLOC(conn, 1, sizeof(conn_t));
+
+    sock_listen = socket(AF_UNIX, SOCK_STREAM, 0);
+    ASSERT(sock_listen != -1, "socket()\n");
+
+    sa.sun_family = AF_UNIX;
+    strcpy(sa.sun_path, opts.daemon.socket);
+    sa_len = offsetof(struct sockaddr_un, sun_path) + strlen(sa.sun_path);
+    ASSERT(bind(sock_listen, (struct sockaddr *) &sa, sa_len) != -1, "bind()\n");
+    ASSERT(listen(sock_listen, 1) == 0, "listen()\n");
+    fprintf(stderr, "%s\n", strerror(errno));
+    ASSERT((conn->fd = accept(sock_listen, NULL, 0)) != -1, "accept()\n");
+    fprintf(stderr, "%s\n", strerror(errno));
+
+    /* TODO: move this and similar to conn_on_init() */
+    conn->errors.type = DATA_T_MSG;
+
+    /* select() here */
+    while (1)
+      {
+        if ((buf_len = read(conn->fd, buf, 4096)) > 0)
+          {
+            buf[buf_len] = '\0';
+            conn_buf_extend(conn, 'r', buf, buf_len);
+            conn_on_read(conn);
+          }
+        if (conn->wr_buf_len != 0)
+          {
+            conn_on_write(conn);
+          }
+      }
+
+    cleanup();
+
     exit(EXIT_SUCCESS);
   }
-
