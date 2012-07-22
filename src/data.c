@@ -196,7 +196,7 @@ data_item_add(data_t *data, char *item, size_t item_len)
   len = (item_len > 0) ? item_len : strlen(item);
   if (data->len == 0)
     {
-      CALLOC(data->buf, len + 1, sizeof(char));
+      CALLOC(data->buf, len + 1 + 1, sizeof(char));
       memcpy(data->buf, item, len);
       data->buf[len] = '\0';
       data->len += len + 1;
@@ -205,11 +205,11 @@ data_item_add(data_t *data, char *item, size_t item_len)
     } 
   else
     {
-      t = realloc(data->buf, data->len + len + 1);
+      t = realloc(data->buf, data->len + len + 1 + 1);
       ASSERT(t != NULL, MSG_M_REALLOC);
       data->buf = t;
       memcpy(&data->buf[data->len], item, len);
-      data->buf[data->len + len] = '\0';
+      memset(&data->buf[data->len + len], '\0', 2 * sizeof(char));
       data->len += len + 1;
       data->items++;
       return 0;
