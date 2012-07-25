@@ -152,5 +152,15 @@ conn_on_read(conn_t *conn)
 void
 conn_on_write(conn_t *conn)
 {
-  ;
+  ssize_t len = 0;
+
+  len = write(conn->fd, conn->wr_buf, conn->wr_buf_len);
+
+  if (len > 0)
+    conn_buf_reduce(conn, 'w', len);
+
+  if (len < 0)
+    msg(msg_warn, "%s", strerror(errno));
+
+  return;
 }
