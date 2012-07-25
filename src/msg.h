@@ -7,6 +7,11 @@
 /** IPC messages */
 /*  no trailing '\n', please */
 
+#define MSG_I_HELLO      \
+  _("Hi! %s v%u.%u glad to meet you.")
+#define MSG_I_BYE        \
+  _("Sya!")
+
 /** parsing errors */
 #define MSG_I_BADREQ     \
   _("Parsing failed, unknown request type.")
