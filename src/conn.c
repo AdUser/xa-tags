@@ -16,6 +16,8 @@
 
 #include "common.h"
 
+#include "handlers.h"
+
 void
 conn_buf_extend(conn_t *conn, char b, char *buf, size_t buf_len)
 {
@@ -138,7 +140,9 @@ conn_on_read(conn_t *conn)
       /* but continue */
     }
 
-  /* TODO: request handle */
+  handle_request(conn, req);
+
+  FREE(req);
 
   return;
 
