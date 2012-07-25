@@ -2,6 +2,7 @@
 #define CONN_F_HUMAN     1 <<  0 /* enable b/j and hookers */
 #define CONN_F_NOBATCH   1 <<  1 /* disable batch requests */
 #define CONN_F_STRICT    1 <<  2 /* don't process requests with any errors */
+#define CONN_F_CLOSE     1 <<  3 /* gracefully close the connection */
 
 typedef struct conn_t
   {
