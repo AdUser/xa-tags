@@ -135,6 +135,11 @@ main(int argc, char *argv[])
           {
             conn_on_write(conn);
           }
+        if (conn->flags & CONN_F_CLOSE)
+          {
+            close(conn->fd);
+            break;
+          }
       }
 
     cleanup();
