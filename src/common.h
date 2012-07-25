@@ -31,3 +31,6 @@
 
 #define MAXLINE 4096
 
+#define PROGNAME "xa-tags"
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1
