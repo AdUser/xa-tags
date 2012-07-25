@@ -20,7 +20,11 @@ void
 usage(int exitcode)
   {
     fprintf(stdout,
-  "Usage: xa-tags [options]\n"
+  "%s  version %u.%u\n",
+  PROGNAME, VERSION_MAJOR, VERSION_MINOR);
+
+    fprintf(stdout,
+  "Usage: %s [options]\n"
   "\n"
   "Daemon options:\n"
   "  -h          Show this help and exit.\n"
@@ -28,7 +32,7 @@ usage(int exitcode)
   "  -D          No daemonize.\n"
   "  -p <file>   Path to pid file.\n"
   "  -s <file>   Path to socket.\n"
-  "\n");
+  "\n", PROGNAME "-daemon");
 
     fprintf(stdout,
   "Database options:\n"
