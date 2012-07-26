@@ -134,12 +134,12 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
 
   memset(req, 0x0, sizeof(ipc_req_t));
 
-  if (memchr(conn->rd_buf, '\n', conn->rd_buf_len) == NULL)
+  if (memchr(conn->rd.buf, '\n', conn->rd.len) == NULL)
     return 1; /* incomplete request */
 
   /* ok, we have at least one complete line in read buffer */
   /* so, check & set request type */
-  s = conn->rd_buf;
+  s = conn->rd.buf;
   for (     ;  isblank(*s); s++); /* skip leading spaces */
   for (e = s;  isalpha(*e); e++);
 
@@ -195,8 +195,8 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
     }
 
   skip:
-    e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
-    conn_buf_reduce(conn, 'r', (e + 1) - conn->rd_buf);
+    e = memchr(conn->rd.buf, '\n', conn->rd.len);
+    buf_reduce(&conn->rd, (e + 1) - conn->rd.buf);
     return 2; /* this return will also used, if anything goes wrong */
 
   extract_data:
@@ -213,8 +213,8 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
       if (*s == '\n') *s = '\0';
 
   ready:
-    e = memchr(conn->rd_buf, '\n', conn->rd_buf_len);
-    conn_buf_reduce(conn, 'r', (e + 1) - conn->rd_buf);
+    e = memchr(conn->rd.buf, '\n', conn->rd.len);
+    buf_reduce(&conn->rd, (e + 1) - conn->rd.buf);
     return 0;
 
 }
@@ -243,7 +243,6 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
 {
   char *buf = NULL;
   size_t buf_len = 1024;
-  char *t = NULL;
   int i = 1;
   int ret = 0;
   const char *status = NULL;
@@ -294,19 +293,8 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
       goto again;
     }
 
-  if (conn->wr_buf_len == 0)
-    {
-      conn->wr_buf = buf;
-      conn->wr_buf_len = ret + 1;
-    }
-  else
-    {
-      t = realloc(conn->wr_buf, conn->wr_buf_len + ret);
-      ASSERT(t != NULL, MSG_M_REALLOC);
-      conn->wr_buf = t;
-      memcpy(&conn->wr_buf[conn->wr_buf_len - 1], buf, ret);
-      conn->wr_buf_len += ret;
-    }
+  buf_extend(&conn->wr, buf, ret);
+  FREE(buf);
 
   return 0;
 }

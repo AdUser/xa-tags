@@ -17,18 +17,18 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "HELLO\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(req->type == REQ_HELLO && req->op == OP_NONE);
-  assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
+  assert(strlen(conn->rd.buf) == 0 && conn->rd.len == 0);
   FREE(req);
 
   /* 2: empty request */
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "\n  \t   HELLO";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 2);
 
@@ -39,21 +39,21 @@ int main()
 
   /* add terminating '\n' to input buffer  */
   /* now request should be processed completely */
-  conn_buf_extend(conn, 'r', "\n", 1);
+  buf_extend(&conn->rd, "\n", 1);
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(req->type == REQ_HELLO && req->op == OP_NONE);
-  assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
+  assert(strlen(conn->rd.buf) == 0 && conn->rd.len == 0);
   FREE(req);
 
   /* 4: invalid request*/
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "QUIT\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 2);
-  assert(conn->rd_buf == NULL && conn->rd_buf_len == 0);
+  assert(strlen(conn->rd.buf) == 0 && conn->rd.len == 0);
   FREE(req);
 
 
@@ -62,10 +62,10 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "DB STAT\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
   assert(req->type == REQ_DB && req->op == OP_D_STAT);
   FREE(req);
 
@@ -73,21 +73,21 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "DB TEST\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 2);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
 
   /* 3: valid operation without '\n' */
   buf = "DB \t\t\t CHECK";
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 1);
 
-  conn_buf_extend(conn, 'r', "\n", 1);
+  buf_extend(&conn->rd, "\n", 1);
   ret = ipc_request_read(conn, req);;
   assert(ret == 0);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
   assert(req->type == REQ_DB && req->op == OP_D_CHECK);
   FREE(req);
 
@@ -99,10 +99,10 @@ int main()
 
   buf = "FILE ADD : " PATH1 "\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
   assert((req->data.flags & DATA_MULTI) == 0);
   assert(req->data.len == strlen(PATH1));
@@ -113,10 +113,10 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD :" PATH1 "\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
   assert((req->data.flags & DATA_MULTI) == 0);
   assert(req->data.len == strlen(PATH1));
@@ -127,10 +127,10 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD ; " PATH1 "\n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 2);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
 
   FREE(req);
 
@@ -138,10 +138,10 @@ int main()
   CALLOC(req, 1, sizeof(ipc_req_t));
   buf = "FILE ADD : \n";
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 2);
-  assert(conn->rd_buf_len == 0);
+  assert(conn->rd.len == 0);
 
   FREE(req);
 
@@ -154,10 +154,10 @@ int main()
 
   STRNDUP(buf, test, 4096);
 
-  conn_buf_extend(conn, 'r', buf, strlen(buf));
+  buf_extend(&conn->rd, buf, strlen(buf));
   ret = ipc_request_read(conn, req);
   assert(ret == 1);
-  conn_buf_extend(conn, 'r', "\n\n", 2);
+  buf_extend(&conn->rd, "\n\n", 2);
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);

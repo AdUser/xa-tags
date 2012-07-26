@@ -9,10 +9,8 @@ typedef struct conn_t
     int fd;
     int timeout;
 
-    char        *rd_buf;     /* these buffers should contain   */
-    char        *wr_buf;     /* null-terminated string, but    */
-    unsigned int rd_buf_len; /* *_buf_len assumes only usefull */
-    unsigned int wr_buf_len; /* bytes, without '\0' */
+    buf_t rd;
+    buf_t wr;
 
     /* used only by server */
     uint16_t flags;
@@ -21,8 +19,6 @@ typedef struct conn_t
 
 /** API functions */
 
-void conn_buf_extend(conn_t *conn, char b, char *buf, size_t buf_len);
-void conn_buf_reduce(conn_t *conn, char b, size_t len);
 void conn_on_errors(conn_t *conn);
 void conn_on_read(conn_t *conn);
 void conn_on_write(conn_t *conn);

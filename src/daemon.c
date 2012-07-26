@@ -128,10 +128,10 @@ main(int argc, char *argv[])
         if ((buf_len = read(conn->fd, buf, 4096)) > 0)
           {
             buf[buf_len] = '\0';
-            conn_buf_extend(conn, 'r', buf, buf_len);
+            buf_extend(&conn->rd, buf, buf_len);
             conn_on_read(conn);
           }
-        if (conn->wr_buf_len != 0)
+        if (conn->wr.len != 0)
           {
             conn_on_write(conn);
           }
