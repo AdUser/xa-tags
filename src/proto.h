@@ -27,6 +27,7 @@ typedef enum req_op_t
     OP_T_GET,
     OP_T_SET,
     OP_T_CLR,
+    OP_T_SEARCH,
 
     /* DB operations */
     OP_D_STAT = 21,

@@ -184,6 +184,9 @@ data_validate(data_t *data, data_t *errors, int strict)
           case DATA_L_UUIDS :
             if (_validate_uuid(item, errors)) skip_item = 1;
             break;
+          case DATA_L_TAGS :
+            if (_validate_tags(item, errors)) skip_item = 1;
+            break;
           case DATA_M_UUID_TAGS :
             if (_validate_uuid(item, errors) ||
                 _validate_tags(&item[21], errors) ||

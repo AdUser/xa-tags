@@ -14,6 +14,7 @@ typedef struct data_t
       DATA_T_MSG,
       DATA_L_FILES,
       DATA_L_UUIDS,
+      DATA_L_TAGS,
       DATA_M_UUID_TAGS,
       DATA_M_UUID_FILE
     } type;
