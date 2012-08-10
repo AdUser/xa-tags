@@ -8,5 +8,6 @@ rm -f DartConfiguration.tcl
 
 find ./ -type d -a -name Testing    -exec rm -rf {} +
 find ./ -type d -a -name CMakeFiles -exec rm -rf {} +
-find ./ -type f -a -name *.cmake    -exec rm     {} +
 find ./ -type f -a -name Makefile   -exec rm     {} +
+find ./tests/ -type f -a -name *.cmake    -exec rm     {} +
+find ./src/   -type f -a -name *.cmake    -exec rm     {} +

@@ -10,3 +10,4 @@ SET(SRC_FILES
 
 # main targets
 ADD_EXECUTABLE("xa-tags-daemon" ${SRC_FILES} "daemon.c")
+TARGET_LINK_LIBRARIES("xa-tags-daemon" ${SQLITE3_LIBRARY})

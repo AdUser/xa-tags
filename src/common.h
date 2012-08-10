@@ -21,6 +21,10 @@
   #define _(x) (x)
 #endif
 
+#ifdef HAVE_SQLITE3
+  #include <sqlite3.h>
+#endif
+
 #include "data.h"
 #include "uuid.h"
 #include "buf.h"
