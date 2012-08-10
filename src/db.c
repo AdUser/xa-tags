@@ -44,11 +44,15 @@ db_open(void)
 
   if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
     msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
+
+  sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
 }
 
 void
 db_close(void)
 {
+  sqlite3_exec(db_conn, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+
   if (sqlite3_close(db_conn) != SQLITE_OK)
     msg(msg_error, MSG_D_FAILCLOSE, sqlite3_errmsg(db_conn));
 }
