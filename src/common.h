@@ -35,3 +35,8 @@
 #define PROGNAME "xa-tags"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
+
+/** hash & checksum functions */
+
+uint16_t crc16(char *str, size_t len);
+uint32_t jhash(char *str, size_t len);
