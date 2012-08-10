@@ -79,6 +79,7 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
         CHECK_OP(buf, "SET",     OP_T_SET,     DATA_M_UUID_TAGS, 2)
         CHECK_OP(buf, "CLR",     OP_T_CLR,     DATA_L_UUIDS,     2)
         CHECK_OP(buf, "SEARCH",  OP_T_SEARCH,  DATA_L_TAGS,      2)
+        CHECK_OP(buf, "FIND",    OP_T_FIND,    DATA_L_TAGS,      2)
         break;
       case REQ_DB :
         if (false) {}
