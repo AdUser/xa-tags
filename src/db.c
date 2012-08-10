@@ -59,7 +59,7 @@ db_file_add(char *path, uuid_t *new_uuid)
   sqlite3_stmt *stmt = NULL;
   char *str = NULL;
   size_t len = 0;
-  
+
   len = strlen(SQL_F_ADD);
   if (sqlite3_prepare_v2(db_conn, SQL_F_ADD, len, &stmt, NULL) != SQLITE_OK)
     {
@@ -94,8 +94,45 @@ db_file_add(char *path, uuid_t *new_uuid)
   return 0;
 }
 
+int
+db_file_update(char *path, uuid_t *new_uuid)
+{
+  sqlite3_stmt *stmt = NULL;
+  char *str = NULL;
+  size_t len = 0;
+
+  len = strlen(SQL_F_UPDATE);
+  if (sqlite3_prepare_v2(db_conn, SQL_F_UPDATE, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+  
+  str = dirname(path);
+  len = strlen(str);
+  new_uuid->dname = crc16(str, len);
+
+  str = &path[len];
+  len = strlen(str);
+  new_uuid->fname = crc16(str, len);
+
+  sqlite3_bind_int(stmt, 1, new_uuid->dname);
+  sqlite3_bind_int(stmt, 2, new_uuid->fname);
+  sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
+  sqlite3_bind_int64(stmt, 4, (sqlite3_int64) new_uuid->id);
+
+  if (sqlite3_step(stmt) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
+
 /*
-int db_file_update(char *path, uuid_t *new_uuid);
 int db_file_del(uuid_t uuid);
 int db_file_search_path(char *str, data_t *results);
 int db_file_search_tag(char *str, data_t *results);
