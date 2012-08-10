@@ -11,7 +11,7 @@
 #define SQL_F_SEARCH \
   "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ?"
 #define SQL_F_UPDATE \
-  "UPDATE " MAIN_TABLE " SET crc_dname = ?, crc_fname = ? WHERE file_id = ?"
+  "UPDATE " MAIN_TABLE " SET crc_dname = ?, crc_fname = ?, filename = ? WHERE file_id = ?"
 
 /* TAG request type */
 #define SQL_T_GET \
