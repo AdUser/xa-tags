@@ -1,0 +1,12 @@
+^                ^ lazy ^ functions
+^ FILE  ^ ADD    |   +  | db_file_add()
+^ FILE  ^ SEARCH |   -  | db_file_search_path()
+^ FILE  ^ DEL    |   +  | db_file_del()
+^ FILE  ^ UPDATE |   +  | db_file_update()
+^ TAG   ^ ADD    |  -/+ | -> TAG GET, TAG SET
+^ TAG   ^ DEL    |  -/+ | -> TAG GET, TAG SET
+^ TAG   ^ SET    |   +  | db_tag_set()
+^ TAG   ^ GET    |   -  | db_tag_get()
+^ TAG   ^ CLEAR  |   +  | -> TAG SET
+^ TAG   ^ SEARCH |   -  | db_file_search_tag()
+^ TAG   ^ FIND   |   -  | db_tag_find()
