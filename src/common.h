@@ -29,6 +29,7 @@
 
 #include "data.h"
 #include "uuid.h"
+#include "db.h"
 #include "buf.h"
 #include "conn.h"
 #include "proto.h"

@@ -6,6 +6,7 @@ SET(SRC_FILES
     "conn.c"
     "handlers.c"
     "buf.c"
+    "db.c"
     )
 
 # main targets
