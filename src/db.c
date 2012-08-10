@@ -132,8 +132,33 @@ db_file_update(char *path, uuid_t *new_uuid)
   return 0;
 }
 
+int
+db_file_del(uuid_t uuid)
+{
+  sqlite3_stmt *stmt = NULL;
+  size_t len = 0;
+
+  len = strlen(SQL_F_DEL);
+  if (sqlite3_prepare_v2(db_conn, SQL_F_DEL, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+  
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid.id);
+
+  if (sqlite3_step(stmt) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
+
 /*
-int db_file_del(uuid_t uuid);
 int db_file_search_path(char *str, data_t *results);
 int db_file_search_tag(char *str, data_t *results);
 
