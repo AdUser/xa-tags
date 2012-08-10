@@ -46,14 +46,25 @@
 #define MSG_I_ABORTREQ   \
   _("Request discarded.")
 
+#define MSG_I_DBRDONLY   \
+  _("Database opened readonly. Request aborted.\n")
+
 /** connection errors */
 #define MSG_I_TIMEOUT    \
   _("Connection timeout.")
 
-/** database errors */
-#define MSG_I_DBRDONLY   \
-  _("Database readonly.")
-
 /** other errors */
-#define MSG_I_UNKNERR    \
-  _("Internal error occured. Request aborted.")
+#define MSG_U_UNKNERR    \
+  _("Internal error occured.")
+
+/** database errors */
+#define MSG_D_FAILOPEN \
+  _("Failed to open database: %s\n")
+#define MSG_D_FAILCLOSE \
+  _("Failed to close database: %s\n")
+#define MSG_D_FAILCREATE \
+  _("Failed to init database: %s\n")
+#define MSG_D_FAILPREPARE \
+  _("Failed to prepare statement: %s.\n")
+#define MSG_D_FAILEXEC \
+  _("Failed to exec statement: %s.\n")
