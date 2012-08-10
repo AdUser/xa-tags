@@ -170,5 +170,10 @@ int db_tag_set(uuid_t uuid, char *tags);
 int db_tag_get(uuid_t uuid, char **tags);
 int db_tag_find(char *str, data_t *results);
 
-int db_commit(void);
 */
+
+int db_commit(void)
+{
+  sqlite3_exec(db_conn, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+  sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
+}
