@@ -22,6 +22,7 @@
 #endif
 
 #include "data.h"
+#include "uuid.h"
 #include "buf.h"
 #include "conn.h"
 #include "proto.h"
