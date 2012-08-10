@@ -67,8 +67,9 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
       case REQ_FILE :
         if (false) {}
         CHECK_OP(buf, "ADD",     OP_F_ADD,     DATA_L_FILES, 2)
-        CHECK_OP(buf, "DEL",     OP_F_DEL,     DATA_L_FILES, 2)
+        CHECK_OP(buf, "DEL",     OP_F_DEL,     DATA_L_UUIDS, 2)
         CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  DATA_L_FILES, 2)
+        CHECK_OP(buf, "UPDATE",  OP_F_UPDATE,  DATA_M_UUID_FILE, 2)
         break;
       case REQ_TAG :
         if (false) {}

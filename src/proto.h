@@ -20,6 +20,7 @@ typedef enum req_op_t
     OP_F_ADD  = 1,
     OP_F_DEL,
     OP_F_SEARCH,
+    OP_F_UPDATE,
 
     /* TAG operations */
     OP_T_ADD = 11,
