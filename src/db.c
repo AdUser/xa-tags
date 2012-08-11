@@ -211,9 +211,65 @@ db_file_search_path(char *str, data_t *results)
   return 0;
 }
 
-/*
-int db_file_search_tag(char *str, data_t *results);
+int
+db_file_search_tag(char *str, data_t *results)
+{
+  sqlite3_stmt *stmt;
+  size_t len = 0;
+  int ret = 0;
+  uint64_t id = 0;
+  char buf[MAXLINE] = { 0 };
 
+  len = strlen(SQL_T_SEARCH);
+  if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  if (strchr(str, '*') != NULL)
+    {
+      snprintf(buf, MAXLINE, "%%%s%%", str);
+      len = strlen(buf);
+      while (len--)
+        if (buf[len] == '*')
+          buf[len] = '%';
+    }
+  else
+    snprintf(buf, MAXLINE, "%% %s %%", str);
+
+  sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
+
+  while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
+    {
+      id = (uint64_t) sqlite3_column_int64(stmt, 0);
+      len = snprintf(buf, PATH_MAX + UUID_CHAR_LEN + 3,
+                   "%08X%08X-%04X-%04X %s\n",
+                   (uint32_t) (id >> 32),
+                   (uint32_t) (id & 0xFFFFFFFF),
+                   sqlite3_column_int(stmt, 1),
+                   sqlite3_column_int(stmt, 2),
+                   sqlite3_column_text(stmt, 3));
+      data_item_add(results, buf, len);
+    }
+
+  if (ret != SQLITE_DONE)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      data_clear(results);
+      return 1;
+    }
+
+  if (results->items > 1)
+    results->flags |= DATA_MULTI;
+  results->type = DATA_M_UUID_FILE;
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
+
+/*
 int db_tag_set(uuid_t uuid, char *tags);
 int db_tag_get(uuid_t uuid, char **tags);
 int db_tag_find(char *str, data_t *results);
