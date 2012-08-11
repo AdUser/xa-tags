@@ -70,3 +70,20 @@ jhash(char *key, size_t len)
   return hash;
 }
 /* -----------------8<------------------------ */
+
+/** custom printf's */
+size_t
+snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)
+{
+  size_t len = 0;
+
+  len = snprintf(buf, buf_len, "%08X%08X-%04X-%04X %s\n",
+                   (uint32_t) (uuid->id >> 32),
+                   (uint32_t) (uuid->id & 0xFFFFFFFF),
+                   uuid->dname, uuid->fname, path);
+
+  return len;
+}
+/*
+size_t snprintf_m_uuid_tags(char *buf, size_t buf_len, uuid_t *uuid, char *tags);
+*/

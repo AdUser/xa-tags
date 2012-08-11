@@ -166,9 +166,9 @@ int
 db_file_search_path(char *str, data_t *results)
 {
   sqlite3_stmt *stmt;
+  uuid_t uuid = { 0, 0, 0 };
   size_t len = 0;
   int ret = 0;
-  uint64_t id = 0;
   char buf[PATH_MAX + UUID_CHAR_LEN + 3] = { 0 };
 
   len = strlen(SQL_F_SEARCH);
@@ -184,14 +184,11 @@ db_file_search_path(char *str, data_t *results)
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-      id = (uint64_t) sqlite3_column_int64(stmt, 0);
-      len = snprintf(buf, PATH_MAX + UUID_CHAR_LEN + 3,
-                   "%08X%08X-%04X-%04X %s\n",
-                   (uint32_t) (id >> 32),
-                   (uint32_t) (id & 0xFFFFFFFF),
-                   sqlite3_column_int(stmt, 1),
-                   sqlite3_column_int(stmt, 2),
-                   sqlite3_column_text(stmt, 3));
+      uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
+      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1),
+      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2),
+      len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
+                                 &uuid, (char *) sqlite3_column_text(stmt, 3));
       data_item_add(results, buf, len);
     }
 
@@ -217,7 +214,7 @@ db_file_search_tag(char *str, data_t *results)
   sqlite3_stmt *stmt;
   size_t len = 0;
   int ret = 0;
-  uint64_t id = 0;
+  uuid_t uuid = { 0, 0, 0 };
   char buf[MAXLINE] = { 0 };
 
   len = strlen(SQL_T_SEARCH);
@@ -242,14 +239,11 @@ db_file_search_tag(char *str, data_t *results)
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-      id = (uint64_t) sqlite3_column_int64(stmt, 0);
-      len = snprintf(buf, PATH_MAX + UUID_CHAR_LEN + 3,
-                   "%08X%08X-%04X-%04X %s\n",
-                   (uint32_t) (id >> 32),
-                   (uint32_t) (id & 0xFFFFFFFF),
-                   sqlite3_column_int(stmt, 1),
-                   sqlite3_column_int(stmt, 2),
-                   sqlite3_column_text(stmt, 3));
+      uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
+      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1),
+      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2),
+      len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
+                                 &uuid, (char *) sqlite3_column_text(stmt, 3));
       data_item_add(results, buf, len);
     }
 
