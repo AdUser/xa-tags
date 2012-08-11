@@ -172,7 +172,8 @@ int db_tag_find(char *str, data_t *results);
 
 */
 
-int db_commit(void)
+void
+db_commit(void)
 {
   sqlite3_exec(db_conn, "COMMIT TRANSACTION;", NULL, NULL, NULL);
   sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);

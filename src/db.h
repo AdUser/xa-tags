@@ -55,7 +55,7 @@ int db_tag_set(uuid_t uuid, char *tags);
 int db_tag_get(uuid_t uuid, char **tags);
 int db_tag_find(char *str, data_t *results);
 
-int db_commit(void);
+void db_commit(void);
 
 void db_open(void);
 void db_close(void);
