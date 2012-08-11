@@ -100,6 +100,15 @@ main(int argc, char *argv[])
     if (!opts.daemon.socket)
       opts.daemon.socket = "./xa-tags-daemon.sock";
 
+    unlink(opts.daemon.socket);
+
+    if (!opts.db.path)
+      opts.db.path = "./test.db";
+
+    db_open();
+
+    opts.daemon.loglevel = log_all;
+
     /* set cleanup actions on SIGTERM */
     memset(&act, 0x0, sizeof(struct sigaction));
     act.sa_sigaction = &sigterm_handler;
