@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <libgen.h>
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
