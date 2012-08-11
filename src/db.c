@@ -71,11 +71,13 @@ db_file_add(char *path, uuid_t *new_uuid)
       return 1;
     }
 
-  str = dirname(path);
-  len = strlen(str);
-  new_uuid->dname = crc16(str, len);
+  if ((str = strrchr(path, '/')) == NULL)
+    return 1; /* path MUST contain at least one slash */
 
-  str = &path[len];
+  len = str - path;
+  new_uuid->dname = crc16(path, len);
+
+  str += 1;
   len = strlen(str);
   new_uuid->fname = crc16(str, len);
 
@@ -83,7 +85,7 @@ db_file_add(char *path, uuid_t *new_uuid)
   sqlite3_bind_int(stmt, 2, new_uuid->fname);
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
 
-  if (sqlite3_step(stmt) != SQLITE_OK)
+  if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       return 1;
