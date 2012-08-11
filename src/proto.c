@@ -286,7 +286,7 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
       ret = snprintf(buf, buf_len, "%s %s %s%s\n", \
                      status, type, \
                      (resp->data.items > 1) ? ">\n" : ": ",
-                     resp->data.buf);
+                     (resp->data.len > 0) ? resp->data.buf : "");
     }
   else ret = snprintf(buf, buf_len, "%s\n", status);
 
