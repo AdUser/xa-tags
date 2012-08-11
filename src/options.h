@@ -2,6 +2,7 @@ struct
   {
     struct
       {
+        int commit_interval;
         char *path;
         bool readonly;
       }
