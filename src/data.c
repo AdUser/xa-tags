@@ -170,6 +170,7 @@ data_validate(data_t *data, data_t *errors, int strict)
       return 0;
     }
 
+  /* TODO: replace with data_items_walk() */
   item = data->buf;
   while(read < data->len)
     {
