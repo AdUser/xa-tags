@@ -16,7 +16,7 @@
 
 #include "common.h"
 
-/** return value:
+/** return values:
   * must always return 1
   */
 int
@@ -240,8 +240,8 @@ data_validate(data_t *data, data_t *errors, int strict)
 }
 
 /**
- * item_len - optional, if 0 - use strlen(item)
- */
+  * item_len - optional, if 0 - use strlen(item)
+  */
 int
 data_item_add(data_t *data, char *item, size_t item_len)
 {
