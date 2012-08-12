@@ -12,6 +12,7 @@ INCLUDE(CTest)
 
 # user options
 OPTION(WITHOUT_GETTEXT "Build without localization support" "OFF")
+OPTION(ASYNC_DB_WRITE "Allow collection and batch execution of write requests" "ON")
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -65,6 +66,10 @@ IF    (SQLITE3_FOUND)
   ADD_DEFINITIONS( -DHAVE_SQLITE3 )
 ENDIF (SQLITE3_FOUND)
 
+## options
+IF    (ASYNC_DB_WRITE STREQUAL "ON")
+  ADD_DEFINITIONS( -DASYNC_DB_WRITE )
+ENDIF (ASYNC_DB_WRITE STREQUAL "ON")
 
 MESSAGE (STATUS "------------------------------------------")
 MESSAGE (STATUS "Build type is:        ${CMAKE_BUILD_TYPE}")
@@ -81,6 +86,7 @@ MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Options:")
 MESSAGE (STATUS "  Disable i18n support: ${WITHOUT_GETTEXT}")
+MESSAGE (STATUS "  Async db write:       ${ASYNC_DB_WRITE}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)

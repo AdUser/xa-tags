@@ -2,7 +2,9 @@ struct
   {
     struct
       {
+#ifdef ASYNC_DB_WRITE
         int commit_interval;
+#endif
         char *path;
         bool readonly;
       }
