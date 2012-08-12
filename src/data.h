@@ -25,4 +25,5 @@ typedef struct data_t
 /** API functions */
 int data_validate(data_t *data, data_t *errors, int strict);
 int data_item_add(data_t *data, char *item, size_t item_len);
+int data_items_walk(const data_t *data, char **item);
 void data_clear(data_t *data);

@@ -274,6 +274,47 @@ data_item_add(data_t *data, char *item, size_t item_len)
   return 1;
 }
 
+/** return values: 
+  * -1 - error occured
+  *  0 - no more items
+  *  1 - next item processed
+  */
+int
+data_items_walk(const data_t *data, char **item)
+{
+  static size_t pos = 0;
+  const static data_t *last = NULL;
+
+  ASSERT(data != NULL, MSG_M_NULLPTR);
+
+  if (item == NULL)
+    return -1;
+
+  if (data != last)
+    {
+      last = data;
+      *item = NULL;
+      pos = 0;
+    }
+
+  if (pos == data->len)
+    return 0;
+
+  if (*item == NULL)
+    {
+      *item = data->buf;
+      pos = strlen(*item) + 1;
+      return 1;
+    }
+  else
+    {
+      *item = &data->buf[pos];
+      pos = (*item - data->buf) + strlen(*item) + 1;
+    }
+
+  return 1;
+}
+
 void
 data_clear(data_t *data)
 {
