@@ -203,11 +203,18 @@ data_validate(data_t *data, data_t *errors, int strict)
             skip_item = 1;
             break;
         }
+
+      if (skip_item && strict)
+        return 2; /* just save time */
+
       if (skip_item)
         {
-          if (strict) return 2; /* just save time */
+          if ((data->len -= item_len) == 0)
+            {
+              data_clear(data);
+              return 1;
+            }
 
-          data->len -= item_len;
           memmove(item, item + item_len, data->len - read);
           t = realloc(data->buf, data->len);
           ASSERT(t != NULL, MSG_M_REALLOC);
@@ -227,12 +234,7 @@ data_validate(data_t *data, data_t *errors, int strict)
   if (data->items > 1 && !(data->flags & DATA_MULTI))
     data->flags |= DATA_MULTI;
 
-  if (data->items == 0)
-    {
-      FREE(data->buf);
-      memset(data, 0x0, sizeof(data_t));
-      return 1;
-    }
+  /* if we have no items - exit point inside 'if (skip_item)' */
 
   return 0;
 }
