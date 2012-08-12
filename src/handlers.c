@@ -81,25 +81,21 @@ _handle_req_file_add(conn_t *conn, const ipc_req_t *req)
   ipc_resp_t resp;
   uuid_t new_uuid;
   char buf[MAXLINE];
-  size_t len = 0;
   size_t buf_len = 0;
   uint16_t i = 0;
-  char *p = NULL;
+  char *item = NULL;
 
   ASSERT(conn != NULL && req != NULL, MSG_M_NULLPTR);
 
   memset(&resp, 0x0, sizeof(ipc_resp_t));
   resp.status = STATUS_ERR;
 
-  p = req->data.buf;
-  while (len < req->data.len)
+  while (data_items_walk(&req->data, &item) > 0)
     {
       memset(&new_uuid, 0x0, sizeof(uuid_t));
-      p = &req->data.buf[len];
-      len += strlen(p);
-      if (db_file_add(p, &new_uuid) == 0)
+      if (db_file_add(item, &new_uuid) == 0)
         {
-          buf_len = snprintf_m_uuid_file(buf, MAXLINE, &new_uuid, p);
+          buf_len = snprintf_m_uuid_file(buf, MAXLINE, &new_uuid, item);
           data_item_add(&resp.data, buf, buf_len);
           i++;
         }
