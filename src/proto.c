@@ -210,8 +210,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
         goto skip;
       }
     e = strstr(s, req->data.flags & DATA_MULTI ? "\n\n" : "\n");
-    STRNDUP(req->data.buf, s, e - s);
-    req->data.len = e - s;
+    data_item_add(&req->data, s, e - s);
     for (s = req->data.buf; *s != '\0'; s++)
       if (*s == '\n') *s = '\0';
 
