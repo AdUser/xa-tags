@@ -189,7 +189,10 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
         if ((e = strstr(s, "\n\n")) == NULL)
           return 1; /* incomplete request */
         req->data.flags |= DATA_MULTI;
+        for (s++; isblank(*s); s++); /* skip leading spaces */
+        goto extract_data; break;
       case  1 :
+        e = strchr(s, '\n');
         goto extract_data; break;
       case  0 :
       case -1 :
@@ -203,16 +206,24 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
     return 2; /* this return will also used, if anything goes wrong */
 
   extract_data:
-    for (s++; isblank(*s); s++); /* skip leading spaces */
-    if (*s == '\n' && (req->data.flags & DATA_MULTI) == 0)
+    for (s++; isblank(*s); s++); /* skip leading spaces, again */
+
+    if (s == e)
       {
         data_item_add(&conn->errors, MSG_I_EXPDATA, 0);
-        goto skip;
+        buf_reduce(&conn->rd, (s + 1) - conn->rd.buf);
+        return 2;
       }
-    e = strstr(s, req->data.flags & DATA_MULTI ? "\n\n" : "\n");
     data_item_add(&req->data, s, e - s);
-    for (s = req->data.buf; *s != '\0'; s++)
-      if (*s == '\n') *s = '\0';
+    if (req->data.flags & DATA_MULTI)
+      {
+        data_items_split(&req->data);
+        buf_reduce(&conn->rd, (e + 2) - conn->rd.buf);
+      }
+    else
+      buf_reduce(&conn->rd, (e + 1) - conn->rd.buf);
+
+    return 0;
 
   ready:
     e = memchr(conn->rd.buf, '\n', conn->rd.len);
