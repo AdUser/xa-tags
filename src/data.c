@@ -27,7 +27,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
   size_t len = 0;
   int ret = 0;
 
-  len = 1 + (buf_len > 0) ? buf_len : strlen(buf);
+  len = 1 + ((buf_len > 0) ? buf_len : strlen(buf));
   CALLOC(t1, len, sizeof(char));
   snprintf(t1, len, "%s", buf);
 
@@ -43,7 +43,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
       goto again;
     }
 
-  data_item_add(errors, t2, len - 1);
+  data_item_add(errors, t2, ret);
   FREE(t1);
   FREE(t2);
 
