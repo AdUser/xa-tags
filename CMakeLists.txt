@@ -11,8 +11,8 @@ INCLUDE(CheckFunctionExists)
 INCLUDE(CTest)
 
 # user options
-OPTION(WITHOUT_GETTEXT "Build without localization support" "OFF")
-OPTION(ASYNC_DB_WRITE "Allow collection and batch execution of write requests" "ON")
+OPTION(OPT_WITHOUT_GETTEXT "Build without localization support" "OFF")
+OPTION(OPT_ASYNC_DB_WRITE "Allow collection and batch execution of write requests" "ON")
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -54,9 +54,9 @@ IF    (SQLITE3_FOUND)
 ENDIF (SQLITE3_FOUND)
 
 # gettext
-IF    (WITHOUT_GETTEXT STREQUAL "ON")
+IF    (OPT_WITHOUT_GETTEXT STREQUAL "ON")
   SET (GETTEXT_STATUS "DISABLED")
-ELSE  (WITHOUT_GETTEXT STREQUAL "ON")
+ELSE  (OPT_WITHOUT_GETTEXT STREQUAL "ON")
   FIND_PACKAGE(Gettext)
 
   IF    (NOT GETTEXT_FOUND)
@@ -64,12 +64,12 @@ ELSE  (WITHOUT_GETTEXT STREQUAL "ON")
   ELSE  (NOT GETTEXT_FOUND)
     SET (GETTEXT_STATUS "FOUND")
   ENDIF (NOT GETTEXT_FOUND)
-ENDIF (WITHOUT_GETTEXT STREQUAL "ON")
+ENDIF (OPT_WITHOUT_GETTEXT STREQUAL "ON")
 
 ## options
-IF    (ASYNC_DB_WRITE STREQUAL "ON")
+IF    (OPT_ASYNC_DB_WRITE STREQUAL "ON")
   ADD_DEFINITIONS( -DASYNC_DB_WRITE )
-ENDIF (ASYNC_DB_WRITE STREQUAL "ON")
+ENDIF (OPT_ASYNC_DB_WRITE STREQUAL "ON")
 
 MESSAGE (STATUS "------------------------------------------")
 MESSAGE (STATUS "Build type is:        ${CMAKE_BUILD_TYPE}")
@@ -85,8 +85,8 @@ MESSAGE (STATUS "Aux dependencies:")
 MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Options:")
-MESSAGE (STATUS "  Disable i18n support: ${WITHOUT_GETTEXT}")
-MESSAGE (STATUS "  Async db write:       ${ASYNC_DB_WRITE}")
+MESSAGE (STATUS "  Disable i18n support: ${OPT_WITHOUT_GETTEXT}")
+MESSAGE (STATUS "  Async db write:       ${OPT_ASYNC_DB_WRITE}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)
