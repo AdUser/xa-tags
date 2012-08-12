@@ -152,6 +152,7 @@ main(int argc, char *argv[])
       }
 
     cleanup();
+    db_close();
 
     exit(EXIT_SUCCESS);
   }
