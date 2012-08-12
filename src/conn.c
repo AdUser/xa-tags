@@ -39,51 +39,54 @@ conn_on_read(conn_t *conn)
   int ret = 0;
   ipc_req_t *req = NULL;
 
-  CALLOC(req, 1, sizeof(ipc_req_t));
-
-  ret = ipc_request_read(conn, req);
-  
-  if (ret == 1)
+  /* process read buffer up to either incomplete request or data end */
+  while (1)
     {
+      CALLOC(req, 1, sizeof(ipc_req_t));
+
+      if ((ret = ipc_request_read(conn, req)) == 1)
+        break; /* more data needed */
+
+      if (ret == 2)
+        {
+          FREE(req);
+          if (conn->errors.items)
+            conn_on_errors(conn);
+          continue;
+        }
+
+      ret = data_validate(&req->data, &conn->errors,
+                          conn->flags & CONN_F_STRICT);
+      if (ret > 0)
+        {
+          FREE(req);
+          if (conn->errors.items)
+            conn_on_errors(conn);
+          continue;
+        }
+
+      if ((conn->flags & CONN_F_NOBATCH) && \
+          (req->data.items > 1))
+        {
+          FREE(req);
+          data_item_add(&conn->errors, MSG_I_NOBATCH, 0);
+          conn_on_errors(conn);
+          return;
+        }
+
+      if (req->data.items > 0 &&
+          conn->errors.items > 0)
+        {
+          data_item_add(&conn->errors, MSG_I_PARTREQ, 0);
+          conn_on_errors(conn);
+          /* but continue */
+        }
+
+      handle_request(conn, req);
+
       FREE(req);
-      return; /* more data needed */
-    }
-  
-  if (ret == 2 && conn->errors.items > 0)
-    goto abort_req;
-
-  ret = data_validate(&req->data, &conn->errors,
-                      conn->flags & CONN_F_STRICT);
-  if (ret > 0)
-    goto abort_req;
-
-  if ((conn->flags & CONN_F_NOBATCH) && \
-      (req->data.items > 1))
-    {
-      FREE(req);
-      data_item_add(&conn->errors, MSG_I_NOBATCH, 0);
-      conn_on_errors(conn);
-      return;
     }
 
-  if (req->data.items > 0 &&
-      conn->errors.items > 0)
-    {
-      data_item_add(&conn->errors, MSG_I_PARTREQ, 0);
-      conn_on_errors(conn);
-      /* but continue */
-    }
-
-  handle_request(conn, req);
-
-  FREE(req);
-
-  return;
-
-  abort_req: 
-  FREE(req);
-  data_item_add(&conn->errors, MSG_I_ABORTREQ, 0);
-  conn_on_errors(conn);
   return;
 }
 
