@@ -239,7 +239,10 @@ data_validate(data_t *data, data_t *errors, int strict)
   return 0;
 }
 
-/**
+/** return values:
+  * 0 - all ok
+  * 1 - error occured
+  *
   * item_len - optional, if 0 - use strlen(item)
   */
 int
@@ -271,6 +274,7 @@ data_item_add(data_t *data, char *item, size_t item_len)
       data->items++;
       return 0;
     }
+
   return 1;
 }
 
