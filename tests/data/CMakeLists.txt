@@ -7,7 +7,9 @@ SET(SRC_FILES
 ADD_EXECUTABLE("data_validate" ${SRC_FILES} "data_validate.c")
 ADD_EXECUTABLE("data_item_add" ${SRC_FILES} "data_item_add.c")
 ADD_EXECUTABLE("data_items_walk" ${SRC_FILES} "data_items_walk.c")
+ADD_EXECUTABLE("data_items_split" ${SRC_FILES} "data_items_split.c")
 
 ADD_TEST("data/validate"   "data_validate")
 ADD_TEST("data/item_add"   "data_item_add")
 ADD_TEST("data/items_walk" "data_items_walk")
+ADD_TEST("data/items_split" "data_items_split")

@@ -31,10 +31,11 @@ TWO-LINE TEXT\n";
 #include "../samples/test_list_of_files.inc"
 
   data->len = strlen(test) + 1;
+  data->items = 1;
   STRNDUP(data->buf, test, 4096);
   for (i = 0; i < data->len; i++)
     if (data->buf[i] == '\n')
-      data->buf[i] = '\0';
+      data->buf[i] = '\0', data->items++;
 
   ret = data_validate(data, errors, 0);
   assert(ret == 0);
@@ -48,10 +49,11 @@ TWO-LINE TEXT\n";
 #include "../samples/test_list_of_uuids.inc"
 
   data->len = strlen(test) + 1;
+  data->items = 1;
   STRNDUP(data->buf, test, 4096);
   for (i = 0; i < data->len; i++)
     if (data->buf[i] == '\n')
-      data->buf[i] = '\0';
+      data->buf[i] = '\0', data->items++;
 
   ret = data_validate(data, errors, 0);
   assert(ret == 0);
@@ -65,10 +67,11 @@ TWO-LINE TEXT\n";
 #include "../samples/test_map_of_uuid_and_file.inc"
 
   data->len = strlen(test) + 1;
+  data->items = 1;
   STRNDUP(data->buf, test, 4096);
   for (i = 0; i < data->len; i++)
     if (data->buf[i] == '\n')
-      data->buf[i] = '\0';
+      data->buf[i] = '\0', data->items++;
 
   ret = data_validate(data, errors, 0);
   assert(ret == 0);
@@ -82,10 +85,11 @@ TWO-LINE TEXT\n";
 #include "../samples/test_map_of_uuid_and_tags.inc"
 
   data->len = strlen(test) + 1;
+  data->items = 1;
   STRNDUP(data->buf, test, 4096);
   for (i = 0; i < data->len; i++)
     if (data->buf[i] == '\n')
-      data->buf[i] = '\0';
+      data->buf[i] = '\0', data->items++;
 
   ret = data_validate(data, errors, 0);
   assert(ret == 0);
