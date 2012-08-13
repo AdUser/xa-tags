@@ -132,7 +132,7 @@ db_file_update(char *path, uuid_t *new_uuid)
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
   sqlite3_bind_int64(stmt, 4, (sqlite3_int64) new_uuid->id);
 
-  if (sqlite3_step(stmt) != SQLITE_OK)
+  if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       return 1;
@@ -158,7 +158,7 @@ db_file_del(const uuid_t *uuid)
 
   sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
-  if (sqlite3_step(stmt) != SQLITE_OK)
+  if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       return 1;
