@@ -115,6 +115,51 @@ _handle_req_file_add(conn_t *conn, const ipc_req_t *req)
   data_clear(&resp.data);
 }
 
+void
+_handle_req_file_del(conn_t *conn, const ipc_req_t *req)
+{
+  ipc_resp_t resp;
+  uuid_t uuid;
+  uint16_t i = 0;
+  uint8_t ret = 0;
+  char buf[MAXLINE] = { 0 };
+  size_t buf_len = 0;
+  char *item = NULL;
+
+  ASSERT(conn != NULL && req != NULL, MSG_M_NULLPTR);
+
+  memset(&resp, 0x0, sizeof(ipc_resp_t));
+  resp.status = STATUS_ERR;
+  resp.data.type = DATA_T_MSG;
+
+  while (data_items_walk(&req->data, &item) > 0)
+    {
+      memset(&uuid, 0x0, sizeof(uuid_t));
+      ret = sscanf(item, UUID_FORMAT, &uuid.id, &uuid.dname, &uuid.fname);
+      if (ret != 3)
+        {
+          buf_len = snprintf(buf, MAXLINE, "%s -- %s\n", MSG_I_BADUUID, item);
+          data_item_add(&resp.data, buf, buf_len);
+          continue;
+        }
+      if (db_file_del(&uuid) == 0)
+        i++;
+    }
+
+  if (i != req->data.items && i != 0)
+    data_item_add(&conn->errors, MSG_I_PARTREQ, 0);
+
+  if (resp.data.items == 0)
+    {
+      resp.status = STATUS_OK;
+      resp.data.type = DATA_EMPTY;
+    }
+
+  ipc_responce_write(conn, &resp);
+
+  data_clear(&resp.data);
+}
+
 /** dispatcher */
 void
 handle_request(conn_t *conn, const ipc_req_t *req)
@@ -132,6 +177,8 @@ handle_request(conn_t *conn, const ipc_req_t *req)
       case REQ_FILE :
         if (req->op == OP_F_ADD)
           _handle_req_file_add(conn, req);
+        if (req->op == OP_F_DEL)
+          _handle_req_file_del(conn, req);
         break;
       case REQ_TAG :
         break;
