@@ -38,11 +38,11 @@ _handle_req_hello(conn_t *conn)
 
   resp->status = STATUS_OK;
   resp->data.type = DATA_T_MSG;
-  resp->data.buf = buf;
+  data_item_add(&resp->data, buf, len);
 
   ipc_responce_write(conn, resp);
 
-  FREE(buf);
+  data_clear(&resp->data);
   FREE(resp);
 }
 
