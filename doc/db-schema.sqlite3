@@ -1,6 +1,7 @@
 -- service table
 DROP TABLE IF EXISTS s_info;
 CREATE TABLE s_info (
+  uuid64    INT(1) NOT NULL DEFAULT 0,
   version   INT(2) NOT NULL DEFAULT 1
 );
 

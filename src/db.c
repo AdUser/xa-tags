@@ -191,7 +191,11 @@ db_file_search_path(char *str, data_t *results)
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
+#ifdef UUID64
       uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
+#else
+      uuid.id    = (uint32_t) sqlite3_column_int64(stmt, 0);
+#endif
       uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1),
       uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2),
       len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,

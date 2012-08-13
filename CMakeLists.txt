@@ -12,6 +12,7 @@ INCLUDE(CTest)
 
 # user options
 OPTION(OPT_WITHOUT_GETTEXT "Build without localization support" "OFF")
+OPTION(OPT_UUID64 "Use 64bit counter in uuid. Without this - DB will be limited with 2^32 files" "OFF")
 OPTION(OPT_ASYNC_DB_WRITE "Allow collection and batch execution of write requests" "ON")
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
@@ -67,6 +68,10 @@ ELSE  (OPT_WITHOUT_GETTEXT STREQUAL "ON")
 ENDIF (OPT_WITHOUT_GETTEXT STREQUAL "ON")
 
 ## options
+IF    (OPT_UUID64 STREQUAL "ON")
+  ADD_DEFINITIONS( -DUUID64 )
+ENDIF (OPT_UUID64 STREQUAL "ON")
+
 IF    (OPT_ASYNC_DB_WRITE STREQUAL "ON")
   ADD_DEFINITIONS( -DASYNC_DB_WRITE )
 ENDIF (OPT_ASYNC_DB_WRITE STREQUAL "ON")
@@ -85,8 +90,9 @@ MESSAGE (STATUS "Aux dependencies:")
 MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Options:")
-MESSAGE (STATUS "  Disable i18n support: ${OPT_WITHOUT_GETTEXT}")
-MESSAGE (STATUS "  Async db write:       ${OPT_ASYNC_DB_WRITE}")
+MESSAGE (STATUS "  64bit counter in uuid:  ${OPT_UUID64}")
+MESSAGE (STATUS "  Async db write:         ${OPT_ASYNC_DB_WRITE}")
+MESSAGE (STATUS "  Disable i18n support:   ${OPT_WITHOUT_GETTEXT}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)

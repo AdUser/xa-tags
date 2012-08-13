@@ -59,16 +59,25 @@ _validate_uuid(char *uuid, data_t *errors)
 {
   int i = 0;
   char c = '\0';
+#ifdef UUID64
+  const uint8_t pos1 = 16;
+  const uint8_t pos2 = 21;
+  const uint8_t max  = 26;
+#else
+  const uint8_t pos1 =  8;
+  const uint8_t pos2 = 13;
+  const uint8_t max  = 18;
+#endif
 
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
-  for (i = 0; i < 20; i++)
+  for (i = 0; i < max; i++)
     {
       c = (isxdigit(uuid[i])) ? '0' : uuid[i];
       switch (c)
         {
-          case '0' : if (i == 6 || i == 13) goto fail; break;
-          case '-' : if (i != 6 && i != 13) goto fail; break;
+          case '0' : if (i == pos1 || i == pos2) goto fail; break;
+          case '-' : if (i != pos1 && i != pos2) goto fail; break;
           default  : /* and '\0' also */    goto fail; break;
         }
     }
@@ -190,14 +199,14 @@ data_validate(data_t *data, data_t *errors, int strict)
             break;
           case DATA_M_UUID_TAGS :
             if (_validate_uuid(item, errors) ||
-                _validate_tags(&item[21], errors) ||
-                !isblank(item[20]))
+                _validate_tags(&item[UUID_CHAR_LEN + 1], errors) ||
+                !isblank(item[UUID_CHAR_LEN]))
                   skip_item = 1;
             break;
           case DATA_M_UUID_FILE :
             if (_validate_uuid(item, errors) ||
-                _validate_path(&item[21], errors) ||
-                !isblank(item[20]))
+                _validate_path(&item[UUID_CHAR_LEN + 1], errors) ||
+                !isblank(item[UUID_CHAR_LEN]))
                   skip_item = 1;
             break;
           default :
