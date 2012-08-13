@@ -34,6 +34,7 @@ db_open(void)
         msg(msg_error, MSG_D_FAILCREATE, err);
       FREE(err);
       sqlite3_close(db_conn);
+      errno = 0;
     }
 
   if (errno != 0)
