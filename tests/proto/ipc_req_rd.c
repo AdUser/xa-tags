@@ -105,7 +105,7 @@ int main()
   assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
   assert((req->data.flags & DATA_MULTI) == 0);
-  assert(req->data.len == strlen(PATH1));
+  assert(req->data.len == strlen(PATH1) + 1);
   assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
 
@@ -119,7 +119,7 @@ int main()
   assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
   assert((req->data.flags & DATA_MULTI) == 0);
-  assert(req->data.len == strlen(PATH1));
+  assert(req->data.len == strlen(PATH1) + 1);
   assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
 
