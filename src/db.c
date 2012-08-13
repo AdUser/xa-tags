@@ -161,6 +161,7 @@ db_file_del(const uuid_t *uuid)
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
       return 1;
     }
 
@@ -207,6 +208,8 @@ db_file_search_path(char *str, data_t *results)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       data_clear(results);
+      sqlite3_finalize(stmt);
+
       return 1;
     }
 
