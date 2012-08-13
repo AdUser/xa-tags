@@ -144,7 +144,7 @@ db_file_update(char *path, uuid_t *new_uuid)
 }
 
 int
-db_file_del(uuid_t uuid)
+db_file_del(const uuid_t *uuid)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
@@ -156,7 +156,7 @@ db_file_del(uuid_t uuid)
       return 1;
     }
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid.id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
   if (sqlite3_step(stmt) != SQLITE_OK)
     {
@@ -275,8 +275,8 @@ db_file_search_tag(char *str, data_t *results)
 }
 
 /*
-int db_tag_set(uuid_t uuid, char *tags);
-int db_tag_get(uuid_t uuid, char **tags);
+int db_tag_set(const uuid_t *uuid, char *tags);
+int db_tag_get(const uuid_t *uuid, char **tags);
 int db_tag_find(char *str, data_t *results);
 
 */

@@ -47,12 +47,12 @@
 
 int db_file_add(char *path, uuid_t *new_uuid);
 int db_file_update(char *path, uuid_t *new_uuid);
-int db_file_del(uuid_t uuid);
+int db_file_del(const uuid_t *uuid);
 int db_file_search_path(char *str, data_t *results);
 int db_file_search_tag(char *str, data_t *results);
 
-int db_tag_set(uuid_t uuid, char *tags);
-int db_tag_get(uuid_t uuid, char **tags);
+int db_tag_set(const uuid_t *uuid, char *tags);
+int db_tag_get(const uuid_t *uuid, char **tags);
 int db_tag_find(char *str, data_t *results);
 
 void db_commit(void);
