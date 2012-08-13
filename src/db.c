@@ -173,7 +173,7 @@ db_file_del(const uuid_t *uuid)
 int
 db_file_search_path(char *str, data_t *results)
 {
-  sqlite3_stmt *stmt;
+  sqlite3_stmt *stmt = NULL;
   uuid_t uuid = { 0, 0, 0 };
   size_t len = 0;
   int ret = 0;
