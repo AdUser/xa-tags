@@ -160,6 +160,37 @@ _handle_req_file_del(conn_t *conn, const ipc_req_t *req)
   data_clear(&resp.data);
 }
 
+void
+_handle_req_file_search(conn_t *conn, const ipc_req_t *req)
+{
+  ipc_resp_t resp;
+  uint16_t i = 0;
+  char *item = NULL;
+
+  ASSERT(conn != NULL && req != NULL, MSG_M_NULLPTR);
+
+  memset(&resp, 0x0, sizeof(ipc_resp_t));
+  resp.status = STATUS_OK;
+  resp.data.type = DATA_M_UUID_FILE;
+
+  while (data_items_walk(&req->data, &item) > 0)
+    if (db_file_search_path(item, &resp.data) == 0)
+      i++;
+
+  if (i != req->data.items && i != 0)
+    data_item_add(&conn->errors, MSG_I_PARTREQ, 0);
+
+  if (resp.data.items == 0)
+    {
+      resp.status = STATUS_ERR;
+      resp.data.type = DATA_EMPTY;
+    }
+
+  ipc_responce_write(conn, &resp);
+
+  data_clear(&resp.data);
+}
+
 /** dispatcher */
 void
 handle_request(conn_t *conn, const ipc_req_t *req)
@@ -179,6 +210,8 @@ handle_request(conn_t *conn, const ipc_req_t *req)
           _handle_req_file_add(conn, req);
         if (req->op == OP_F_DEL)
           _handle_req_file_del(conn, req);
+        if (req->op == OP_F_SEARCH)
+          _handle_req_file_search(conn, req);
         break;
       case REQ_TAG :
         break;
