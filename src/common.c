@@ -71,6 +71,58 @@ jhash(char *key, size_t len)
 }
 /* -----------------8<------------------------ */
 
+/** string functions */
+
+/** returns allocated string with normalized path
+ * 'path' must begin with either "/" or "~/"
+ */
+char *
+normalize_path(const char *path)
+{
+  char buf[PATH_MAX] = { 0 };
+  const char *s = NULL;
+  const char *e = NULL;
+  char *t = NULL;
+  size_t len = 0;
+
+  ASSERT(path != NULL, MSG_M_NULLPTR);
+  memset(buf, 0x0, PATH_MAX);
+
+  t = buf;
+  s = path;
+  if (*path == '/')
+    s++;
+
+  for ( ; (e = strchr(s, '/')) != NULL; s = e + 1)
+    {
+      len = e - s;
+      switch (len)
+        {
+          case 2 :
+            if (strncmp(s, "../", 3) == 0)
+              {
+                while (t > buf && *t != '/') t--;
+                *t = '\0';
+                continue;
+              }
+          case 1 : if (strncmp(s, "./",  2) == 0) continue;
+          case 0 : if (strncmp(s, "/",   1) == 0) continue;
+          default :
+            if (*path != '~' || t != buf) *t++ = '/';
+            memcpy(t, s, len * sizeof(char));
+            t += len;
+            break;
+        }
+    }
+
+  if (t != buf) *t++ = '/';
+  memcpy(t, s, strlen(s) * sizeof(char));
+
+  STRNDUP(t, buf, PATH_MAX);
+
+  return t;
+}
+
 /** custom printf's */
 size_t
 snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)
