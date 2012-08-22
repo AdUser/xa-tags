@@ -20,3 +20,22 @@ Each option begins with "OPT_" prefix. Complete list of available options you ma
 
   grep OPTION CMakeLists.txt
 
+===== Theory =====
+Amount of data, that you can store in xattr is very limited on most common linux fs.
+
+On ext* FS family it directly depends on used block size of filesystem. You can't change this after formating your disk, so take care about it in advance.
+
+On JFS amount of data limited by 64k per file.
+
+On XFS and ReiserFS there is no practical limit for size, but, you should remember, that it consumes precious space, reserved for inodes.
+
+Note, that this space also shared with acl's, security labels (Selinux, for example) or maybe other programs. So, available size for data may be greatly smaller, than you expect.
+
+For more detail information see manual page attr(5).
+
+Basically, to get everything works, make sure in following:
+
+  - you have enabled support for xattr in kernel for choosen filesystem
+    zgrep XATTR /proc/config.gz
+  - your filesystem mounted with user_xattr option (for ext* or reiserfs)
+
