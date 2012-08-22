@@ -1,0 +1,22 @@
+===== Build =====
+
+Build process is simple:
+
+cd <root of source tree>
+cmake <options> .
+make
+make test    # optional
+make install # optional, not works yet
+
+You may change cmake options either by specifying it manually as cmake args, or by ccmake, ncurses util, usially shipped with cmake. A few axamples:
+
+  cmake -DOPT_UUID64=ON -DOPT_WITHOUT_GETTEXT=ON .
+
+  ccmake .
+  <change anything>
+  cmake .
+
+Each option begins with "OPT_" prefix. Complete list of available options you may asquire by folloving command:
+
+  grep OPTION CMakeLists.txt
+
