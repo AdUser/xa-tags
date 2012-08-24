@@ -45,6 +45,9 @@
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 
+#define XATTR_ID    "user.xat.id"
+#define XATTR_TAGS  "user.xat.tags"
+
 /** hash & checksum functions */
 
 uint16_t crc16(char *str, size_t len);
