@@ -11,9 +11,20 @@ INCLUDE(CheckFunctionExists)
 INCLUDE(CTest)
 
 # user options
-OPTION(OPT_WITHOUT_GETTEXT "Build without localization support" "OFF")
-OPTION(OPT_UUID64 "Use 64bit counter in uuid. Without this - DB will be limited with 2^32 files" "OFF")
-OPTION(OPT_ASYNC_DB_WRITE "Allow collection and batch execution of write requests" "ON")
+# see readme for full description
+IF    (NOT DEFINED OPERATIONAL_MODE)
+  #SET(OPERATIONAL_MODE "DUMB_TOOL")
+  #SET(OPERATIONAL_MODE "DUMB_CLIENT")
+   SET(OPERATIONAL_MODE "SMART_TOOL")
+  #SET(OPERATIONAL_MODE "SMART_CLIENT")
+ENDIF (NOT DEFINED OPERATIONAL_MODE)
+ADD_DEFINITIONS( -DOPERATIONAL_MODE=${OPERATIONAL_MODE} )
+
+OPTION(OPT_DAEMON "Use daemon for serving the database" OFF)
+OPTION(OPT_INLINE_TAGS "Save copy of tags directly in xattr" OFF)
+OPTION(OPT_I18N   "Build without localization support" ON)
+OPTION(OPT_UUID64 "Use 64bit counter in uuid. Without this - DB will be limited with 2^32 files" OFF)
+OPTION(OPT_ASYNC_DB "Allow collection and batch execution of write requests" ON)
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -45,54 +56,75 @@ ENDIF (NOT LIBDIR)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-## checks
-# sqlite3
-FIND_PACKAGE(Sqlite3 REQUIRED)
-
-IF    (SQLITE3_FOUND)
-  SET (SQLITE_STATUS "FOUND")
-  ADD_DEFINITIONS( -DHAVE_SQLITE3 )
-ENDIF (SQLITE3_FOUND)
-
-# gettext
-IF    (OPT_WITHOUT_GETTEXT STREQUAL "ON")
-  SET (GETTEXT_STATUS "DISABLED")
-ELSE  (OPT_WITHOUT_GETTEXT STREQUAL "ON")
-  FIND_PACKAGE(Gettext)
-
-  IF    (NOT GETTEXT_FOUND)
-    SET (GETTEXT_STATUS "NOT FOUND")
-  ELSE  (NOT GETTEXT_FOUND)
-    SET (GETTEXT_STATUS "FOUND")
-  ENDIF (NOT GETTEXT_FOUND)
-ENDIF (OPT_WITHOUT_GETTEXT STREQUAL "ON")
-
 ## options
 IF    (OPT_UUID64 STREQUAL "ON")
   ADD_DEFINITIONS( -DUUID64 )
 ENDIF (OPT_UUID64 STREQUAL "ON")
 
-IF    (OPT_ASYNC_DB_WRITE STREQUAL "ON")
+IF    (OPT_ASYNC_DB STREQUAL "ON")
   ADD_DEFINITIONS( -DASYNC_DB_WRITE )
-ENDIF (OPT_ASYNC_DB_WRITE STREQUAL "ON")
+ENDIF (OPT_ASYNC_DB STREQUAL "ON")
 
-MESSAGE (STATUS "------------------------------------------")
-MESSAGE (STATUS "Build type is:        ${CMAKE_BUILD_TYPE}")
-MESSAGE (STATUS "CFLAGS is:            ${CMAKE_C_FLAGS}")
+## checks
+IF     (OPERATIONAL_MODE STREQUAL  "DUMB_TOOL")
+  SET(OPT_DAEMON       OFF)
+  SET(OPT_INLINE_TAGS  ON)
+  SET(OPT_UUID64       OFF)
+ELSEIF (OPERATIONAL_MODE STREQUAL "SMART_TOOL")
+  SET(OPT_DAEMON       OFF)
+ELSEIF (OPERATIONAL_MODE STREQUAL  "DUMB_CLIENT")
+  SET(OPT_DAEMON       ON)
+ELSEIF (OPERATIONAL_MODE STREQUAL "SMART_CLIENT")
+  SET(OPT_DAEMON       ON)
+ELSE   (OPERATIONAL_MODE STREQUAL  "DUMB_TOOL")
+  MESSAGE(FATAL_ERROR "Unknown operational mode, build aborted")
+ENDIF  (OPERATIONAL_MODE STREQUAL  "DUMB_TOOL")
+
+## dependencies
+# sqlite3
+SET(SQLITE_STATUS "DISABLED")
+IF    (NOT OPERATIONAL_MODE STREQUAL "DUMB_TOOL")
+  FIND_PACKAGE(Sqlite3 REQUIRED)
+
+  IF    (SQLITE3_FOUND)
+    SET (SQLITE_STATUS "FOUND")
+    ADD_DEFINITIONS( -DHAVE_SQLITE3 )
+  ENDIF (SQLITE3_FOUND)
+ENDIF (NOT OPERATIONAL_MODE STREQUAL "DUMB_TOOL")
+
+# gettext
+IF    (OPT_I18N STREQUAL "OFF")
+  SET (GETTEXT_STATUS "DISABLED")
+ELSE  (OPT_I18N STREQUAL "OFF")
+  FIND_PACKAGE(Gettext)
+
+  IF    (NOT GETTEXT_FOUND)
+    SET (GETTEXT_STATUS "NOT FOUND")
+  ELSE  (NOT GETTEXT_FOUND)
+    ADD_DEFINITIONS( -DHAVE_GETTEXT )
+    SET (GETTEXT_STATUS "FOUND")
+  ENDIF (NOT GETTEXT_FOUND)
+ENDIF (OPT_I18N STREQUAL "OFF")
+
+MESSAGE (STATUS "---------------------------------------------")
+MESSAGE (STATUS "Build type is:            ${CMAKE_BUILD_TYPE}")
+MESSAGE (STATUS "CFLAGS is:                ${CMAKE_C_FLAGS}")
 MESSAGE (STATUS "")
-MESSAGE (STATUS "Install prefix:       ${CMAKE_INSTALL_PREFIX}")
-MESSAGE (STATUS "Binaries directory:   ${INSTALL_BIN}")
+MESSAGE (STATUS "Install prefix:           ${CMAKE_INSTALL_PREFIX}")
+MESSAGE (STATUS "Binaries directory:       ${INSTALL_BIN}")
 MESSAGE (STATUS "")
-MESSAGE (STATUS "Required libraries:")
-MESSAGE (STATUS "  sqlite3: ${SQLITE_STATUS}")
+MESSAGE (STATUS "Operational mode:         ${OPERATIONAL_MODE}")
 MESSAGE (STATUS "")
-MESSAGE (STATUS "Aux dependencies:")
-MESSAGE (STATUS "  gettext: ${GETTEXT_STATUS}")
+MESSAGE (STATUS "Dependencies:")
+MESSAGE (STATUS "  sqlite3:                ${SQLITE_STATUS}")
+MESSAGE (STATUS "  gettext:                ${GETTEXT_STATUS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "Options:")
 MESSAGE (STATUS "  64bit counter in uuid:  ${OPT_UUID64}")
-MESSAGE (STATUS "  Async db write:         ${OPT_ASYNC_DB_WRITE}")
-MESSAGE (STATUS "  Disable i18n support:   ${OPT_WITHOUT_GETTEXT}")
+MESSAGE (STATUS "  Async db write:         ${OPT_ASYNC_DB}")
+MESSAGE (STATUS "  i18n support:           ${OPT_I18N}")
+MESSAGE (STATUS "  Use daemon:             ${OPT_DAEMON}")
+MESSAGE (STATUS "  Inline tags:            ${OPT_INLINE_TAGS}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)
