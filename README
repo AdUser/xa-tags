@@ -39,3 +39,16 @@ Basically, to get everything works, make sure in following:
     zgrep XATTR /proc/config.gz
   - your filesystem mounted with user_xattr option (for ext* or reiserfs)
 
+===== Identifier generation rules =====
+
+UUID of each file consists of tree parts:
+  - a some number
+  - checksum of path component (dirname)
+  - checksum of path component (filename)
+
+First part becomes unique sequence, if any mode other than "dumb_tool" is used. Else, it will always equals to zero. Length may differ according to UUID64 option enabled or not (4 or 8 bytes, 8 or 16 bytes in hex form).
+
+Second and third part used for detect renames and moves of file, and correct db entries accordingly. Without this, search for file by tag will give you old location of file. Length of these components is 2 bytes (4 bytes in hex form).
+
+UUID must be written to attr in hexededimal form, delimited dy '-' sign. attr name is 'user.xat.id'.
+
