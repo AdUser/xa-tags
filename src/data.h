@@ -28,5 +28,6 @@ int data_item_add(data_t *data, char *item, size_t item_len);
 int data_items_walk(const data_t *data, char **item);
 char *data_item_search(data_t *data, const char *item);
 void data_items_split(data_t *data, char delim);
+void data_items_merge(data_t *data, char glue);
 void data_clear(data_t *data);
 int data_parse_tags(data_t *data, char *str);
