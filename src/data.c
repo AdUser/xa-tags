@@ -396,16 +396,19 @@ data_clear(data_t *data)
 }
 
 int
-data_parse_tags(data_t *data, char *tags)
+data_parse_tags(data_t *data, const char *tags)
 {
+  char *buf = NULL;
   char *s = NULL;
   char *e = NULL;
   size_t len = 0;
 
   ASSERT(data != NULL && tags != NULL, MSG_M_NULLPTR);
 
+  STRNDUP(buf, tags, strlen(tags) + 1);
+
   data_clear(data);
-  s = tags;
+  s = buf;
   while (true)
     {
       while (isblank(*s)) s++;
@@ -421,5 +424,6 @@ data_parse_tags(data_t *data, char *tags)
         }
     }
 
+  FREE(buf);
   return (data->items > 0) ? 1 : 0;
 }
