@@ -350,3 +350,32 @@ data_clear(data_t *data)
   FREE(data->buf);
   memset(data, 0x0, sizeof(data_t));
 }
+
+int
+data_parse_tags(data_t *data, char *tags)
+{
+  char *s = NULL;
+  char *e = NULL;
+  size_t len = 0;
+
+  ASSERT(data != NULL && tags != NULL, MSG_M_NULLPTR);
+
+  data_clear(data);
+  s = tags;
+  while (true)
+    {
+      while (isblank(*s)) s++;
+      if (*s == '\0')
+        break;
+      e = s;
+      while (*e != '\0' && isblank(*e) != 1) e++;
+      len = e - s;
+      if (len > 0)
+        {
+          data_item_add(data, s, len);
+          s += len;
+        }
+    }
+
+  return (data->items > 0) ? 1 : 0;
+}
