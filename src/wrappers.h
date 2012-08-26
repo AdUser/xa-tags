@@ -3,6 +3,10 @@
     msg(msg_error, MSG_M_OOM, __FILE__, __LINE__)
     /* yes, i know about assert() */
 
+#define REALLOC(new_ptr, old_ptr, new_size) \
+  if (((new_ptr) = realloc((old_ptr), (new_size))) == NULL) \
+    msg(msg_error, MSG_M_REALLOC, __FILE__, __LINE__)
+
 #define FREE(ptr) \
   if (ptr != NULL) free((ptr)); \
   (ptr) = NULL
