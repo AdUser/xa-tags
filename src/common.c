@@ -123,6 +123,31 @@ normalize_path(const char *path)
   return t;
 }
 
+#ifndef _GNU_SOURCE
+/* strstr for memory */
+void *
+memmem(const void *haystack, size_t haystacklen,
+       const void *needle,   size_t needlelen)
+{
+  size_t pos = 0;
+  unsigned char *h = NULL;
+  unsigned char *n = NULL;
+
+  n = (unsigned char *) needle;
+  for (pos = 0; pos <= haystacklen; pos++)
+    {
+      h = (unsigned char *) haystack;
+      h += pos;
+      if (*h == *n && (haystacklen - pos) >= needlelen && \
+          memcmp(h, n, needlelen) == 0)
+        return (void *) h;
+    }
+
+  return NULL;
+}
+#endif
+
+
 /** custom printf's */
 size_t
 snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)

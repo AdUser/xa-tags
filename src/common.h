@@ -55,6 +55,10 @@ uint32_t jhash(char *str, size_t len);
 
 /** string functions */
 char *normalize_path(const char *path);
+#ifndef _GNU_SOURCE
+void *memmem(const void *haystack, size_t haystacklen,
+             const void *needle,   size_t needlelen);
+#endif
 
 /** custom printf's */
 size_t snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path);
