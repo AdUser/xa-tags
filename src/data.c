@@ -290,12 +290,12 @@ data_item_add(data_t *data, char *item, size_t item_len)
 }
 
 void
-data_items_split(data_t *data)
+data_items_split(data_t *data, char delim)
 {
   size_t i = 0;
 
   for (i = 0; i < data->len; i++)
-    if (data->buf[i] == '\n')
+    if (data->buf[i] == delim)
       {
         data->buf[i] = '\0';
         data->items += 1;

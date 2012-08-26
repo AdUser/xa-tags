@@ -217,7 +217,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
     data_item_add(&req->data, s, e - s);
     if (req->data.flags & DATA_MULTI)
       {
-        data_items_split(&req->data);
+        data_items_split(&req->data, '\n');
         buf_reduce(&conn->rd, (e + 2) - conn->rd.buf);
       }
     else
