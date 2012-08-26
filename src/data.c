@@ -299,7 +299,7 @@ data_items_split(data_t *data, char delim)
       {
         data->buf[i] = '\0';
         data->items += 1;
-      }
+       }
 }
 
 void
@@ -426,4 +426,17 @@ data_parse_tags(data_t *data, const char *tags)
 
   FREE(buf);
   return (data->items > 0) ? 1 : 0;
+}
+
+void
+data_merge(data_t *to, data_t *from)
+{
+  char *p = NULL;
+  char *item = NULL;
+
+  ASSERT(to != NULL && from != NULL, MSG_M_NULLPTR);
+
+  while (data_items_walk(from, &item) > 0)
+    if ((p = data_item_search(to, item)) == NULL)
+      data_item_add(to, item, 0);
 }
