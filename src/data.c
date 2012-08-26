@@ -343,6 +343,35 @@ data_items_walk(const data_t *data, char **item)
   return 1;
 }
 
+/** returns pointer to found item or NULL */
+char *
+data_item_search(data_t *data, const char *item)
+{
+  char *p = NULL;
+  size_t item_len = 0;
+
+  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
+
+  if (strcmp(item, data->buf) == 0)
+    return data->buf;
+
+  item_len = strlen(item) + 1;
+  p = data->buf;
+  do {
+    p = (char *) memmem(p, data->len - (p - data->buf), item, item_len);
+
+    if (p == NULL)
+      return NULL;
+
+    if (*(p - 1) == '\0')
+      return p;
+
+    p += item_len;
+  } while (p != NULL);
+
+  return NULL;
+}
+
 void
 data_clear(data_t *data)
 {
