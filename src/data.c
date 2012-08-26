@@ -367,6 +367,9 @@ data_item_search(data_t *data, const char *item)
 
   ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
 
+  if (data->items == 0)
+    return NULL;
+
   if (strcmp(item, data->buf) == 0)
     return data->buf;
 
