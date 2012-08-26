@@ -325,35 +325,31 @@ data_items_merge(data_t *data, char glue)
 int
 data_items_walk(const data_t *data, char **item)
 {
-  static size_t pos = 0;
-  const static data_t *last = NULL;
+  size_t len = 0;
 
-  ASSERT(data != NULL, MSG_M_NULLPTR);
+  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
 
-  if (item == NULL)
-    return -1;
-
-  if (data != last)
-    {
-      last = data;
-      *item = NULL;
-      pos = 0;
-    }
-
-  if (pos == data->len)
+  if (data->len == 0)
     return 0;
 
   if (*item == NULL)
     {
       *item = data->buf;
-      pos = strlen(*item) + 1;
       return 1;
     }
-  else
+
+  if (*item < data->buf || *item > (data->buf + data->len))
     {
-      *item = &data->buf[pos];
-      pos = (*item - data->buf) + strlen(*item) + 1;
+      *item = data->buf;
+      return 1;
     }
+
+  len = strlen(*item) + 1;
+
+  if (*item + len == data->buf + data->len)
+    return 0;
+
+  *item += len;
 
   return 1;
 }
