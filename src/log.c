@@ -16,16 +16,18 @@
 
 #include "common.h"
 
+extern enum loglevel verbosity;
+
 void
 msg(enum msglevel level, char *format, ...)
-  {
+  { 
     va_list ap;
 
-    if ((opts.daemon.loglevel == log_quiet  && level <= msg_error)  || \
-        (opts.daemon.loglevel == log_normal && level <= msg_status) || \
-        (opts.daemon.loglevel == log_extra  && level <= msg_info)   || \
-        (opts.daemon.loglevel == log_all    && level <= msg_debug))
-      {
+    if ((verbosity == log_quiet  && level <= msg_error)  || \
+        (verbosity == log_normal && level <= msg_status) || \
+        (verbosity == log_extra  && level <= msg_info)   || \
+        (verbosity == log_all    && level <= msg_debug))
+       {
         va_start(ap, format);
         vfprintf(stderr, format, ap);
         va_end(ap);

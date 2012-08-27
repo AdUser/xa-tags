@@ -16,6 +16,8 @@
 
 #include "common.h"
 
+enum loglevel verbosity = log_normal;
+
 void
 usage(int exitcode)
   {

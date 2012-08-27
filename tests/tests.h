@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <signal.h>
 
+enum loglevel verbosity = log_normal;
+
 static void handler(int sig, siginfo_t *siginfo, void *context)
 { exit(EXIT_FAILURE); }
 
