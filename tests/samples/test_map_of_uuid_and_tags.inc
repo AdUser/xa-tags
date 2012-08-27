@@ -1,9 +1,9 @@
   "    \n"                                                   /* fail */ \
-  "1EE79B-889A3A-2A40CD LXDE, comp\n"                        /* pass */ \
-  "1EE79B-135B85-DE5620 someone's try to kill all humans\n"  /* pass */ \
+  "00000000-A52D-A178 LXDE, comp\n"                          /* pass */ \
+  "00000000-A52D-4BB1 someone's try to kill all humans\n"    /* pass */ \
   "\t\t\t\n"                                                 /* fail */ \
-  "1EE79B-F314F1-22134C try to escape hyphen\\\n"            /* fail */ \
-  "1EE79B-C71527-9BC445  winter,tree,  moon, rating:5   \n"  /* pass */ \
-  "1EE79B-A8782C-E286F0 second \" try to escape \' hyphen\n" /* pass */ \
-  "1EE79B-4171A7-2250BA solar system, planets\n"             /* pass */ \
-  "1EE79B-35F304-DDC9DA she is watching you\n"               /* pass */ ;
+  "00000000-78A7-C574 try to escape hyphen\\\n"              /* fail */ \
+  "00000000-78A7-DDE0  winter,tree,  moon, rating:5   \n"    /* pass */ \
+  "00000000-78A7-D5FB second \" try to escape \' hyphen\n"   /* pass */ \
+  "00000000-78A7-C717 solar system, planets\n"               /* pass */ \
+  "00000000-78A7-AB3C she is watching you\n"                 /* pass */ ;

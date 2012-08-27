@@ -1,10 +1,10 @@
-  "1BF050-7490EB-AE6BEB\n"    /* pass */ \
-  "FC56B55198E28-6EDAC8\n"    /* fail */ \
-  "20A97C-K78B2E-ECCD58\n"    /* fail */ \
-  "\t17E6B0-93DC11-99EB8E\n"  /* fail */ \
-  "  52AB14-5BD3A2-2C6F5E\n"  /* fail */ \
-  "ADC68D-A6D0CB-A54CC\n"     /* fail */ \
-  "141899-A504B5-31A714\t\n"  /* pass */ \
-  "857CE0-21C51A-B209AD  \n"  /* pass */ \
-  "52AB14C-9304F-69340D\n"    /* fail */ \
-  "AAD452-1FE824-0B8EE4"      /* pass */ ;
+  "001BF050-7490-6BEB\n"    /* pass */ \
+  "00FC56B55198E-DAC8\n"    /* fail */ \
+  "0020A97C-K78B-CD58\n"    /* fail */ \
+  "\t0017E6B0-93DC-EB8E\n"  /* fail */ \
+  "  0052AB14-5BD3-6F5E\n"  /* fail */ \
+  "00ADC68D-A6D0-4CC\n"     /* fail */ \
+  "00141899-A504-A714\t\n"  /* pass */ \
+  "00857CE0-21C5-09AD  \n"  /* pass */ \
+  "0052AB14C-930-340D\n"    /* fail */ \
+  "00AAD452-1FE8-8EE4"      /* pass */ ;
