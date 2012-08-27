@@ -335,7 +335,10 @@ data_items_merge(data_t *data, char glue)
   size_t i = 0;
   size_t len = 0;
 
-  for (i = 0, len = data->len - 1; i < len; i++)
+  if (data->len > 0)
+    len = data->len - 1;
+
+  for (i = 0; i < len; i++)
     if (data->buf[i] == '\0')
       {
         data->buf[i] = glue;
