@@ -289,6 +289,33 @@ data_item_add(data_t *data, char *item, size_t item_len)
   return 1;
 }
 
+int
+data_item_del(data_t *data, char *item)
+{
+  char *p = NULL;
+  size_t item_len = 0;
+
+  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
+
+  item_len = strlen(item) + 1;
+
+  if (data->items == 0)
+    return 0; /* nothing to do */
+
+  if ((p = data_item_search(data, item)) == NULL)
+    return 0; /* nothing to do */
+
+  memmove(p, p + item_len, data->len - (p - data->buf) - item_len + 1);
+  REALLOC(p, data->buf, data->len - item_len + 1);
+  data->buf = p;
+
+  data->len -= item_len;
+
+  data->items -= 1;
+
+  return 0;
+}
+
 void
 data_items_split(data_t *data, char delim)
 {
