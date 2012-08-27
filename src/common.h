@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <attr/xattr.h>
 #include <sys/un.h>
 
 #ifdef HAVE_GETTEXT
@@ -31,6 +32,7 @@
 #include "data.h"
 #include "uuid.h"
 #include "db.h"
+#include "file.h"
 #include "buf.h"
 #include "conn.h"
 #include "proto.h"
