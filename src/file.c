@@ -66,7 +66,11 @@ int
 file_tags_set(const char *path, char *tags, size_t len)
 {
   errno = 0;
-  setxattr(path, XATTR_TAGS, tags, len, 0);
+
+  if (len > 0)
+    setxattr(path, XATTR_TAGS, tags, len, 0);
+  else
+    removexattr(path, XATTR_TAGS);
 
   if (errno != 0)
     {
