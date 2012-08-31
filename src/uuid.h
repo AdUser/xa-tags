@@ -16,3 +16,6 @@ typedef struct uuid_t
     uint16_t dname;
     uint16_t fname;
   } uuid_t;
+
+/** API functions */
+int uuid_validate(char *uuid);
