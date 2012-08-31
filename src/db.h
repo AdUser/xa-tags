@@ -1,3 +1,6 @@
+#define DB_USER_PATH ".local/cache/" PROGNAME "/"
+#define DB_SYSTEM_PATH "/var/lib/" PROGNAME "/"
+#define DB_FILENAME "xa-tags.db"
 #define MAIN_TABLE "d_files"
 #define TAGS_TABLE "d_uniq_tags"
 
