@@ -104,13 +104,13 @@ file_tags_clr(const char *path)
  * 1 - error occured
  */
 int
-file_id_get(const char *path, uuid_t *uuid)
+file_uuid_get(const char *path, uuid_t *uuid)
 {
   char buf[64] = { 0 };
 
   ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
 
-  getxattr(path, XATTR_ID, buf, 64);
+  getxattr(path, XATTR_UUID, buf, 64);
   buf[64 - 1] = '\0';
   if (errno != 0 && errno != ENOATTR)
     {
