@@ -29,7 +29,8 @@ db_open(void)
   if (stat(opts.db.path, &st) == -1 && errno == ENOENT)
     {
       flags |= SQLITE_OPEN_CREATE;
-      sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL);
+      if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
+        msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
       if (sqlite3_exec(db_conn, SQL_DB_CREATE, NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILCREATE, err);
       FREE(err);
