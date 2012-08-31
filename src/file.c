@@ -98,3 +98,34 @@ file_tags_clr(const char *path)
 
   return 0;
 }
+
+/** return values:
+ * 0 - all ok
+ * 1 - error occured
+ */
+int
+file_id_get(const char *path, uuid_t *uuid)
+{
+  char buf[64] = { 0 };
+
+  ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
+
+  getxattr(path, XATTR_ID, buf, 64);
+  buf[64 - 1] = '\0';
+  if (errno != 0 && errno != ENOATTR)
+    {
+      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      return 1;
+    }
+
+  if (uuid_validate(buf) == 1)
+    {
+      msg(msg_warn, "%s -- %s\n", path, MSG_I_BADUUID);
+      memset(uuid, 0, sizeof(uuid_t));
+      return 1;
+    }
+
+  uuid_parse(uuid, buf);
+
+  return 0;
+}
