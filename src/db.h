@@ -48,6 +48,9 @@
 
 /** API functions */
 
+char *db_find_path_user(void);
+char *db_find_path_system(void);
+
 int db_file_add(char *path, uuid_t *new_uuid);
 int db_file_update(char *path, uuid_t *new_uuid);
 int db_file_del(const uuid_t *uuid);

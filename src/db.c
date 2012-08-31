@@ -18,6 +18,55 @@
 
 sqlite3 *db_conn = NULL;
 
+char *
+db_find_path_user(void)
+{
+  char buf[PATH_MAX];
+  char *p = NULL;
+  struct stat st;
+
+  if ((p = getenv("XDG_DATA_HOME")) != NULL)
+    {
+      snprintf(buf, PATH_MAX, "%s/%s/%s", p, PROGNAME, DB_FILENAME);
+      if (stat(buf, &st) == 0)
+        {
+          STRNDUP(p, buf, PATH_MAX);
+          return p;
+        }
+    }
+
+  if ((p = getenv("HOME")) != NULL)
+    {
+      snprintf(buf, PATH_MAX, "%s/%s/%s", p, DB_USER_PATH, DB_FILENAME);
+      if (stat(buf, &st) == 0)
+        {
+          STRNDUP(p, buf, PATH_MAX);
+          return p;
+        }
+    }
+
+  if (true)
+    {
+      snprintf(buf, PATH_MAX, "%s/%s", DB_USER_PATH, DB_FILENAME);
+      STRNDUP(p, buf, PATH_MAX);
+      return p;
+    }
+
+  return NULL;
+}
+
+char *
+db_find_path_system(void)
+{
+  char buf[PATH_MAX];
+  char *p = NULL;
+
+  snprintf(buf, PATH_MAX, "%s/%s", DB_SYSTEM_PATH, DB_FILENAME);
+  STRNDUP(p, buf, PATH_MAX);
+
+  return p;
+}
+
 void
 db_open(void)
 {
