@@ -153,16 +153,13 @@ size_t
 snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)
 {
   size_t len = 0;
+  char *p = NULL;
 
-#ifdef UUID64
-  len = snprintf(buf, buf_len, "%08X%08X-%04X-%04X %s",
-                   (uint32_t) (uuid->id >> 32),
-                   (uint32_t) (uuid->id & 0xFFFFFFFF),
-                   uuid->dname, uuid->fname, path);
-#else
-  len = snprintf(buf, buf_len, "%08X-%04X-%04X %s",
-                   uuid->id, uuid->dname, uuid->fname, path);
-#endif
+  p = uuid_printf(uuid);
+
+  len = snprintf(buf, buf_len, "%s %s", p, path);
+
+  FREE(p);
 
   return len;
 }

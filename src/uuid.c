@@ -65,3 +65,27 @@ uuid_parse(uuid_t *uuid, char *str)
 
   return 1;
 }
+
+/** returns allocated string or NULL on error */
+char *
+uuid_printf(uuid_t *uuid)
+{
+  size_t len = UUID_CHAR_LEN + 1;
+  char *p = NULL;
+
+  ASSERT(uuid != NULL, MSG_M_NULLPTR);
+
+  CALLOC(p, len, sizeof(char));
+
+#ifdef UUID64
+  snprintf(p, len, "%08X%08X-%04X-%04X",
+              (uint32_t) (uuid->id >> 32),
+              (uint32_t) (uuid->id & 0xFFFFFFFF),
+              uuid->dname, uuid->fname);
+#else
+  snprintf(p, len, "%08X-%04X-%04X",
+              uuid->id, uuid->dname, uuid->fname);
+#endif
+
+  return p;
+}
