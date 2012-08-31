@@ -6,12 +6,14 @@ SET(SRC_FILES_DAEMON
     "conn.c"
     "handlers.c"
     "buf.c"
+    "uuid.c"
     "db.c"
     )
 
 SET(SRC_FILES_CLIENT
     "common.c"
     "log.c"
+    "uuid.c"
     "data.c"
     "file.c"
     )

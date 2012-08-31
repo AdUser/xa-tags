@@ -2,6 +2,7 @@ SET(SRC_DIR "../../src")
 SET(SRC_FILES
     "${SRC_DIR}/log.c"
     "${SRC_DIR}/data.c"
+    "${SRC_DIR}/uuid.c"
     )
 
 ADD_EXECUTABLE("data_validate" ${SRC_FILES} "data_validate.c")

@@ -57,36 +57,13 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
 int
 _validate_uuid(char *uuid, data_t *errors)
 {
-  int i = 0;
-  char c = '\0';
-#ifdef UUID64
-  const uint8_t pos1 = 16;
-  const uint8_t pos2 = 21;
-  const uint8_t max  = 26;
-#else
-  const uint8_t pos1 =  8;
-  const uint8_t pos2 = 13;
-  const uint8_t max  = 18;
-#endif
-
-  ASSERT(uuid != NULL, MSG_M_NULLPTR);
-
-  for (i = 0; i < max; i++)
+  if (uuid_validate(uuid) == 1)
     {
-      c = (isxdigit(uuid[i])) ? '0' : uuid[i];
-      switch (c)
-        {
-          case '0' : if (i == pos1 || i == pos2) goto fail; break;
-          case '-' : if (i != pos1 && i != pos2) goto fail; break;
-          default  : /* and '\0' also */    goto fail; break;
-        }
+      _add_val_error(errors, MSG_I_BADUUID, uuid, 20);
+      return 1;
     }
 
   return 0;
-
-  fail:
-  _add_val_error(errors, MSG_I_BADUUID, uuid, 20);
-  return 1;
 }
 
 /** return values:
