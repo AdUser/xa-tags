@@ -56,16 +56,7 @@ _handle_tag_del(const char *path, const char *tags)
 void
 _handle_tag_clr(const char *path, const char *tags)
 {
-  errno = 0;
-  removexattr(path, XATTR_TAGS);
-  switch (errno)
-    {
-      case ENOATTR :
-        break;
-      default :
-        msg(msg_warn, "%s: %s\n", path, strerror(errno));
-        break;
-    }
+  file_tags_clr(path);
 }
 
 void

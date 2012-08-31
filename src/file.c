@@ -80,3 +80,21 @@ file_tags_set(const char *path, char *tags, size_t len)
 
   return 0;
 }
+
+/** return values:
+ *  0 - on success
+ *  1 - if error occured
+ */
+int
+file_tags_clr(const char *path)
+{
+  errno = 0;
+  removexattr(path, XATTR_TAGS);
+  if (errno != 0 && errno != ENOATTR)
+    {
+      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      return 1;
+    }
+
+  return 0;
+}
