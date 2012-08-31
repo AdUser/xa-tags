@@ -129,3 +129,22 @@ file_uuid_get(const char *path, uuid_t *uuid)
 
   return 0;
 }
+
+/** return values:
+ *  0 - on success
+ *  1 - if error occured
+ */
+int
+file_uuid_set(const char *path, char *uuid)
+{
+  errno = 0;
+  setxattr(path, XATTR_UUID, uuid, UUID_CHAR_LEN, 0);
+
+  if (errno != 0)
+    {
+      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      return 1;
+    }
+
+  return 0;
+}
