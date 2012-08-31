@@ -121,7 +121,6 @@ _handle_req_file_del(conn_t *conn, const ipc_req_t *req)
   ipc_resp_t resp;
   uuid_t uuid;
   uint16_t i = 0;
-  uint8_t ret = 0;
   char buf[MAXLINE] = { 0 };
   size_t buf_len = 0;
   char *item = NULL;
@@ -135,8 +134,7 @@ _handle_req_file_del(conn_t *conn, const ipc_req_t *req)
   while (data_items_walk(&req->data, &item) > 0)
     {
       memset(&uuid, 0x0, sizeof(uuid_t));
-      ret = sscanf(item, UUID_FORMAT, &uuid.id, &uuid.dname, &uuid.fname);
-      if (ret != 3)
+      if (uuid_parse(&uuid, item) != 0)
         {
           buf_len = snprintf(buf, MAXLINE, "%s -- %s\n", MSG_I_BADUUID, item);
           data_item_add(&resp.data, buf, buf_len);

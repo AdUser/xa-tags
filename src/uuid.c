@@ -50,3 +50,18 @@ uuid_validate(char *uuid)
 
   return 0;
 }
+
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ */
+inline int
+uuid_parse(uuid_t *uuid, char *str)
+{
+  ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
+
+  if (sscanf(str, UUID_FORMAT, &uuid->id, &uuid->dname, &uuid->fname) == 3)
+    return 0;
+
+  return 1;
+}

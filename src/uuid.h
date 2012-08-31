@@ -19,3 +19,4 @@ typedef struct uuid_t
 
 /** API functions */
 int uuid_validate(char *uuid);
+int uuid_parse(uuid_t *uuid, char *str);
