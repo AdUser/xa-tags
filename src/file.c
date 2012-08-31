@@ -148,3 +148,21 @@ file_uuid_set(const char *path, char *uuid)
 
   return 0;
 }
+
+/** return values:
+ *  0 - on success
+ *  1 - if error occured
+ */
+int
+file_uuid_clr(const char *path)
+{
+  errno = 0;
+  removexattr(path, XATTR_UUID);
+  if (errno != 0 && errno != ENOATTR)
+    {
+      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      return 1;
+    }
+
+  return 0;
+}
