@@ -327,8 +327,51 @@ db_file_search_tag(char *str, data_t *results)
   return 0;
 }
 
+int
+db_tags_get(uuid_t *uuid, data_t *tags)
+{
+  sqlite3_stmt *stmt = NULL;
+  size_t len = 0;
+  int ret = 0;
+  char *p = NULL;
+
+  ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
+
+  len = strlen(SQL_T_GET);
+  if (sqlite3_prepare_v2(db_conn, SQL_T_GET, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+
+  ret = sqlite3_step(stmt);
+  if (ret == SQLITE_DONE)
+    {
+      p = uuid_printf(uuid);
+      msg(msg_warn, MSG_D_NOUUID, p);
+      FREE(p);
+      return 1;
+    }
+
+  if (ret != SQLITE_ROW)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
+      return 1;
+    }
+
+  data_clear(tags);
+  p = (char *) sqlite3_column_text(stmt, 3);
+  data_parse_tags(tags, p);
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
+
 /*
-int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(uuid_t *uuid, data_t *tags);
 int db_tags_find(char *str, data_t *results);
 */
