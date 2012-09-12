@@ -43,7 +43,7 @@ void
 _handle_tag_clr(const char *path, const char *unused)
 {
   file_tags_clr(path);
-} 
+}
 
 void
 _handle_tag_set(const char *path, const char *str)

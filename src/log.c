@@ -20,7 +20,7 @@ extern enum loglevel verbosity;
 
 void
 msg(enum msglevel level, char *format, ...)
-  { 
+  {
     va_list ap;
 
     if ((verbosity == log_quiet  && level <= msg_error)  || \
