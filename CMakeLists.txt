@@ -25,6 +25,7 @@ OPTION(OPT_INLINE_TAGS "Save copy of tags directly in xattr" OFF)
 OPTION(OPT_I18N   "Build without localization support" ON)
 OPTION(OPT_UUID64 "Use 64bit counter in uuid. Without this - DB will be limited with 2^32 files" OFF)
 OPTION(OPT_ASYNC_DB "Allow collection and batch execution of write requests" ON)
+OPTION(OPT_DB_AUTOCREATE "Create and initialize database automatically if missing" OFF)
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -72,6 +73,10 @@ ENDIF (OPT_DAEMON STREQUAL "OFF")
 IF    (OPT_INLINE_TAGS STREQUAL "ON")
   ADD_DEFINITIONS( -DINLINE_TAGS )
 ENDIF (OPT_INLINE_TAGS STREQUAL "ON")
+
+IF    (OPT_DB_AUTOCREATE STREQUAL "ON")
+  ADD_DEFINITIONS( -DDB_AUTOCREATE )
+ENDIF (OPT_DB_AUTOCREATE STREQUAL "ON")
 
 ## checks
 IF     (OPERATIONAL_MODE STREQUAL  "DUMB_TOOL")
@@ -133,6 +138,7 @@ MESSAGE (STATUS "  Async db write:         ${OPT_ASYNC_DB}")
 MESSAGE (STATUS "  i18n support:           ${OPT_I18N}")
 MESSAGE (STATUS "  Use daemon:             ${OPT_DAEMON}")
 MESSAGE (STATUS "  Inline tags:            ${OPT_INLINE_TAGS}")
+MESSAGE (STATUS "  Autocreate db:          ${OPT_DB_AUTOCREATE}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)

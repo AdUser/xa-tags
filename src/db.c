@@ -64,6 +64,7 @@ db_open(void)
   errno = 0;
   if (stat(opts.db.path, &st) == -1 && errno == ENOENT)
     {
+#ifdef DB_AUTOCREATE
       flags |= SQLITE_OPEN_CREATE;
       if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
@@ -72,6 +73,10 @@ db_open(void)
       FREE(err);
       sqlite3_close(db_conn);
       errno = 0;
+#else
+      err = strerror(errno);
+      msg(msg_error, "%s -- %s\n", err, opts.db.path);
+#endif
     }
 
   if (errno != 0)
