@@ -1,56 +1,44 @@
 void
-_handle_tag_add(const char *path, const char *tags)
+_handle_tag_add(const char *path, const char *str)
 {
-  char *buf = NULL;
   data_t new_tags;
-  data_t old_tags;
+  data_t tags;
 
   memset(&new_tags, 0, sizeof(data_t));
-  memset(&old_tags, 0, sizeof(data_t));
+  memset(&tags,     0, sizeof(data_t));
 
-  file_tags_get(path, &buf);
+  file_tags_get(path, &tags);
 
-  if (buf != NULL)
-    data_parse_tags(&old_tags, buf);
+  data_parse_tags(&new_tags, str);
+  data_merge(&tags, &new_tags);
 
-  data_parse_tags(&new_tags, tags);
+  data_items_merge(&tags, ' ');
 
-  FREE(buf);
-
-  data_merge(&old_tags, &new_tags);
-  data_items_merge(&old_tags, ' ');
-
-  file_tags_set(path, old_tags.buf, strlen(old_tags.buf));
+  file_tags_set(path, tags.buf, strlen(tags.buf));
 }
 
 void
-_handle_tag_del(const char *path, const char *tags)
+_handle_tag_del(const char *path, const char *str)
 {
-  char *buf = NULL;
   char *item = NULL;
   data_t new_tags;
-  data_t old_tags;
+  data_t tags;
   size_t len = 0;
 
   memset(&new_tags, 0, sizeof(data_t));
-  memset(&old_tags, 0, sizeof(data_t));
+  memset(&tags,     0, sizeof(data_t));
 
-  file_tags_get(path, &buf);
+  file_tags_get(path, &tags);
 
-  if (buf != NULL)
-    data_parse_tags(&old_tags, buf);
-
-  data_parse_tags(&new_tags, tags);
-
-  FREE(buf);
+  data_parse_tags(&new_tags, str);
 
   while (data_items_walk(&new_tags, &item) > 0)
-    data_item_del(&old_tags, item);
+    data_item_del(&tags, item);
 
-  data_items_merge(&old_tags, ' ');
+  data_items_merge(&tags, ' ');
 
-  len = (old_tags.len > 0) ? old_tags.len - 1 : 0 ;
-  file_tags_set(path, old_tags.buf, len);
+  len = (tags.len > 0) ? tags.len - 1 : 0 ;
+  file_tags_set(path, tags.buf, len);
 }
 
 void
@@ -83,14 +71,14 @@ _handle_tag_set(const char *path, const char *tags)
 void
 _handle_tag_lst(const char *path, const char *unused)
 {
-  char *tags = NULL;
-  size_t size = 0;
+  data_t tags;
 
-  size = file_tags_get(path, &tags);
+  memset(&tags, 0, sizeof(data_t));
 
-  printf("%s: %s\n", path, (size > 0) ? tags : "");
+  file_tags_get(path, &tags);
+  data_items_merge(&tags, ' ');
 
-  FREE(tags);
+  printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
 }
 
 int

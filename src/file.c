@@ -17,11 +17,11 @@
 #include "common.h"
 
 /** return values:
- *  0 - if attribute not found or tag set is empty
- * >0 - on success
+ * 0 - all ok
+ * 1 - if attribute not found or empty
  */
 ssize_t
-file_tags_get(const char *path, char **tags)
+file_tags_get(const char *path, data_t *tags)
 {
   char *buf = 0;
   ssize_t size;
@@ -34,11 +34,11 @@ file_tags_get(const char *path, char **tags)
      {
       if (errno != ENOATTR)
         msg(msg_warn, "%s -- %s\n", path, strerror(errno));
-      return 0;
+      return 1;
     }
 
   if (size == 0)
-    return 0;
+    return 1;
 
   CALLOC(buf, size, sizeof(char));
 
@@ -47,15 +47,17 @@ file_tags_get(const char *path, char **tags)
     {
       if (errno != ENOATTR)
         msg(msg_warn, "%s -- %s\n", path, strerror(errno));
-      return 0;
+      FREE(buf);
+      return 1;
     }
 
   buf[size] = '\0';
 
-  FREE(*tags);
-  *tags = buf;
+  data_clear(tags);
+  data_parse_tags(tags, buf);
+  FREE(buf);
 
-  return size;
+  return 0;
 }
 
 /** return values:
