@@ -112,6 +112,10 @@ db_close(void)
     msg(msg_error, MSG_D_FAILCLOSE, sqlite3_errmsg(db_conn));
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - error occured
+ */
 int
 db_file_add(char *path, uuid_t *new_uuid)
 {
