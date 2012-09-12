@@ -101,7 +101,8 @@ file_tags_clr(const char *path)
 
 /** return values:
  * 0 - all ok
- * 1 - error occured
+ * 1 - uuid not found
+ * 2 - error occured
  */
 int
 file_uuid_get(const char *path, uuid_t *uuid)
