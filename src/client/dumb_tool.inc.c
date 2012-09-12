@@ -14,7 +14,7 @@ _handle_tag_add(const char *path, const char *str)
 
   data_items_merge(&tags, ' ');
 
-  file_tags_set(path, tags.buf, strlen(tags.buf));
+  file_tags_set(path, &tags);
 }
 
 void
@@ -23,7 +23,6 @@ _handle_tag_del(const char *path, const char *str)
   char *item = NULL;
   data_t new_tags;
   data_t tags;
-  size_t len = 0;
 
   memset(&new_tags, 0, sizeof(data_t));
   memset(&tags,     0, sizeof(data_t));
@@ -37,35 +36,31 @@ _handle_tag_del(const char *path, const char *str)
 
   data_items_merge(&tags, ' ');
 
-  len = (tags.len > 0) ? tags.len - 1 : 0 ;
-  file_tags_set(path, tags.buf, len);
+  file_tags_set(path, &tags);
 }
 
 void
-_handle_tag_clr(const char *path, const char *tags)
+_handle_tag_clr(const char *path, const char *unused)
 {
   file_tags_clr(path);
-}
+} 
 
 void
-_handle_tag_set(const char *path, const char *tags)
+_handle_tag_set(const char *path, const char *str)
 {
-  data_t new_tags;
-  size_t len = 0;
+  data_t tags;
 
-  memset(&new_tags, 0, sizeof(data_t));
+  memset(&tags, 0, sizeof(data_t));
 
-  if (strlen(tags) == 0)
+  if (strlen(str) == 0)
     {
       _handle_tag_clr(path, NULL);
       return;
     }
 
-  data_parse_tags(&new_tags, tags);
-  data_items_merge(&new_tags, ' ');
+  data_parse_tags(&tags, str);
 
-  len = (new_tags.len > 0) ? new_tags.len - 1 : 0 ;
-  file_tags_set(path, new_tags.buf, len);
+  file_tags_set(path, &tags);
 }
 
 void

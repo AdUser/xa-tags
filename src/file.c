@@ -65,12 +65,14 @@ file_tags_get(const char *path, data_t *tags)
  *  1 - if error occured
  */
 int
-file_tags_set(const char *path, char *tags, size_t len)
+file_tags_set(const char *path, data_t *tags)
 {
   errno = 0;
 
-  if (len > 0)
-    setxattr(path, XATTR_TAGS, tags, len, 0);
+  data_items_merge(tags, ' ');
+
+  if (tags->len > 0)
+    setxattr(path, XATTR_TAGS, tags->buf, tags->len, 0);
   else
     removexattr(path, XATTR_TAGS);
 
