@@ -117,7 +117,7 @@ db_close(void)
  * 1 - error occured
  */
 int
-db_file_add(char *path, uuid_t *new_uuid)
+db_file_add(const char *path, uuid_t *new_uuid)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;

@@ -20,5 +20,5 @@ typedef struct uuid_t
 /** API functions */
 int uuid_validate(char *uuid);
 int uuid_parse(uuid_t *uuid, char *str);
-int uuid_generate(uuid_t *uuid, char *path);
+int uuid_generate(uuid_t *uuid, const char *path);
 char *uuid_printf(uuid_t *uuid);

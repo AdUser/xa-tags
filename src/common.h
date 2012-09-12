@@ -52,7 +52,7 @@
 
 /** hash & checksum functions */
 
-uint16_t crc16(char *str, size_t len);
+uint16_t crc16(const char *str, size_t len);
 uint32_t jhash(char *str, size_t len);
 
 /** string functions */

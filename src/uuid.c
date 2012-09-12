@@ -71,9 +71,9 @@ uuid_parse(uuid_t *uuid, char *str)
  * 1 - error
  */
 int
-uuid_generate(uuid_t *uuid, char *path)
+uuid_generate(uuid_t *uuid, const char *path)
 {
-  char *p = NULL;
+  const char *p = NULL;
   size_t len = 0;
 
   ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);

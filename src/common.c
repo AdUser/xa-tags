@@ -31,8 +31,8 @@
 */
 
 uint16_t
-crc16(char *str, size_t len)
-{
+crc16(const char *str, size_t len)
+{ 
   uint16_t crc = 0xFFFF;
   uint8_t i;
 
