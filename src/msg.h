@@ -57,6 +57,9 @@
 #define MSG_U_UNKNERR    \
   _("Internal error occured.")
 
+#define MSG_U_HOMEUNSET  \
+  _("$HOME variable unset, i don't know, where to look for database.")
+
 /** database errors */
 #define MSG_D_FAILOPEN \
   _("Failed to open database: %s\n")
