@@ -37,7 +37,7 @@ file_tags_get(const char *path, data_t *tags)
       return 1;
     }
 
-  if (size == 0)
+  if (size <= 0)
     return 1;
 
   CALLOC(buf, size, sizeof(char));
@@ -51,7 +51,7 @@ file_tags_get(const char *path, data_t *tags)
       return 1;
     }
 
-  buf[size] = '\0';
+  buf[size - 1] = '\0';
 
   data_clear(tags);
   data_parse_tags(tags, buf);
@@ -117,6 +117,9 @@ file_uuid_get(const char *path, uuid_t *uuid)
 
   getxattr(path, XATTR_UUID, buf, 64);
   buf[64 - 1] = '\0';
+  if (errno != 0 && errno == ENOATTR)
+    return 1;
+
   if (errno != 0 && errno != ENOATTR)
     {
       msg(msg_warn, "%s -- %s\n", path, strerror(errno));
