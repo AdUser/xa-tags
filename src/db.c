@@ -120,7 +120,6 @@ int
 db_file_add(char *path, uuid_t *new_uuid)
 {
   sqlite3_stmt *stmt = NULL;
-  char *str = NULL;
   size_t len = 0;
 
   len = strlen(SQL_F_ADD);
@@ -130,15 +129,7 @@ db_file_add(char *path, uuid_t *new_uuid)
       return 1;
     }
 
-  if ((str = strrchr(path, '/')) == NULL)
-    return 1; /* path MUST contain at least one slash */
-
-  len = str - path;
-  new_uuid->dname = crc16(path, len);
-
-  str += 1;
-  len = strlen(str);
-  new_uuid->fname = crc16(str, len);
+  uuid_generate(new_uuid, path);
 
   sqlite3_bind_int(stmt, 1, new_uuid->dname);
   sqlite3_bind_int(stmt, 2, new_uuid->fname);
