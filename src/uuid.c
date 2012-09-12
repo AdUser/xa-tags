@@ -66,6 +66,33 @@ uuid_parse(uuid_t *uuid, char *str)
   return 1;
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ */
+int
+uuid_generate(uuid_t *uuid, char *path)
+{
+  char *p = NULL;
+  size_t len = 0;
+
+  ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
+
+  if ((p = strrchr(path, '/')) == NULL)
+    return 1; /* path MUST contain at least one slash */
+
+  p += 1; /* "/path/to/some/file" */
+          /*              --^     */
+  len = p - path;
+  uuid->dname = crc16(path, len);
+  len = strlen(p);
+  uuid->fname = crc16(p, len);
+
+  uuid->id = 0;
+
+  return 0;
+}
+
 /** returns allocated string or NULL on error */
 char *
 uuid_printf(uuid_t *uuid)

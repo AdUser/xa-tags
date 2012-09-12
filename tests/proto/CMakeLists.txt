@@ -1,5 +1,6 @@
 SET(SRC_DIR "../../src")
 SET(SRC_FILES
+    "${SRC_DIR}/common.c"
     "${SRC_DIR}/proto.c"
     "${SRC_DIR}/buf.c"
     "${SRC_DIR}/log.c"
