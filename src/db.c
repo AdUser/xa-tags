@@ -65,6 +65,7 @@ db_open(void)
   if (stat(opts.db.path, &st) == -1 && errno == ENOENT)
     {
 #ifdef DB_AUTOCREATE
+      mkdir_r(opts.db.path, 0755);
       flags |= SQLITE_OPEN_CREATE;
       if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));

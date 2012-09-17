@@ -147,6 +147,30 @@ memmem(const void *haystack, size_t haystacklen,
 }
 #endif
 
+void
+mkdir_r(const char *path, mode_t mode)
+{
+  struct stat st;
+  char *p = NULL;
+  char *tmp = NULL;
+
+  ASSERT(path != NULL, MSG_M_NULLPTR);
+
+  STRNDUP(tmp, path, PATH_MAX);
+  for (p = tmp + 1; (p = strchr(p, '/')) != NULL; p += 1)
+    {
+      *p = '\0';
+      if (stat(tmp, &st) != 0)
+        {
+          if (errno != ENOENT)
+            msg(msg_error, "%s\n", strerror(errno));
+          if (mkdir(tmp, mode) != 0)
+            msg(msg_error, "%s\n", strerror(errno));
+        }
+      *p = '/';
+    }
+  FREE(tmp);
+}
 
 /** custom printf's */
 size_t

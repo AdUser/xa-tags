@@ -62,6 +62,8 @@ void *memmem(const void *haystack, size_t haystacklen,
              const void *needle,   size_t needlelen);
 #endif
 
+void mkdir_r(const char *path, mode_t mode);
+
 /** custom printf's */
 size_t snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path);
 size_t snprintf_m_uuid_tags(char *buf, size_t buf_len, uuid_t *uuid, const char *tags);
