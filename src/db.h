@@ -27,7 +27,7 @@
   "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ?"
 /* service operations */
 #define SQL_T_UNIQ_ADD \
-  "INSERT INTO " TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
+  "INSERT OR IGNORE INTO " TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
 
 /* DB request type */
 #define SQL_D_STAT \
