@@ -26,6 +26,7 @@ OPTION(OPT_I18N   "Build without localization support" ON)
 OPTION(OPT_UUID64 "Use 64bit counter in uuid. Without this - DB will be limited with 2^32 files" OFF)
 OPTION(OPT_ASYNC_DB "Allow collection and batch execution of write requests" ON)
 OPTION(OPT_DB_AUTOCREATE "Create and initialize database automatically if missing" OFF)
+OPTION(OPT_UNIQ_TAGS_LIST "Create and maintain list of used tags" ON)
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -78,11 +79,16 @@ IF    (OPT_DB_AUTOCREATE STREQUAL "ON")
   ADD_DEFINITIONS( -DDB_AUTOCREATE )
 ENDIF (OPT_DB_AUTOCREATE STREQUAL "ON")
 
+IF    (OPT_UNIQ_TAGS_LIST STREQUAL "ON")
+  ADD_DEFINITIONS( -DUNIQ_TAGS_LIST )
+ENDIF (OPT_UNIQ_TAGS_LIST STREQUAL "ON")
+
 ## checks
 IF     (OPERATIONAL_MODE STREQUAL  "DUMB_TOOL")
   SET(OPT_DAEMON       OFF)
   SET(OPT_INLINE_TAGS  ON)
   SET(OPT_UUID64       OFF)
+  SET(OPT_UNIQ_TAGS_LIST OFF)
 ELSEIF (OPERATIONAL_MODE STREQUAL "SMART_TOOL")
   SET(OPT_DAEMON       OFF)
 ELSEIF (OPERATIONAL_MODE STREQUAL  "DUMB_CLIENT")
@@ -139,6 +145,7 @@ MESSAGE (STATUS "  i18n support:           ${OPT_I18N}")
 MESSAGE (STATUS "  Use daemon:             ${OPT_DAEMON}")
 MESSAGE (STATUS "  Inline tags:            ${OPT_INLINE_TAGS}")
 MESSAGE (STATUS "  Autocreate db:          ${OPT_DB_AUTOCREATE}")
+MESSAGE (STATUS "  List of used tags:      ${OPT_UNIQ_TAGS_LIST}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)

@@ -376,6 +376,11 @@ db_tags_set(uuid_t *uuid, data_t *tags)
       return 1;
     }
 
+#ifdef UNIQ_TAGS_LIST
+  if (db_tag_add_uniq(tags) > 0)
+    return 1;
+#endif
+
   CALLOC(p, tags->len + 2, sizeof(char));
   data_items_merge(tags, ' ');
   memcpy(&p[1], tags->buf, tags->len);

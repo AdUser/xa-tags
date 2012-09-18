@@ -61,7 +61,9 @@ int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(uuid_t *uuid, data_t *tags);
 int db_tags_find(char *str, data_t *results);
 
+#ifdef UNIQ_TAGS_LIST
 int db_tag_add_uniq(data_t *tags);
+#endif
 
 void db_commit(void);
 
