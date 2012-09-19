@@ -16,7 +16,21 @@
 
 #include "common.h"
 
-#include "client/usage.inc.c"
+void
+usage(int exitcode)
+{
+  fprintf(stdout,
+  "%s  version %u.%u\n",
+  PROGNAME, VERSION_MAJOR, VERSION_MINOR);
+
+  fprintf(stdout,
+  "Usage: %s [options] <file> [<file>]\n"
+  "\n", PROGNAME);
+
+  #include "client/usage_basic.inc.c"
+
+  exit(exitcode);
+}
 
 enum loglevel verbosity = log_normal;
 
