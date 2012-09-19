@@ -25,11 +25,11 @@ enum loglevel verbosity = log_normal;
 #define  DUMB_CLIENT 3
 #define SMART_CLIENT 4
 
-#if   OPERATIONAL_MODE ==  DUMB_TOOL
+#if   MODE ==  DUMB_TOOL
   #include "client/dumb_tool.inc.c"
-#elif OPERATIONAL_MODE == SMART_TOOL
-#elif OPERATIONAL_MODE ==  DUMB_CLIENT
-#elif OPERATIONAL_MODE == SMART_CLIENT
+#elif MODE == SMART_TOOL
+#elif MODE ==  DUMB_CLIENT
+#elif MODE == SMART_CLIENT
 #else
   /* do nothing */
 #endif
