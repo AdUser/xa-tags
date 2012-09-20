@@ -2,11 +2,11 @@
 ^ FILE  ^ SEARCH | L_FILE         | M_UUID_FILE   |
 ^ FILE  ^ DEL    | L_UUID         | -             |
 ^ FILE  ^ UPDATE | M_UUID_FILE    | -             |
-^                                              |||| 
+^                                              ||||
 ^ TAG   ^ ADD    | M_UUID_TAGS    | M_UUID_TAGS*  |
 ^ TAG   ^ DEL    | M_UUID_TAGS    | M_UUID_TAGS*  |
 ^ TAG   ^ SET    | M_UUID_TAGS    | -             |
 ^ TAG   ^ GET    | L_UUID         | M_UUID_TAGS   |
 ^ TAG   ^ CLEAR  | L_UUID         | -             |
-^ TAG   ^ SEARCH | L_TAGS         | M_UUID_FILE   |
+^ TAG   ^ SEARCH | L_TAGS         | L_FILE        |
 ^ TAG   ^ FIND   | L_TAGS         | L_TAGS        |

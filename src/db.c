@@ -266,8 +266,7 @@ db_file_search_tag(char *str, data_t *results)
   sqlite3_stmt *stmt;
   size_t len = 0;
   int ret = 0;
-  uuid_t uuid = { 0, 0, 0 };
-  char buf[MAXLINE] = { 0 };
+  char buf[PATH_MAX] = { 0 };
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -276,26 +275,16 @@ db_file_search_tag(char *str, data_t *results)
       return 1;
     }
 
-  if (strchr(str, '*') != NULL)
-    {
-      snprintf(buf, MAXLINE, "%%%s%%", str);
-      len = strlen(buf);
-      while (len--)
-        if (buf[len] == '*')
-          buf[len] = '%';
-    }
-  else
-    snprintf(buf, MAXLINE, "%% %s %%", str);
+  len = snprintf(buf, MAXLINE, "%% %s %%", str);
+  while (len --> 0)
+    if (buf[len] == '*')
+      buf[len] = '%';
 
   sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-      uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
-      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1),
-      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2),
-      len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
-                                 &uuid, (char *) sqlite3_column_text(stmt, 3));
+      len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
       data_item_add(results, buf, len);
     }
 
@@ -308,7 +297,7 @@ db_file_search_tag(char *str, data_t *results)
 
   if (results->items > 1)
     results->flags |= DATA_MULTI;
-  results->type = DATA_M_UUID_FILE;
+  results->type = DATA_L_FILES;
 
   sqlite3_finalize(stmt);
 

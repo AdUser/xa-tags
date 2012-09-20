@@ -22,7 +22,7 @@
 #define SQL_T_SET \
   "UPDATE " MAIN_TABLE " SET tags = ? WHERE file_id = ?"
 #define SQL_T_SEARCH \
-  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE tags LIKE ?"
+  "SELECT filename, tags FROM " MAIN_TABLE " WHERE tags LIKE ?"
 #define SQL_T_FIND \
   "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ?"
 /* service operations */
