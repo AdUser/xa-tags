@@ -28,6 +28,9 @@ usage(int exitcode)
   "\n", PROGNAME);
 
   #include "client/usage_basic.inc.c"
+#if MODE >= SMART_TOOL
+  #include "client/usage_search.inc.c"
+#endif
 
   exit(exitcode);
 }
@@ -42,6 +45,7 @@ enum loglevel verbosity = log_normal;
 #if   MODE ==  DUMB_TOOL
   #include "client/dumb_tool.inc.c"
 #elif MODE == SMART_TOOL
+  #include "client/smart_tool.inc.c"
 #elif MODE ==  DUMB_CLIENT
 #elif MODE == SMART_CLIENT
 #else

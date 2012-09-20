@@ -13,8 +13,8 @@ INCLUDE(CTest)
 # user options
 # see readme for full description
 IF    (NOT DEFINED MODE)
-   SET(MODE "DUMB_TOOL")
-  #SET(MODE "SMART_TOOL")
+  #SET(MODE "DUMB_TOOL")
+   SET(MODE "SMART_TOOL")
   #SET(MODE "DUMB_CLIENT")
   #SET(MODE "SMART_CLIENT")
 ENDIF (NOT DEFINED MODE)
