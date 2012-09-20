@@ -224,7 +224,11 @@ db_file_search_path(char *str, data_t *results)
       return 1;
     }
 
-  snprintf(buf, PATH_MAX + 3, "%%%s%%", str);
+  len = snprintf(buf, PATH_MAX + 3, "%%%s%%", str);
+
+  while (len --> 0)
+    if (buf[len] == '*')
+      buf[len] = '%';
 
   sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
 
