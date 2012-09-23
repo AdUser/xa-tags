@@ -25,15 +25,9 @@ uuid_validate(char *uuid)
 {
   int i = 0;
   char c = '\0';
-#ifdef UUID64
   const uint8_t pos1 = 16;
   const uint8_t pos2 = 21;
   const uint8_t max  = 26;
-#else
-  const uint8_t pos1 =  8;
-  const uint8_t pos2 = 13;
-  const uint8_t max  = 18;
-#endif
 
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
@@ -104,15 +98,10 @@ uuid_printf(uuid_t *uuid)
 
   CALLOC(p, len, sizeof(char));
 
-#ifdef UUID64
   snprintf(p, len, "%08X%08X-%04X-%04X",
               (uint32_t) (uuid->id >> 32),
               (uint32_t) (uuid->id & 0xFFFFFFFF),
               uuid->dname, uuid->fname);
-#else
-  snprintf(p, len, "%08X-%04X-%04X",
-              uuid->id, uuid->dname, uuid->fname);
-#endif
 
   return p;
 }
