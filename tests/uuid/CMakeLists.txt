@@ -6,5 +6,7 @@ SET(SRC_FILES
     )
 
 ADD_EXECUTABLE("uuid_generate"  ${SRC_FILES} "uuid_generate.c")
+ADD_EXECUTABLE("uuid_parse"     ${SRC_FILES} "uuid_parse.c")
 
 ADD_TEST("uuid/generate"       "uuid_generate")
+ADD_TEST("uuid/parse"          "uuid_parse")
