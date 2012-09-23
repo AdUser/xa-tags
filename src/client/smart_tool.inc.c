@@ -204,6 +204,7 @@ main(int argc, char **argv)
   data_t files;
   struct stat st;
   char opt = 0;
+  char op = '\0';
   char *str  = NULL;
   char *item = NULL;
   void (*handler)(const char *, const char *) = NULL;
@@ -214,18 +215,22 @@ main(int argc, char **argv)
     usage(EXIT_FAILURE);
 
   while ((opt = getopt(argc, argv, "hcl" "a:d:s:" "f:F:")) != -1)
-    switch (opt)
-      {
-        case 'a' : handler = &_handle_tag_add; str = optarg; break;
-        case 'd' : handler = &_handle_tag_del; str = optarg; break;
-        case 's' : handler = &_handle_tag_set; str = optarg; break;
-        case 'c' : handler = &_handle_tag_clr; break;
-        case 'l' : handler = &_handle_tag_lst; break;
-        case 'f' : handler = &_handle_file_search_tag;  str = optarg; break;
-        case 'F' : handler = &_handle_file_search_path; str = optarg; break;
-        case 'h' : usage(EXIT_SUCCESS); break;
-        default  : usage(EXIT_FAILURE); break;
-      }
+    {
+      op = opt;
+      str = optarg;
+      switch (opt)
+        {
+          case 'a' : handler = &_handle_tag_add; break;
+          case 'd' : handler = &_handle_tag_del; break;
+          case 's' : handler = &_handle_tag_set; break;
+          case 'c' : handler = &_handle_tag_clr; break;
+          case 'l' : handler = &_handle_tag_lst; break;
+          case 'f' : handler = &_handle_file_search_tag;  break;
+          case 'F' : handler = &_handle_file_search_path; break;
+          case 'h' : usage(EXIT_SUCCESS); break;
+          default  : usage(EXIT_FAILURE); break;
+        }
+    }
 
   for (; optind < argc; optind++)
     {
@@ -240,16 +245,27 @@ main(int argc, char **argv)
         printf("%s -- %s\n", argv[optind], strerror(errno));
     }
 
-  if (files.items < 1)
-    usage(EXIT_FAILURE);
-
   /* init */
-
   opts.db.path = db_find_path_user();
   db_open();
 
-  while ((ret = data_items_walk(&files, &item)) > 0)
-    handler(item, str);
+  switch (op)
+    {
+      case 'f' :
+      case 'F' :
+        handler(NULL, str);
+        break;
+      case 'a' :
+      case 'd' :
+      case 's' :
+      case 'c' :
+      case 'l' :
+        if (files.items < 1)
+          usage(EXIT_FAILURE);
+        while ((ret = data_items_walk(&files, &item)) > 0)
+          handler(item, str);
+        break;
+    }
 
   data_clear(&files);
 
