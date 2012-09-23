@@ -25,8 +25,10 @@ file_tags_get(const char *path, data_t *tags)
 {
   char *buf = 0;
   ssize_t size;
+  data_t tmp;
 
   errno = 0;
+  memset(&tmp, 0x0, sizeof(data_t));
 
   /* determine needed buf size */
   size = getxattr(path, XATTR_TAGS, buf, 0);
@@ -53,8 +55,9 @@ file_tags_get(const char *path, data_t *tags)
 
   buf[size - 1] = '\0';
 
-  data_clear(tags);
-  data_parse_tags(tags, buf);
+  data_parse_tags(&tmp, buf);
+  data_merge(tags, &tmp);
+  data_clear(&tmp);
   FREE(buf);
 
   return 0;
