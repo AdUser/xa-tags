@@ -1,9 +1,10 @@
-#define UUID_CHAR_LEN ((sizeof(uint64_t) + 2 * sizeof(uint16_t))* 2) + 2
-#define UUID_FORMAT "%016llX-%04hX-%04hX"
+#define UUID_CHAR_LEN 16 /* sizeof(uint64_t) * 2 */
+#define UUID_FORMAT "%016llX"
 
 typedef struct uuid_t
   {
     uint64_t id;
+    /* auxillary fields */
     uint16_t dname;
     uint16_t fname;
   } uuid_t;

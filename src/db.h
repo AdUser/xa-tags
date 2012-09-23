@@ -8,7 +8,7 @@
 
 /* FILE request type */
 #define SQL_F_ADD \
-  "INSERT INTO " MAIN_TABLE " (crc_dname, crc_fname, filename) VALUES (?, ?, ?)"
+  "INSERT INTO " MAIN_TABLE " (" UUID_COL ", filename) VALUES (?, ?, ?, ?)"
 #define SQL_F_DEL \
   "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
 #define SQL_F_SEARCH \
@@ -38,7 +38,7 @@
 /* DB create statements */
 #define SQL_DB_CREATE \
 "CREATE TABLE s_info ( version INT(2) NOT NULL DEFAULT 1);" \
-"CREATE TABLE d_files ( file_id INTEGER PRIMARY KEY AUTOINCREMENT," \
+"CREATE TABLE d_files ( file_id INTEGER PRIMARY KEY," \
 " crc_dname INTEGER NOT NULL DEFAULT 0, crc_fname INTEGER NOT NULL DEFAULT 0,"\
 " filename TEXT NOT NULL DEFAULT '', tags TEXT NOT NULL DEFAULT '');" \
 "CREATE INDEX IF NOT EXISTS i_crc_dname ON d_files (crc_dname);" \

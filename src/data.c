@@ -59,7 +59,7 @@ _validate_uuid(char *uuid, data_t *errors)
 {
   if (uuid_validate(uuid) == 1)
     {
-      _add_val_error(errors, MSG_I_BADUUID, uuid, 20);
+      _add_val_error(errors, MSG_I_BADUUID, uuid, UUID_CHAR_LEN);
       return 1;
     }
 

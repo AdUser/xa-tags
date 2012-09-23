@@ -25,22 +25,16 @@ uuid_validate(char *uuid)
 {
   int i = 0;
   char c = '\0';
-  const uint8_t pos1 = 16;
-  const uint8_t pos2 = 21;
-  const uint8_t max  = 26;
 
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
-  for (i = 0; i < max; i++)
-    {
-      c = (isxdigit(uuid[i])) ? '0' : uuid[i];
-      switch (c)
-        {
-          case '0' : if (i == pos1 || i == pos2) return 1; break;
-          case '-' : if (i != pos1 && i != pos2) return 1; break;
-          default  : /* and '\0' also */         return 1; break;
-        }
-    }
+  for (i = 0; i < UUID_CHAR_LEN; i++)
+    if (!isxdigit(uuid[i]))
+      return 1;
+
+  c = uuid[UUID_CHAR_LEN]; /* char right behind uuid */
+  if (!(isblank(c) || c == '\0'))
+    return 1;
 
   return 0;
 }
@@ -52,12 +46,20 @@ uuid_validate(char *uuid)
 inline int
 uuid_parse(uuid_t *uuid, char *str)
 {
+  uint8_t i = 0;
   ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
 
-  if (sscanf(str, UUID_FORMAT, &uuid->id, &uuid->dname, &uuid->fname) == 3)
-    return 0;
+  if (uuid_validate(str))
+    return 1;
 
-  return 1;
+  uuid->id = 0;
+  for (i = 0; i < UUID_CHAR_LEN; i++)
+    {
+      uuid->id <<= 4;
+      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : str[i] - 'A' + 0xA;
+    }
+
+  return 0;
 }
 
 /** return values:
@@ -72,6 +74,14 @@ uuid_generate(uuid_t *uuid, const char *path)
 
   ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
 
+  uuid->id = 0;
+  uuid->id += rand() & 0xFFFFFFFF;
+  uuid->id <<= 32;
+  uuid->id += rand();
+
+  if (uuid->id == 0) /* you are lucky, dude */
+    uuid->id = 1;
+
   if ((p = strrchr(path, '/')) == NULL)
     return 1; /* path MUST contain at least one slash */
 
@@ -81,8 +91,6 @@ uuid_generate(uuid_t *uuid, const char *path)
   uuid->dname = crc16(path, len);
   len = strlen(p);
   uuid->fname = crc16(p, len);
-
-  uuid->id = 0;
 
   return 0;
 }
@@ -98,10 +106,9 @@ uuid_printf(uuid_t *uuid)
 
   CALLOC(p, len, sizeof(char));
 
-  snprintf(p, len, "%08X%08X-%04X-%04X",
+  snprintf(p, len, "%08X%08X",
               (uint32_t) (uuid->id >> 32),
-              (uint32_t) (uuid->id & 0xFFFFFFFF),
-              uuid->dname, uuid->fname);
+              (uint32_t) (uuid->id & 0xFFFFFFFF));
 
   return p;
 }

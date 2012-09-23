@@ -124,9 +124,10 @@ db_file_add(const char *path, uuid_t *new_uuid)
 
   uuid_generate(new_uuid, path);
 
-  sqlite3_bind_int(stmt, 1, new_uuid->dname);
-  sqlite3_bind_int(stmt, 2, new_uuid->fname);
-  sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
+  sqlite3_bind_int64(stmt, 1, new_uuid->id);
+  sqlite3_bind_int(stmt, 2, new_uuid->dname);
+  sqlite3_bind_int(stmt, 3, new_uuid->fname);
+  sqlite3_bind_text(stmt, 4, path, -1, SQLITE_STATIC);
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
