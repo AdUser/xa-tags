@@ -31,7 +31,7 @@ file_tags_get(const char *path, data_t *tags)
   memset(&tmp, 0x0, sizeof(data_t));
 
   /* determine needed buf size */
-  size = getxattr(path, XATTR_TAGS, buf, 0);
+  size = 1 + getxattr(path, XATTR_TAGS, buf, 0);
   if (errno != 0)
      {
       if (errno != ENOATTR)
@@ -39,7 +39,7 @@ file_tags_get(const char *path, data_t *tags)
       return 1;
     }
 
-  if (size <= 0)
+  if (size <= 1)
     return 1;
 
   CALLOC(buf, size, sizeof(char));
@@ -74,8 +74,8 @@ file_tags_set(const char *path, data_t *tags)
 
   data_items_merge(tags, ' ');
 
-  if (tags->len > 0)
-    setxattr(path, XATTR_TAGS, tags->buf, tags->len, 0);
+  if (tags->len > 1)
+    setxattr(path, XATTR_TAGS, tags->buf, tags->len - 1, 0);
   else
     removexattr(path, XATTR_TAGS);
 
@@ -114,26 +114,27 @@ file_tags_clr(const char *path)
 int
 file_uuid_get(const char *path, uuid_t *uuid)
 {
-  char buf[64] = { 0 };
+  const size_t len = UUID_CHAR_LEN + 1;
+  char buf[UUID_CHAR_LEN + 1] = { 0 };
 
   ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
 
-  getxattr(path, XATTR_UUID, buf, 64);
-  buf[64 - 1] = '\0';
+  getxattr(path, XATTR_UUID, buf, len);
+  buf[len - 1] = '\0';
   if (errno != 0 && errno == ENOATTR)
     return 1;
 
   if (errno != 0 && errno != ENOATTR)
     {
       msg(msg_warn, "%s -- %s\n", path, strerror(errno));
-      return 1;
+      return 2;
     }
 
   if (uuid_validate(buf) == 1)
     {
       msg(msg_warn, "%s -- %s\n", path, MSG_I_BADUUID);
       memset(uuid, 0, sizeof(uuid_t));
-      return 1;
+      return 2;
     }
 
   uuid_parse(uuid, buf);
