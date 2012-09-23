@@ -312,8 +312,11 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   size_t len = 0;
   int ret = 0;
   char *p = NULL;
+  data_t tmp;
 
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
+
+  memset(&tmp, 0x0, sizeof(data_t));
 
   len = strlen(SQL_T_GET);
   if (sqlite3_prepare_v2(db_conn, SQL_T_GET, len, &stmt, NULL) != SQLITE_OK)
@@ -340,9 +343,10 @@ db_tags_get(uuid_t *uuid, data_t *tags)
       return 1;
     }
 
-  data_clear(tags);
   p = (char *) sqlite3_column_text(stmt, 3);
-  data_parse_tags(tags, p);
+  data_parse_tags(&tmp, p);
+  data_merge(tags, &tmp);
+  data_clear(&tmp);
 
   sqlite3_finalize(stmt);
 
