@@ -135,6 +135,7 @@ db_file_add(const char *path, uuid_t *new_uuid)
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
       return 1;
     }
 
@@ -177,6 +178,7 @@ db_file_update(char *path, uuid_t *new_uuid)
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
       return 1;
     }
 
@@ -295,6 +297,7 @@ db_file_search_tag(char *str, data_t *results)
   if (ret != SQLITE_DONE)
     {
       msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
       data_clear(results);
       return 1;
     }
