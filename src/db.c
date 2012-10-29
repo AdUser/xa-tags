@@ -69,7 +69,11 @@ db_open(void)
       flags |= SQLITE_OPEN_CREATE;
       if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
-      if (sqlite3_exec(db_conn, SQL_DB_CREATE, NULL, NULL, &err) != SQLITE_OK)
+      if (sqlite3_exec(db_conn, SQL_DB_CREATE_COMMON, NULL, NULL, &err) != SQLITE_OK)
+        msg(msg_error, MSG_D_FAILCREATE, err);
+      if (sqlite3_exec(db_conn, SQL_DB_CREATE_UNIQ,   NULL, NULL, &err) != SQLITE_OK)
+        msg(msg_error, MSG_D_FAILCREATE, err);
+      if (sqlite3_exec(db_conn, SQL_DB_INIT,   NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILCREATE, err);
       FREE(err);
       sqlite3_close(db_conn);
@@ -124,10 +128,9 @@ db_file_add(const char *path, uuid_t *new_uuid)
 
   uuid_generate(new_uuid, path);
 
-  sqlite3_bind_int64(stmt, 1, new_uuid->id);
-  sqlite3_bind_int(stmt, 2, new_uuid->dname);
-  sqlite3_bind_int(stmt, 3, new_uuid->fname);
-  sqlite3_bind_text(stmt, 4, path, -1, SQLITE_STATIC);
+  sqlite3_bind_int(stmt, 1, new_uuid->dname);
+  sqlite3_bind_int(stmt, 2, new_uuid->fname);
+  sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {

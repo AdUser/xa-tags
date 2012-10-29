@@ -74,13 +74,7 @@ uuid_generate(uuid_t *uuid, const char *path)
 
   ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
 
-  uuid->id = 0;
-  uuid->id += rand() & 0xFFFFFFFF;
-  uuid->id <<= 32;
-  uuid->id += rand();
-
-  if (uuid->id == 0) /* you are lucky, dude */
-    uuid->id = 1;
+  uuid->id = 0; /* generated automatically after insert */
 
   if ((p = strrchr(path, '/')) == NULL)
     return 1; /* path MUST contain at least one slash */

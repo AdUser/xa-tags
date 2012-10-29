@@ -1,6 +1,7 @@
 #define DB_USER_PATH ".local/cache/" PROGNAME "/"
 #define DB_SYSTEM_PATH "/var/lib/" PROGNAME "/"
 #define DB_FILENAME "xa-tags.db"
+#define DB_VERSION "2"
 #define MAIN_TABLE "d_files"
 #define TAGS_TABLE "d_uniq_tags"
 
@@ -8,7 +9,7 @@
 
 /* FILE request type */
 #define SQL_F_ADD \
-  "INSERT INTO " MAIN_TABLE " (" UUID_COL ", filename) VALUES (?, ?, ?, ?)"
+  "INSERT INTO " MAIN_TABLE " (crc_dname, crc_fname, filename) VALUES (?, ?, ?)"
 #define SQL_F_DEL \
   "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
 #define SQL_F_SEARCH \
@@ -36,15 +37,34 @@
     "(SELECT COUNT(*) FROM d_files)     as 'file_records'"
 
 /* DB create statements */
-#define SQL_DB_CREATE \
-"CREATE TABLE s_info ( version INT(2) NOT NULL DEFAULT 1);" \
-"CREATE TABLE d_files ( file_id INTEGER PRIMARY KEY," \
-" crc_dname INTEGER NOT NULL DEFAULT 0, crc_fname INTEGER NOT NULL DEFAULT 0,"\
-" filename TEXT NOT NULL DEFAULT '', tags TEXT NOT NULL DEFAULT '');" \
+#define SQL_DB_CREATE_COMMON \
+"CREATE TABLE s_info " \
+"(" \
+"  version  INTEGER NOT NULL DEFAULT 0," \
+"  uuid_min INTEGER NOT NULL DEFAULT 0 " \
+");" \
+"CREATE TABLE d_files" \
+"(" \
+"  file_id   INTEGER PRIMARY KEY," \
+"  crc_dname INTEGER NOT NULL DEFAULT 0,"  \
+"  crc_fname INTEGER NOT NULL DEFAULT 0,"  \
+"  filename  TEXT    NOT NULL DEFAULT ''," \
+"  tags      TEXT    NOT NULL DEFAULT '' " \
+");" \
 "CREATE INDEX IF NOT EXISTS i_crc_dname ON d_files (crc_dname);" \
-"CREATE INDEX IF NOT EXISTS i_crc_fname ON d_files (crc_fname);" \
-"CREATE TABLE d_uniq_tags ( tag_id INTEGER NOT NULL DEFAULT 0, " \
-"tag TEXT NOT NULL DEFAULT '', PRIMARY KEY (tag_id));"
+"CREATE INDEX IF NOT EXISTS i_crc_fname ON d_files (crc_fname);"
+
+#define SQL_DB_CREATE_UNIQ \
+"CREATE TABLE d_uniq_tags " \
+"(" \
+"  tag_id INTEGER NOT NULL DEFAULT 0,"  \
+"  tag    TEXT    NOT NULL DEFAULT ''," \
+"  PRIMARY KEY (tag_id)" \
+");"
+
+#define SQL_DB_INIT \
+"INSERT INTO s_info (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
+"INSERT INTO d_files (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM s_info;" \
 
 /** API functions */
 
