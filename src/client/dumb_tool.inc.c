@@ -76,6 +76,34 @@ _handle_tag_lst(const char *path, const char *unused)
   printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
  }
 
+/* not a function, because we can reduce a lot of calls *
+ * of malloc() and free() with one lazy growing 'buf'   */
+#define FILE_CHECK(str) \
+{ \
+  errno = 0; \
+  attr_size = getxattr((str), XATTR_TAGS, buf, buf_size - 1); \
+  while (attr_size < 0 && errno == ERANGE) \
+    { \
+      buf_size *= 2; \
+      tmp = buf; \
+      REALLOC(buf, tmp, buf_size); \
+      errno = 0; \
+      attr_size = getxattr(ftsent->fts_path, XATTR_TAGS, buf, buf_size - 1); \
+    } \
+  buf[attr_size + 1] = '\0'; \
+  if (errno == 0) \
+    { \
+      match = true; \
+      tmp = NULL; \
+      while (data_items_walk(&tags, &tmp) > 0) \
+        if (strstr(buf, tmp) == NULL) \
+          match = false; \
+      \
+      if (match) \
+        _handle_tag_lst((str), NULL); \
+    } \
+}
+
 void
 _handle_search_by_tag(const char *path, const char *str)
 {
@@ -83,7 +111,13 @@ _handle_search_by_tag(const char *path, const char *str)
   char *tmp = NULL;
   char *buf = NULL;
   size_t buf_size = 1024;
+  ssize_t attr_size = 0;
   struct stat st;
+  bool match = false;
+  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR | FTS_NOSTAT;
+  FTS *fts = NULL;
+  FTSENT *ftsent = NULL;
+  char *fts_argv[2];
 
   memset(&tags, 0, sizeof(data_t));
   CALLOC(buf, 1, buf_size * sizeof(char));
@@ -93,32 +127,23 @@ _handle_search_by_tag(const char *path, const char *str)
   stat(path, &st);
 
   if (S_ISREG(st.st_mode))
+    FILE_CHECK(path);
+
+  if (S_ISDIR(st.st_mode))
     {
-      errno = 0;
-      while (getxattr(path, XATTR_TAGS, buf, buf_size - 1) < 0 && errno == ERANGE)
-        {
-          buf_size *= 2;
-          tmp = buf;
-          REALLOC(buf, tmp, buf_size);
-          errno = 0;
-        }
+      fts_argv[0] = (char * const) path; /* FIXME: hack */
+      fts_argv[1] = NULL;
+      if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
+        msg(msg_error, "Can't open directory");
+      while ((ftsent = fts_read(fts)) != NULL)
+        if (ftsent->fts_info & (FTS_DP | FTS_D) ||
+            ftsent->fts_info & FTS_F)
+          FILE_CHECK(ftsent->fts_path);
 
-      if (errno == 0)
-        {
-          while (data_items_walk(&tags, &tmp) > 0)
-            if (strstr(buf, tmp) == NULL)
-              goto done;
-
-          /* If loop above completes without return, this means,  *
-           * that 'buf' contain all tokens from 'tags'. Print it. */
-          _handle_tag_lst(path, NULL);
-        }
+      fts_close(fts);
     }
 
-  /* TODO: ftw for dir */
-
-  done:
-    free(buf);
+  free(buf);
 }
 
 int
