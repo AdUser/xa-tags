@@ -10,15 +10,17 @@ make install # optional, not works yet
 
 You may change cmake options either by specifying it manually as cmake args, or by ccmake, ncurses util, usially shipped with cmake. A few axamples:
 
-  cmake -DOPT_WITHOUT_GETTEXT=ON .
+  cmake -DOPT_WITHOUT_GETTEXT=ON -D MODE=SMART_TOOL .
 
   ccmake .
   <change anything>
   cmake .
 
-Each option begins with "OPT_" prefix. Complete list of available options you may asquire by folloving command:
+Each option begins with "OPT_" prefix. Complete list of available options you may asquire by following command:
 
   grep OPTION CMakeLists.txt
+
+A most important build option is 'MODE'. It defines all other capabilities of tool. Se more details about them in in 'README' file.
 
 ===== Theory =====
 Amount of data, that you can store in xattr is very limited on most common linux fs.
@@ -41,5 +43,5 @@ Basically, to get everything works, make sure in following:
 
 ===== Identifier generation rules =====
 
-UUID of each file is a some random number. It is used in any mode other than "dumb_tool". Values of identifier is between 1 and 2^64. By printable form, identifier should be hex-encoded and padded to 16 chars.
+UUID of each file is a some random number (as base) + sequental counter. It is used in any mode other than "dumb_tool". Values of identifier is between 1 and 2^64. By printable form, identifier should be hex-encoded and padded to 16 chars.
 

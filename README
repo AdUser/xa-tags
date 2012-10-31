@@ -4,4 +4,9 @@ Designed and written with eye on high portability, small resource consumption an
 
 Four operational modes planned: two as standalone tool and two as client-server.
 
+Standalone modes:
+  * DUMB_TOOL     - requires only xattr support on your fs, stores all data inside inodes.
+  * SMART_TOOL    - requires sqlite also. Stores tags in database and files' id in inodes.
+                    Not suffer from inode size limitation.
+
 See 'INSTALL' file and 'doc/' directory for more details.
