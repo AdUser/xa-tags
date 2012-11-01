@@ -16,6 +16,11 @@
 
 #include "common.h"
 
+#define  DUMB_TOOL   1
+#define SMART_TOOL   2
+#define  DUMB_CLIENT 3
+#define SMART_CLIENT 4
+
 void
 usage(int exitcode)
 {
@@ -32,15 +37,11 @@ usage(int exitcode)
   #include "client/usage_search.inc.c"
 #endif
 
+  fprintf(stdout, "\n");
   exit(exitcode);
 }
 
 enum loglevel verbosity = log_normal;
-
-#define  DUMB_TOOL   1
-#define SMART_TOOL   2
-#define  DUMB_CLIENT 3
-#define SMART_CLIENT 4
 
 #if   MODE ==  DUMB_TOOL
   #include "client/dumb_tool.inc.c"
