@@ -137,7 +137,7 @@ file_uuid_get(const char *path, uuid_t *uuid)
       return 2;
     }
 
-  uuid_parse(uuid, buf);
+  uuid_id_parse(uuid, buf);
 
   return 0;
 }
@@ -150,7 +150,7 @@ int
 file_uuid_set(const char *path, uuid_t *uuid)
 {
   errno = 0;
-  setxattr(path, XATTR_UUID, uuid_printf(uuid), UUID_CHAR_LEN, 0);
+  setxattr(path, XATTR_UUID, uuid_id_printf(uuid), UUID_CHAR_LEN, 0);
 
   if (errno != 0)
     {

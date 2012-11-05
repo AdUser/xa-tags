@@ -44,7 +44,7 @@ uuid_validate(char *uuid)
  * 1 - error
  */
 inline int
-uuid_parse(uuid_t *uuid, char *str)
+uuid_id_parse(uuid_t *uuid, char *str)
 {
   uint8_t i = 0;
   ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
@@ -91,7 +91,7 @@ uuid_generate(uuid_t *uuid, const char *path)
 
 /** returns allocated string or NULL on error */
 char *
-uuid_printf(uuid_t *uuid)
+uuid_id_printf(uuid_t *uuid)
 {
   static char buf[UUID_CHAR_LEN + 1];
 
