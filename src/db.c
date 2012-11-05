@@ -71,8 +71,10 @@ db_open(void)
         msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
       if (sqlite3_exec(db_conn, SQL_DB_CREATE_COMMON, NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILCREATE, err);
+#ifdef UNIQ_TAGS_LIST
       if (sqlite3_exec(db_conn, SQL_DB_CREATE_UNIQ,   NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILCREATE, err);
+#endif
       if (sqlite3_exec(db_conn, SQL_DB_INIT,   NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, MSG_D_FAILCREATE, err);
       FREE(err);
