@@ -21,29 +21,6 @@
  * 1 - error
  */
 int
-uuid_validate(char *uuid)
-{
-  int i = 0;
-  char c = '\0';
-
-  ASSERT(uuid != NULL, MSG_M_NULLPTR);
-
-  for (i = 0; i < UUID_CHAR_LEN; i++)
-    if (!isxdigit(uuid[i]))
-      return 1;
-
-  c = uuid[UUID_CHAR_LEN]; /* char right behind uuid */
-  if (!(isblank(c) || c == '\0'))
-    return 1;
-
-  return 0;
-}
-
-/** return values:
- * 0 - all ok
- * 1 - error
- */
-int
 uuid_generate(uuid_t *uuid, const char *path)
 {
   const char *p = NULL;
@@ -70,13 +47,36 @@ uuid_generate(uuid_t *uuid, const char *path)
  * 0 - all ok
  * 1 - error
  */
+int
+uuid_id_validate(char *uuid)
+{
+  int i = 0;
+  char c = '\0';
+
+  ASSERT(uuid != NULL, MSG_M_NULLPTR);
+
+  for (i = 0; i < UUID_CHAR_LEN; i++)
+    if (!isxdigit(uuid[i]))
+      return 1;
+
+  c = uuid[UUID_CHAR_LEN]; /* char right behind uuid */
+  if (!(isblank(c) || c == '\0'))
+    return 1;
+
+  return 0;
+}
+
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ */
 inline int
 uuid_id_parse(uuid_t *uuid, char *str)
 {
   uint8_t i = 0;
   ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
 
-  if (uuid_validate(str))
+  if (uuid_id_validate(str))
     return 1;
 
   uuid->id = 0;

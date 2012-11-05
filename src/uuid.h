@@ -13,10 +13,10 @@ typedef struct uuid_t
 
 /** API functions */
 /** common functions */
-int uuid_validate(char *uuid);
 int uuid_generate(uuid_t *uuid, const char *path);
 
 /** specific parts of uuid */
 /* id */
+int uuid_id_validate(char *uuid);
 int uuid_id_parse(uuid_t *uuid, char *str);
 char *uuid_id_printf(uuid_t *uuid);

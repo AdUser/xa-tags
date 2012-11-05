@@ -130,7 +130,7 @@ file_uuid_get(const char *path, uuid_t *uuid)
       return 2;
     }
 
-  if (uuid_validate(buf) == 1)
+  if (uuid_id_validate(buf) == 1)
     {
       msg(msg_warn, "%s -- %s\n", path, MSG_I_BADUUID);
       memset(uuid, 0, sizeof(uuid_t));

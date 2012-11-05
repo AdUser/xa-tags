@@ -57,7 +57,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
 int
 _validate_uuid(char *uuid, data_t *errors)
 {
-  if (uuid_validate(uuid) == 1)
+  if (uuid_id_validate(uuid) == 1)
     {
       _add_val_error(errors, MSG_I_BADUUID, uuid, UUID_CHAR_LEN);
       return 1;
