@@ -43,29 +43,6 @@ uuid_validate(char *uuid)
  * 0 - all ok
  * 1 - error
  */
-inline int
-uuid_id_parse(uuid_t *uuid, char *str)
-{
-  uint8_t i = 0;
-  ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
-
-  if (uuid_validate(str))
-    return 1;
-
-  uuid->id = 0;
-  for (i = 0; i < UUID_CHAR_LEN; i++)
-    {
-      uuid->id <<= 4;
-      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : str[i] - 'A' + 0xA;
-    }
-
-  return 0;
-}
-
-/** return values:
- * 0 - all ok
- * 1 - error
- */
 int
 uuid_generate(uuid_t *uuid, const char *path)
 {
@@ -89,7 +66,29 @@ uuid_generate(uuid_t *uuid, const char *path)
   return 0;
 }
 
-/** returns allocated string or NULL on error */
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ */
+inline int
+uuid_id_parse(uuid_t *uuid, char *str)
+{
+  uint8_t i = 0;
+  ASSERT(uuid != NULL && str != NULL, MSG_M_NULLPTR);
+
+  if (uuid_validate(str))
+    return 1;
+
+  uuid->id = 0;
+  for (i = 0; i < UUID_CHAR_LEN; i++)
+    {
+      uuid->id <<= 4;
+      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : str[i] - 'A' + 0xA;
+    }
+
+  return 0;
+}
+
 char *
 uuid_id_printf(uuid_t *uuid)
 {
