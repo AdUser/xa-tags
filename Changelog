@@ -1,0 +1,18 @@
+2012-11-05 v0.2:
+  Relese goal: make it work already!
+  Main changes and added features:
+    * API cleanup
+    * debugging and testing
+    * added search in 'DUMB_TOOL' mode
+    * make both modes usable
+      * DUMB_TOOL considered stable
+      * SMART_TOOL still needs a lot of work
+    * changed uuid format
+
+2012-08-28 v0.1: first public release
+  Release goal: prepare for work
+  Main changes and added features:
+    * beta of 'DUMB_TOOL' mode
+    * beta of 'SMART_TOOL' mode
+    * mostly all service functions
+    * a lot of documentation
