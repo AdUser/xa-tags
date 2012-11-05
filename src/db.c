@@ -338,9 +338,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   ret = sqlite3_step(stmt);
   if (ret == SQLITE_DONE)
     {
-      p = uuid_printf(uuid);
-      msg(msg_warn, MSG_D_NOUUID, p);
-      FREE(p);
+      msg(msg_warn, MSG_D_NOUUID, uuid_printf(uuid));
       return 1;
     }
 

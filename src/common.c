@@ -177,13 +177,8 @@ size_t
 snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)
 {
   size_t len = 0;
-  char *p = NULL;
 
-  p = uuid_printf(uuid);
-
-  len = snprintf(buf, buf_len, "%s %s", p, path);
-
-  FREE(p);
+  len = snprintf(buf, buf_len, "%s %s", uuid_printf(uuid), path);
 
   return len;
 }

@@ -149,14 +149,8 @@ file_uuid_get(const char *path, uuid_t *uuid)
 int
 file_uuid_set(const char *path, uuid_t *uuid)
 {
-  char *p = NULL;
-
-  p = uuid_printf(uuid);
-
   errno = 0;
-  setxattr(path, XATTR_UUID, p, UUID_CHAR_LEN, 0);
-
-  FREE(p);
+  setxattr(path, XATTR_UUID, uuid_printf(uuid), UUID_CHAR_LEN, 0);
 
   if (errno != 0)
     {

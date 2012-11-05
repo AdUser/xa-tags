@@ -93,16 +93,13 @@ uuid_generate(uuid_t *uuid, const char *path)
 char *
 uuid_printf(uuid_t *uuid)
 {
-  size_t len = UUID_CHAR_LEN + 1;
-  char *p = NULL;
+  static char buf[UUID_CHAR_LEN + 1];
 
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
-  CALLOC(p, len, sizeof(char));
-
-  snprintf(p, len, "%08X%08X",
+  snprintf(buf, UUID_CHAR_LEN + 1, "%08X%08X",
               (uint32_t) (uuid->id >> 32),
               (uint32_t) (uuid->id & 0xFFFFFFFF));
 
-  return p;
+  return buf;
 }
