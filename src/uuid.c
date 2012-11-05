@@ -97,7 +97,7 @@ uuid_printf(uuid_t *uuid)
 
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
-  snprintf(buf, UUID_CHAR_LEN + 1, "%08X%08X",
+  snprintf(buf, UUID_CHAR_LEN + 1, UUID_FORMAT,
               (uint32_t) (uuid->id >> 32),
               (uint32_t) (uuid->id & 0xFFFFFFFF));
 

@@ -1,5 +1,5 @@
 #define UUID_CHAR_LEN 16 /* sizeof(uint64_t) * 2 */
-#define UUID_FORMAT "%016llX"
+#define UUID_FORMAT "%08X%08X" /* base, counter */
 
 typedef struct uuid_t
   {
