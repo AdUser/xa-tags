@@ -319,7 +319,6 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
   int ret = 0;
-  char *p = NULL;
   data_t tmp;
 
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
@@ -349,8 +348,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
       return 1;
     }
 
-  p = (char *) sqlite3_column_text(stmt, 3);
-  data_parse_tags(&tmp, p);
+  data_parse_tags(&tmp, (char *) sqlite3_column_text(stmt, 3));
   data_merge(tags, &tmp);
   data_clear(&tmp);
 
