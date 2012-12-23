@@ -151,7 +151,7 @@ db_file_add(const char *path, uuid_t *new_uuid)
 }
 
 int
-db_file_update(char *path, uuid_t *new_uuid)
+db_file_update(const char *path, uuid_t *uuid)
 {
   sqlite3_stmt *stmt = NULL;
   char *str = NULL;
@@ -166,16 +166,16 @@ db_file_update(char *path, uuid_t *new_uuid)
 
   str = dirname(path);
   len = strlen(str);
-  new_uuid->dname = crc16(str, len);
+  uuid->dname = crc16(str, len);
 
   str = &path[len];
   len = strlen(str);
-  new_uuid->fname = crc16(str, len);
+  uuid->fname = crc16(str, len);
 
-  sqlite3_bind_int(stmt, 1, new_uuid->dname);
-  sqlite3_bind_int(stmt, 2, new_uuid->fname);
+  sqlite3_bind_int(stmt, 1, uuid->dname);
+  sqlite3_bind_int(stmt, 2, uuid->fname);
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
-  sqlite3_bind_int64(stmt, 4, (sqlite3_int64) new_uuid->id);
+  sqlite3_bind_int64(stmt, 4, (sqlite3_int64) uuid->id);
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {

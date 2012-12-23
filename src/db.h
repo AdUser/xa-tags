@@ -74,7 +74,7 @@ char *db_find_path_user(void);
 char *db_find_path_system(void);
 
 int db_file_add(const char *path, uuid_t *new_uuid);
-int db_file_update(char *path, uuid_t *new_uuid);
+int db_file_update(const char *path, uuid_t *uuid);
 int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, data_t *results);
 int db_file_search_path(const char *str, data_t *results);
