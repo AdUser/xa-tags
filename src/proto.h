@@ -19,6 +19,7 @@ typedef enum req_op_t
     /* FILE operations */
     OP_F_ADD  = 1,
     OP_F_DEL,
+    OP_F_GET,
     OP_F_SEARCH,
     OP_F_UPDATE,
 

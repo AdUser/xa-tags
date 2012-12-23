@@ -12,6 +12,8 @@
   "INSERT INTO " MAIN_TABLE " (crc_dname, crc_fname, filename) VALUES (?, ?, ?)"
 #define SQL_F_DEL \
   "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
+#define SQL_F_GET \
+  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE file_id = ?"
 #define SQL_F_SEARCH \
   "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ?"
 #define SQL_F_UPDATE \
