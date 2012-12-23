@@ -217,6 +217,37 @@ db_file_del(const uuid_t *uuid)
 }
 
 int
+db_file_get(const uuid_t *uuid, data_t *results)
+{
+  sqlite3_stmt *stmt = NULL;
+  size_t len = 0;
+  int ret = 0;
+
+  len = strlen(SQL_F_GET);
+  if (sqlite3_prepare_v2(db_conn, SQL_F_GET, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+
+  while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
+    data_item_add(results, (char *) sqlite3_column_text(stmt, 0), 0);
+
+  if (ret != SQLITE_DONE)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
+      return 1;
+    }
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
+
+int
 db_file_search_path(const char *str, data_t *results)
 {
   sqlite3_stmt *stmt = NULL;

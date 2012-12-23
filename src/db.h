@@ -13,7 +13,7 @@
 #define SQL_F_DEL \
   "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
 #define SQL_F_GET \
-  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE file_id = ?"
+  "SELECT filename FROM " MAIN_TABLE " WHERE file_id = ?"
 #define SQL_F_SEARCH \
   "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ?"
 #define SQL_F_UPDATE \
@@ -76,6 +76,7 @@ char *db_find_path_system(void);
 int db_file_add(const char *path, uuid_t *new_uuid);
 int db_file_update(char *path, uuid_t *new_uuid);
 int db_file_del(const uuid_t *uuid);
+int db_file_get(const uuid_t *uuid, data_t *results);
 int db_file_search_path(const char *str, data_t *results);
 int db_file_search_tag(char *str, data_t *results);
 
