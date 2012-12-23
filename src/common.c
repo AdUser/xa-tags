@@ -174,7 +174,7 @@ mkdir_r(const char *path, mode_t mode)
 
 /** custom printf's */
 size_t
-snprintf_m_uuid_file(char *buf, size_t buf_len, uuid_t *uuid, const char *path)
+snprintf_m_uuid_file(char *buf, size_t buf_len, const uuid_t *uuid, const char *path)
 {
   size_t len = 0;
 

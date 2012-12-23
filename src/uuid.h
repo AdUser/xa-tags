@@ -19,4 +19,4 @@ int uuid_generate(uuid_t *uuid, const char *path);
 /* id */
 int uuid_id_validate(char *uuid);
 int uuid_id_parse(uuid_t *uuid, char *str);
-char *uuid_id_printf(uuid_t *uuid);
+char *uuid_id_printf(const uuid_t *uuid);

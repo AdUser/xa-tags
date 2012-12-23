@@ -90,7 +90,7 @@ uuid_id_parse(uuid_t *uuid, char *str)
 }
 
 char *
-uuid_id_printf(uuid_t *uuid)
+uuid_id_printf(const uuid_t *uuid)
 {
   static char buf[UUID_CHAR_LEN + 1];
 
