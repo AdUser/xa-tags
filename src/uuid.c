@@ -23,22 +23,14 @@
 int
 uuid_generate(uuid_t *uuid, const char *path)
 {
-  const char *p = NULL;
-  size_t len = 0;
-
   ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
 
   uuid->id = 0; /* generated automatically after insert */
 
-  if ((p = strrchr(path, '/')) == NULL)
+  if (strrchr(path, '/') == NULL)
     return 1; /* path MUST contain at least one slash */
 
-  p += 1; /* "/path/to/some/file" */
-          /*              --^     */
-  len = p - path;
-  uuid->dname = crc16(path, len);
-  len = strlen(p);
-  uuid->fname = crc16(p, len);
+  get_path_checksums(uuid, path);
 
   return 0;
 }

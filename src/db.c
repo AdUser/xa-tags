@@ -154,7 +154,6 @@ int
 db_file_update(const char *path, uuid_t *uuid)
 {
   sqlite3_stmt *stmt = NULL;
-  char *str = NULL;
   size_t len = 0;
 
   len = strlen(SQL_F_UPDATE);
@@ -164,13 +163,7 @@ db_file_update(const char *path, uuid_t *uuid)
       return 1;
     }
 
-  str = dirname(path);
-  len = strlen(str);
-  uuid->dname = crc16(str, len);
-
-  str = &path[len];
-  len = strlen(str);
-  uuid->fname = crc16(str, len);
+  get_path_checksums(uuid, path);
 
   sqlite3_bind_int(stmt, 1, uuid->dname);
   sqlite3_bind_int(stmt, 2, uuid->fname);
