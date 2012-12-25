@@ -35,6 +35,7 @@ usage(int exitcode)
   #include "client/usage_basic.inc.c"
 #if MODE >= SMART_TOOL
   #include "client/usage_search.inc.c"
+  #include "client/usage_update.inc.c"
 #endif
 
   fprintf(stdout, "\n");

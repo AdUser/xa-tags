@@ -197,6 +197,31 @@ _handle_file_search_path(const char *unused, const char *substr)
   printf("%s\n", results.buf);
 }
 
+/* update operations */
+void
+_handle_file_update(const char *path, const char *unused)
+{
+  uuid_t uuid = { 0, 0, 0 };
+  data_t files;
+
+  memset(&files, 0, sizeof(data_t));
+
+  if (file_uuid_get(path, &uuid) > 0)
+    return;
+
+  if (db_file_get(&uuid, &files) > 0)
+    return;
+
+  if (files.items == 0)
+    {
+      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(&uuid));
+      return;
+    }
+
+  if (strncmp(files.buf, path, PATH_MAX) != 0)
+    db_file_update(path, &uuid);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -215,7 +240,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "hcl" "a:d:s:" "f:F:")) != -1)
+  while ((opt = getopt(argc, argv, "hcl" "a:d:s:" "f:F:" "u")) != -1)
     {
       op = opt;
       str = optarg;
@@ -228,6 +253,7 @@ main(int argc, char **argv)
           case 'l' : handler = &_handle_tag_lst; break;
           case 'f' : handler = &_handle_file_search_tag;  break;
           case 'F' : handler = &_handle_file_search_path; break;
+          case 'u' : handler = &_handle_file_update; break;
           case 'h' : usage(EXIT_SUCCESS); break;
           default  : usage(EXIT_FAILURE); break;
         }
@@ -270,6 +296,7 @@ main(int argc, char **argv)
       case 's' :
       case 'c' :
       case 'l' :
+      case 'u' :
         if (files.items < 1)
           usage(EXIT_FAILURE);
         while ((ret = data_items_walk(&files, &item)) > 0)
