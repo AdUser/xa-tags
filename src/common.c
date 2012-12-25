@@ -71,6 +71,22 @@ jhash(char *key, size_t len)
 }
 /* -----------------8<------------------------ */
 
+void
+get_path_checksums(uuid_t * const uuid, const char *path)
+{
+  const char *p = NULL;
+
+  ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
+
+  if ((p = strrchr(path, '/')) == NULL)
+    return;
+
+  p += 1; /* "/path/to/some/file" */
+          /*              --^     */
+  uuid->dname = crc16(path, p - path);
+  uuid->fname = crc16(p, strlen(p));
+}
+
 /** string functions */
 
 /** returns allocated string with normalized path
