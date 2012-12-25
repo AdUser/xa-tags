@@ -207,6 +207,7 @@ main(int argc, char **argv)
   char op = '\0';
   char *str  = NULL;
   char *item = NULL;
+  char buf[PATH_MAX];
   void (*handler)(const char *, const char *) = NULL;
 
   memset(&files, 0, sizeof(data_t));
@@ -238,7 +239,16 @@ main(int argc, char **argv)
       if (stat(argv[optind], &st) == 0)
         {
           item = realpath(argv[optind], NULL);
-          data_item_add(&files, item, 0);
+          ret = strlen(item);
+
+          if (ret > 0) ret--;
+
+          if (S_ISDIR(st.st_mode))
+            snprintf(buf, PATH_MAX, "%s%c", item, (item[ret] != '/') ? '/' : '\0');
+          else
+            snprintf(buf, PATH_MAX, "%s", item);
+
+          data_item_add(&files, buf, 0);
           FREE(item);
         }
       else
