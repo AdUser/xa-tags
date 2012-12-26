@@ -119,6 +119,7 @@ file_uuid_get(const char *path, uuid_t *uuid)
 
   ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
 
+  errno = 0;
   getxattr(path, XATTR_UUID, buf, len);
   buf[len - 1] = '\0';
   if (errno != 0 && errno == ENOATTR)
