@@ -198,45 +198,58 @@ _handle_file_search_path(const char *unused, const char *substr)
 }
 
 /* update operations */
+
+/** return codes:
+ * 0 - all ok
+ * 1 - error
+ */
+int
+_real_file_update(const char *path, uuid_t * uuid, struct stat *st)
+{
+  uuid_t uuid_linked = { 0, 0, 0 };
+  data_t files;
+
+  memset(&files, 0, sizeof(data_t));
+
+  if (db_file_get(uuid, &files) > 0)
+    return 1;
+
+  if (files.items == 0)
+    {
+      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(uuid));
+      return 1;
+    }
+
+  stat(files.buf, st);
+
+  if (st->st_nlink == 1)
+    if (strncmp(files.buf, path, PATH_MAX) != 0)
+      db_file_update(path, uuid);
+
+  if (st->st_nlink > 1)
+    {
+      if ((file_uuid_get(files.buf, &uuid_linked) == 0)
+          && (uuid_linked.id == uuid->id))
+        msg(msg_warn, MSG_D_LINKED, path, files.buf);
+      else
+        db_file_update(path, uuid);
+    }
+
+  data_clear(&files);
+
+  return 0;
+}
+
 void
 _handle_file_update(const char *path, const char *unused)
 {
-  uuid_t uuid = { 0, 0, 0 };
-  uuid_t uuid_linked = { 0, 0, 0 };
-  data_t files;
   struct stat st;
-
-  memset(&files, 0, sizeof(data_t));
+  uuid_t uuid = { 0, 0, 0 };
 
   if (file_uuid_get(path, &uuid) > 0)
     return;
 
-  if (db_file_get(&uuid, &files) > 0)
-    return;
-
-  if (files.items == 0)
-    {
-      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(&uuid));
-      return;
-    }
-
-  stat(files.buf, &st);
-
-  if (st.st_nlink == 1)
-    if (strncmp(files.buf, path, PATH_MAX) != 0)
-      db_file_update(path, &uuid);
-
-  if (st.st_nlink > 1)
-    {
-      if ((file_uuid_get(files.buf, &uuid_linked) == 0)
-          && (uuid_linked.id == uuid.id))
-        {
-          msg(msg_warn, MSG_D_LINKED, path, files.buf);
-          return;
-        }
-      db_file_update(path, &uuid);
-    }
-
+  _real_file_update(path, &uuid, &st);
 }
 
 int
