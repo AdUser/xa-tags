@@ -240,7 +240,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "hcl" "a:d:s:" "f:F:" "u")) != -1)
+  while ((opt = getopt(argc, argv, "vhq" "cl" "a:d:s:" "f:F:" "u")) != -1)
     {
       op = opt;
       str = optarg;
@@ -254,6 +254,8 @@ main(int argc, char **argv)
           case 'f' : handler = &_handle_file_search_tag;  break;
           case 'F' : handler = &_handle_file_search_path; break;
           case 'u' : handler = &_handle_file_update; break;
+          case 'v' : verbosity = log_extra; break;
+          case 'q' : verbosity = log_quiet; break;
           case 'h' : usage(EXIT_SUCCESS); break;
           default  : usage(EXIT_FAILURE); break;
         }

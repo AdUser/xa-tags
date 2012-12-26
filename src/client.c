@@ -32,6 +32,7 @@ usage(int exitcode)
   "Usage: %s [options] <file> [<file>]\n"
   "\n", PROGNAME);
 
+  #include "client/usage_common.inc.c"
   #include "client/usage_basic.inc.c"
 #if MODE >= SMART_TOOL
   #include "client/usage_search.inc.c"

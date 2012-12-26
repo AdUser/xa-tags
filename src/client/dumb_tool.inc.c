@@ -162,7 +162,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "hcl" "a:d:s:f:")) != -1)
+  while ((opt = getopt(argc, argv, "vqh" "cl" "a:d:s:f:")) != -1)
     switch (opt)
       {
         case 'a' : handler = &_handle_tag_add; tags = optarg; break;
@@ -171,6 +171,8 @@ main(int argc, char **argv)
         case 'c' : handler = &_handle_tag_clr; break;
         case 'l' : handler = &_handle_tag_lst; break;
         case 'f' : handler = &_handle_search_by_tag; tags = optarg; break;
+        case 'v' : verbosity = log_extra; break;
+        case 'q' : verbosity = log_quiet; break;
         case 'h' : usage(EXIT_SUCCESS); break;
         default  : usage(EXIT_FAILURE); break;
       }

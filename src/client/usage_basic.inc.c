@@ -1,6 +1,5 @@
   fprintf(stdout,
   "Basic operations:\n"
-  "  -h          This help.\n"
   "  -a <str>    Add tag.\n"
   "  -d <str>    Delete tag.\n"
   "  -c          Delete all tags (clear).\n"
