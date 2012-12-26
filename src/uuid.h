@@ -1,7 +1,5 @@
 #define UUID_CHAR_LEN 16 /* sizeof(uint64_t) * 2 */
 #define UUID_FORMAT "%08X%08X" /* base, counter */
-#define HASH_CHAR_LEN  8 /* sizeof(uint32_t) * 2*/
-#define HASH_FORMAT "%04X%04X" /* dirname csum, filename csum */
 
 typedef struct uuid_t
   {

@@ -49,7 +49,6 @@
 #define VERSION_MINOR 2
 
 #define XATTR_UUID  "user.xat.uuid"
-#define XATTR_HASH  "user.xat.hash"
 #define XATTR_TAGS  "user.xat.tags"
 
 /** hash & checksum functions */
