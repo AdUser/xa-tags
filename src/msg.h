@@ -74,3 +74,5 @@
 
 #define MSG_D_NOUUID     \
   _("No such uuid: %s.\n")
+#define MSG_D_LINKED     \
+  _("Hardlinked file, ignored: %s (%s).\n")
