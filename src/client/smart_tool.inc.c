@@ -150,6 +150,21 @@ _handle_tag_lst(const char *path, const char *unused)
   data_clear(&tags);
 }
 
+void
+_handle_tag_search(const char *unused, const char *tag)
+{
+  char *p = NULL;
+  data_t results;
+
+  memset(&results, 0x0, sizeof(data_t));
+
+  db_tags_find(tag, &results);
+
+  if (results.items > 0)
+    while(data_items_walk(&results, &p) > 0)
+      printf("%s\n", p);
+}
+
 /* extended operations */
 void
 _handle_file_search_tag(const char *unused, const char *str)
@@ -273,7 +288,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "vhq" "cl" "a:d:s:" "f:F:" "u")) != -1)
+  while ((opt = getopt(argc, argv, "vhq" "cl" "a:d:s:" "f:F:" "T:" "u")) != -1)
     {
       op = opt;
       str = optarg;
@@ -286,6 +301,7 @@ main(int argc, char **argv)
           case 'l' : handler = &_handle_tag_lst; break;
           case 'f' : handler = &_handle_file_search_tag;  break;
           case 'F' : handler = &_handle_file_search_path; break;
+          case 'T' : handler = &_handle_tag_search; break;
           case 'u' : handler = &_handle_file_update; break;
           case 'v' : verbosity = log_extra; break;
           case 'q' : verbosity = log_quiet; break;
@@ -324,6 +340,9 @@ main(int argc, char **argv)
     {
       case 'f' :
       case 'F' :
+#ifdef UNIQ_TAGS_LIST
+      case 'T' :
+#endif
         handler(NULL, str);
         break;
       case 'a' :
