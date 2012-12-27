@@ -356,6 +356,8 @@ main(int argc, char **argv)
         while ((ret = data_items_walk(&files, &item)) > 0)
           handler(item, str);
         break;
+      default :
+        usage(EXIT_FAILURE);
     }
 
   data_clear(&files);
