@@ -82,7 +82,7 @@ int db_file_search_tag(char *str, data_t *results);
 
 int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(uuid_t *uuid, data_t *tags);
-int db_tags_find(char *str, data_t *results);
+int db_tags_find(const char *str, data_t *results);
 
 #ifdef UNIQ_TAGS_LIST
 int db_tag_add_uniq(data_t *tags);

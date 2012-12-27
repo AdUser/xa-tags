@@ -461,9 +461,48 @@ db_tag_add_uniq(data_t *tags)
   return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
-/*
-int db_tags_find(char *str, data_t *results);
-*/
+int
+db_tags_find(const char *str, data_t *results)
+{
+  sqlite3_stmt *stmt = NULL;
+  char buf[PATH_MAX]; /* not exactly 'path', but size should be reasonable */
+  char *p = NULL;
+  size_t len = 0;
+  int ret = 0;
+
+  ASSERT(str != NULL && results != NULL, MSG_M_NULLPTR);
+
+  len = strlen(SQL_T_FIND);
+  if (sqlite3_prepare_v2(db_conn, SQL_T_FIND, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  strncpy(buf, str, PATH_MAX);
+  for (p = buf; *p != '\0'; p++)
+    if (*p == '*') *p = '%';
+
+  sqlite3_bind_text(stmt, 1, buf, len, SQLITE_TRANSIENT);
+
+  while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
+    {
+      len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
+      data_item_add(results, buf, len);
+    }
+
+  if (ret != SQLITE_DONE)
+    {
+      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      sqlite3_finalize(stmt);
+      data_clear(results);
+      return 1;
+    }
+
+  sqlite3_finalize(stmt);
+
+  return 0;
+}
 
 void
 db_commit(void)
