@@ -224,13 +224,16 @@ _real_file_update(const char *path, uuid_t * uuid, struct stat *st)
 
   if (st->st_nlink == 1)
     if (strncmp(files.buf, path, PATH_MAX) != 0)
-      db_file_update(path, uuid);
+      {
+        db_file_update(path, uuid);
+        msg(msg_info, MSG_F_UPDATED, path);
+      }
 
   if (st->st_nlink > 1)
     {
       if ((file_uuid_get(files.buf, &uuid_linked) == 0)
           && (uuid_linked.id == uuid->id))
-        msg(msg_warn, MSG_D_LINKED, path, files.buf);
+        msg(msg_warn, MSG_F_LINKED, path, files.buf);
       else
         db_file_update(path, uuid);
     }

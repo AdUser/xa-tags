@@ -60,6 +60,14 @@
 #define MSG_U_HOMEUNSET  \
   _("$HOME variable unset, i don't know, where to look for database.")
 
+/* file handle messages */
+#define MSG_F_UPDATED    \
+  _("File updated: %s")
+#define MSG_F_LINKED     \
+  _("Hardlinked file, ignored: %s (%s)\n")
+#define MSG_F_FAILOPEN   \
+  _("Can't open: %s\n")
+
 /** database errors */
 #define MSG_D_FAILOPEN \
   _("Failed to open database: %s\n")
@@ -74,5 +82,3 @@
 
 #define MSG_D_NOUUID     \
   _("No such uuid: %s.\n")
-#define MSG_D_LINKED     \
-  _("Hardlinked file, ignored: %s (%s).\n")

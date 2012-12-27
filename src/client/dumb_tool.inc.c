@@ -133,8 +133,10 @@ _handle_search_by_tag(const char *path, const char *str)
     {
       fts_argv[0] = (char * const) path; /* FIXME: hack */
       fts_argv[1] = NULL;
+
       if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
-        msg(msg_error, "Can't open directory");
+        msg(msg_error, MSG_F_FAILOPEN, path);
+
       while ((ftsent = fts_read(fts)) != NULL)
         if (ftsent->fts_info & (FTS_DP | FTS_D) ||
             ftsent->fts_info & FTS_F)
