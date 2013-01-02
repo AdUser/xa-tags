@@ -273,6 +273,53 @@ _handle_file_update(const char *path, const char *unused)
   _real_file_update(path, &uuid, &st);
 }
 
+void
+_handle_file_update_recursive(const char *path, const char *unused)
+{
+  struct stat st;
+  uuid_t uuid = { 0, 0, 0 };
+  char buf[PATH_MAX];
+  /* fts-related variables */
+  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR;
+  FTS *fts = NULL;
+  FTSENT *ftsent = NULL;
+  char *fts_argv[2];
+
+  stat(path, &st);
+
+  if (S_ISREG(st.st_mode))
+    {
+      if (file_uuid_get(path, &uuid) == 0)
+        _real_file_update(path, &uuid, &st);
+      return;
+    }
+
+  if (!S_ISDIR(st.st_mode))
+    return;
+
+  fts_argv[0] = (char * const) path;
+  fts_argv[1] = NULL;
+
+  if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
+    msg(msg_error, MSG_F_FAILOPEN, path);
+
+  while ((ftsent = fts_read(fts)) != NULL)
+    {
+      if (file_uuid_get(ftsent->fts_path, &uuid) > 0)
+         continue;
+
+      if (ftsent->fts_info & FTS_F)
+        _real_file_update(ftsent->fts_path, &uuid, ftsent->fts_statp);
+
+      if (ftsent->fts_info & (FTS_DP | FTS_D))
+        {
+          snprintf(buf, PATH_MAX, "%s/", ftsent->fts_path);
+          _real_file_update(buf, &uuid, ftsent->fts_statp);
+        }
+    }
+  fts_close(fts);
+}
+
 int
 main(int argc, char **argv)
 {
