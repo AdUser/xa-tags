@@ -2,16 +2,18 @@ void
 _handle_tag_add(const char *path, const char *str)
 {
   uuid_t uuid = { 0, 0, 0 };
-  data_t add_tags;
-  data_t tags;
+  data_t sel_tags; /* selected tags */
+  data_t all_tags; /* resulting tags set */
+  data_t tmp_tags; /* temporary tags set */
 
   ASSERT(path != NULL && str != NULL, MSG_M_NULLPTR);
 
   if (strlen(str) == 0)
     return; /* nothing to do*/
 
-  memset(&add_tags, 0, sizeof(data_t));
-  memset(&tags,     0, sizeof(data_t));
+  memset(&sel_tags, 0, sizeof(data_t));
+  memset(&all_tags, 0, sizeof(data_t));
+  memset(&tmp_tags, 0, sizeof(data_t));
 
   if (file_uuid_get(path, &uuid) > 0)
     {
@@ -20,21 +22,23 @@ _handle_tag_add(const char *path, const char *str)
       file_uuid_set(path, &uuid);
     }
 
-  db_tags_get(&uuid, &tags);
+  db_tags_get(&uuid, &all_tags);
 #ifdef INLINE_TAGS
-  file_tags_get(path, &tags);
+  file_tags_get(path, &tmp_tags);
+  data_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_parse_tags(&add_tags, str);
-  data_merge(&tags, &add_tags);
+  data_parse_tags(&sel_tags, str);
+  data_merge(&all_tags, &sel_tags);
 
-  db_tags_set(&uuid, &tags);
+  db_tags_set(&uuid, &all_tags);
 #ifdef INLINE_TAGS
-  file_tags_set(path, &tags);
+  file_tags_set(path, &all_tags);
 #endif
 
-  data_clear(&add_tags);
-  data_clear(&tags);
+  data_clear(&sel_tags);
+  data_clear(&all_tags);
+  data_clear(&tmp_tags);
 }
 
 void
@@ -42,16 +46,18 @@ _handle_tag_del(const char *path, const char *str)
 {
   char *item = NULL;
   uuid_t uuid;
-  data_t tags;
-  data_t del_tags;
+  data_t sel_tags; /* selected tags */
+  data_t all_tags; /* resulting tags set */
+  data_t tmp_tags; /* temporary tags set */
 
   ASSERT(path != NULL && str != NULL, MSG_M_NULLPTR);
 
   if (strlen(str) == 0)
     return; /* nothing to do*/
 
-  memset(&del_tags, 0, sizeof(data_t));
-  memset(&tags,     0, sizeof(data_t));
+  memset(&sel_tags, 0, sizeof(data_t));
+  memset(&all_tags, 0, sizeof(data_t));
+  memset(&tmp_tags, 0, sizeof(data_t));
 
   if (file_uuid_get(path, &uuid) > 0)
     {
@@ -61,23 +67,25 @@ _handle_tag_del(const char *path, const char *str)
         return;
     }
 
-  db_tags_get(&uuid, &tags);
+  db_tags_get(&uuid, &all_tags);
 #ifdef INLINE_TAGS
-  file_tags_get(path, &tags);
+  file_tags_get(path, &tmp_tags);
+  data_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_parse_tags(&del_tags, str);
+  data_parse_tags(&sel_tags, str);
 
-  while(data_items_walk(&del_tags, &item) > 0)
-    data_item_del(&tags, item);
+  while(data_items_walk(&sel_tags, &item) > 0)
+    data_item_del(&all_tags, item);
 
-  db_tags_set(&uuid, &tags);
+  db_tags_set(&uuid, &all_tags);
 #ifdef INLINE_TAGS
-  file_tags_set(path, &tags);
+  file_tags_set(path, &all_tags);
 #endif
 
-  data_clear(&del_tags);
-  data_clear(&tags);
+  data_clear(&all_tags);
+  data_clear(&sel_tags);
+  data_clear(&tmp_tags);
 }
 
 void
@@ -130,24 +138,25 @@ void
 _handle_tag_lst(const char *path, const char *unused)
 {
   uuid_t uuid = { 0, 0, 0 };
-  data_t tags;
+  data_t all_tags; /* resulting tags set */
+  data_t tmp_tags; /* temporary tags set */
 
-  memset(&tags, 0x0, sizeof(data_t));
+  memset(&all_tags, 0x0, sizeof(data_t));
 
   if (file_uuid_get(path, &uuid) != 0)
     return;
 
-  if (db_tags_get(&uuid, &tags) != 0)
-    return;
-
+  db_tags_get(&uuid, &all_tags);
 #ifdef INLINE_TAGS
-  file_tags_get(path, &tags);
+  file_tags_get(path, &tmp_tags);
+  data_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_items_merge(&tags, ' ');
-  printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
+  data_items_merge(&all_tags, ' ');
+  printf("%s: %s\n", path, (all_tags.len > 0) ? all_tags.buf : "");
 
-  data_clear(&tags);
+  data_clear(&all_tags);
+  data_clear(&tmp_tags);
 }
 
 void
