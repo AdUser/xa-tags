@@ -2,6 +2,7 @@
 #define DB_SYSTEM_PATH "/var/lib/" PROGNAME "/"
 #define DB_FILENAME "xa-tags.db"
 #define DB_VERSION "2"
+#define INFO_TABLE "s_info"
 #define MAIN_TABLE "d_files"
 #define TAGS_TABLE "d_uniq_tags"
 
@@ -35,17 +36,17 @@
 /* DB request type */
 #define SQL_D_STAT \
   "SELECT " \
-    "(SELECT COUNT(*) FROM d_uniq_tags) as 'uniq_tags', " \
-    "(SELECT COUNT(*) FROM d_files)     as 'file_records'"
+    "(SELECT COUNT(*) FROM " TAGS_TABLE ") as 'uniq_tags', " \
+    "(SELECT COUNT(*) FROM " MAIN_TABLE ")     as 'file_records'"
 
 /* DB create statements */
 #define SQL_DB_CREATE_COMMON \
-"CREATE TABLE s_info " \
+"CREATE TABLE " INFO_TABLE \
 "(" \
 "  version  INTEGER NOT NULL DEFAULT 0," \
 "  uuid_min INTEGER NOT NULL DEFAULT 0 " \
 ");" \
-"CREATE TABLE d_files" \
+"CREATE TABLE " MAIN_TABLE \
 "(" \
 "  file_id   INTEGER PRIMARY KEY," \
 "  crc_dname INTEGER NOT NULL DEFAULT 0,"  \
@@ -53,11 +54,11 @@
 "  filename  TEXT    NOT NULL DEFAULT ''," \
 "  tags      TEXT    NOT NULL DEFAULT '' " \
 ");" \
-"CREATE INDEX IF NOT EXISTS i_crc_dname ON d_files (crc_dname);" \
-"CREATE INDEX IF NOT EXISTS i_crc_fname ON d_files (crc_fname);"
+"CREATE INDEX IF NOT EXISTS i_crc_dname ON " MAIN_TABLE " (crc_dname);" \
+"CREATE INDEX IF NOT EXISTS i_crc_fname ON " MAIN_TABLE " (crc_fname);"
 
 #define SQL_DB_CREATE_UNIQ \
-"CREATE TABLE d_uniq_tags " \
+"CREATE TABLE " TAGS_TABLE \
 "(" \
 "  tag_id INTEGER NOT NULL DEFAULT 0,"  \
 "  tag    TEXT    NOT NULL DEFAULT ''," \
@@ -65,8 +66,8 @@
 ");"
 
 #define SQL_DB_INIT \
-"INSERT INTO s_info (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
-"INSERT INTO d_files (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM s_info;" \
+"INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
+"INSERT INTO " MAIN_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
 
 /** API functions */
 
