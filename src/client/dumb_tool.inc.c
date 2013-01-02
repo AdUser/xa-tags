@@ -76,34 +76,6 @@ _handle_tag_lst(const char *path, const char *unused)
   printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
  }
 
-/* not a function, because we can reduce a lot of calls *
- * of malloc() and free() with one lazy growing 'buf'   */
-#define FILE_CHECK(str) \
-{ \
-  errno = 0; \
-  attr_size = getxattr((str), XATTR_TAGS, buf, buf_size - 1); \
-  while (attr_size < 0 && errno == ERANGE) \
-    { \
-      buf_size *= 2; \
-      tmp = buf; \
-      REALLOC(buf, tmp, buf_size); \
-      errno = 0; \
-      attr_size = getxattr(ftsent->fts_path, XATTR_TAGS, buf, buf_size - 1); \
-    } \
-  buf[attr_size + 1] = '\0'; \
-  if (errno == 0) \
-    { \
-      match = true; \
-      tmp = NULL; \
-      while (data_items_walk(&search_tags, &tmp) > 0) \
-        if (strstr(buf, tmp) == NULL) \
-          match = false; \
-      \
-      if (match) \
-        _handle_tag_lst((str), NULL); \
-    } \
-}
-
 void
 _handle_search_by_tag(const char *path, const char *str)
 {
@@ -123,7 +95,7 @@ _handle_search_by_tag(const char *path, const char *str)
 
   data_parse_tags(&search_tags, str);
 
-  fts_argv[0] = (char * const) path; /* FIXME: hack */
+  fts_argv[0] = (char * const) path;
   fts_argv[1] = NULL;
 
   if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
@@ -132,7 +104,32 @@ _handle_search_by_tag(const char *path, const char *str)
   while ((ftsent = fts_read(fts)) != NULL)
     if (ftsent->fts_info & (FTS_DP | FTS_D) ||
         ftsent->fts_info & FTS_F)
-      FILE_CHECK(ftsent->fts_path);
+      {
+        /* not a function, because we can reduce a lot of calls *
+         * of malloc() and free() with one lazy growing 'buf'   */
+        errno = 0;
+        attr_size = getxattr(ftsent->fts_path, XATTR_TAGS, buf, buf_size - 1);
+        while (attr_size < 0 && errno == ERANGE)
+          {
+            buf_size *= 2;
+            tmp = buf;
+            REALLOC(buf, tmp, buf_size);
+            errno = 0;
+            attr_size = getxattr(ftsent->fts_path, XATTR_TAGS, buf, buf_size - 1);
+          }
+        buf[attr_size + 1] = '\0';
+        if (errno == 0)
+          {
+            match = true;
+            tmp = NULL;
+            while (data_items_walk(&search_tags, &tmp) > 0)
+              if (strstr(buf, tmp) == NULL)
+                match = false;
+
+            if (match)
+              _handle_tag_lst((ftsent->fts_path), NULL);
+          }
+      }
 
   fts_close(fts);
 
