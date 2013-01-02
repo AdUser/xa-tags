@@ -95,7 +95,7 @@ _handle_tag_lst(const char *path, const char *unused)
     { \
       match = true; \
       tmp = NULL; \
-      while (data_items_walk(&tags, &tmp) > 0) \
+      while (data_items_walk(&search_tags, &tmp) > 0) \
         if (strstr(buf, tmp) == NULL) \
           match = false; \
       \
@@ -107,7 +107,7 @@ _handle_tag_lst(const char *path, const char *unused)
 void
 _handle_search_by_tag(const char *path, const char *str)
 {
-  data_t tags;
+  data_t search_tags;
   char *tmp = NULL;
   char *buf = NULL;
   size_t buf_size = 1024;
@@ -119,10 +119,10 @@ _handle_search_by_tag(const char *path, const char *str)
   FTSENT *ftsent = NULL;
   char *fts_argv[2];
 
-  memset(&tags, 0, sizeof(data_t));
+  memset(&search_tags, 0, sizeof(data_t));
   CALLOC(buf, 1, buf_size * sizeof(char));
 
-  data_parse_tags(&tags, str);
+  data_parse_tags(&search_tags, str);
 
   stat(path, &st);
 
