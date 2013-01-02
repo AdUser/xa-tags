@@ -62,7 +62,7 @@
 
 /* file handle messages */
 #define MSG_F_UPDATED    \
-  _("File updated: %s")
+  _("File updated: %s\n")
 #define MSG_F_LINKED     \
   _("Hardlinked file, ignored: %s (%s)\n")
 #define MSG_F_FAILOPEN   \
