@@ -167,12 +167,14 @@ main(int argc, char **argv)
   while ((opt = getopt(argc, argv, "vqh" "cl" "a:d:s:f:")) != -1)
     switch (opt)
       {
+        /* operations */
         case 'a' : handler = &_handle_tag_add; tags = optarg; break;
         case 'd' : handler = &_handle_tag_del; tags = optarg; break;
         case 's' : handler = &_handle_tag_set; tags = optarg; break;
         case 'c' : handler = &_handle_tag_clr; break;
         case 'l' : handler = &_handle_tag_lst; break;
         case 'f' : handler = &_handle_search_by_tag; tags = optarg; break;
+        /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
         case 'h' : usage(EXIT_SUCCESS); break;
