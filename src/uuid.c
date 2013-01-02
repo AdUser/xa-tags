@@ -75,7 +75,7 @@ uuid_id_parse(uuid_t *uuid, char *str)
   for (i = 0; i < UUID_CHAR_LEN; i++)
     {
       uuid->id <<= 4;
-      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : str[i] - 'A' + 0xA;
+      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : toupper(str[i]) - 'A' + 0xA;
     }
 
   return 0;
