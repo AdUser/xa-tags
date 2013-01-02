@@ -112,9 +112,8 @@ _handle_search_by_tag(const char *path, const char *str)
   char *buf = NULL;
   size_t buf_size = 1024;
   ssize_t attr_size = 0;
-  struct stat st;
   bool match = false;
-  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR | FTS_NOSTAT;
+  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR;
   FTS *fts = NULL;
   FTSENT *ftsent = NULL;
   char *fts_argv[2];
@@ -124,26 +123,18 @@ _handle_search_by_tag(const char *path, const char *str)
 
   data_parse_tags(&search_tags, str);
 
-  stat(path, &st);
+  fts_argv[0] = (char * const) path; /* FIXME: hack */
+  fts_argv[1] = NULL;
 
-  if (S_ISREG(st.st_mode))
-    FILE_CHECK(path);
+  if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
+    msg(msg_error, MSG_F_FAILOPEN, path);
 
-  if (S_ISDIR(st.st_mode))
-    {
-      fts_argv[0] = (char * const) path; /* FIXME: hack */
-      fts_argv[1] = NULL;
+  while ((ftsent = fts_read(fts)) != NULL)
+    if (ftsent->fts_info & (FTS_DP | FTS_D) ||
+        ftsent->fts_info & FTS_F)
+      FILE_CHECK(ftsent->fts_path);
 
-      if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
-        msg(msg_error, MSG_F_FAILOPEN, path);
-
-      while ((ftsent = fts_read(fts)) != NULL)
-        if (ftsent->fts_info & (FTS_DP | FTS_D) ||
-            ftsent->fts_info & FTS_F)
-          FILE_CHECK(ftsent->fts_path);
-
-      fts_close(fts);
-    }
+  fts_close(fts);
 
   free(buf);
 }
