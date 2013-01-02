@@ -332,13 +332,14 @@ main(int argc, char **argv)
   char *item = NULL;
   char buf[PATH_MAX];
   void (*handler)(const char *, const char *) = NULL;
+  bool recursive = false;
 
   memset(&files, 0, sizeof(data_t));
 
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "vhq" "cl" "a:d:s:" "f:F:" "T:" "u")) != -1)
+  while ((opt = getopt(argc, argv, "rvhq" "cl" "a:d:s:" "f:F:" "T:" "u")) != -1)
     switch (opt)
       {
         /* operations */
@@ -356,12 +357,16 @@ main(int argc, char **argv)
         /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
+        case 'r' : recursive = true; break;
         case 'h' : usage(EXIT_SUCCESS); break;
         default  : usage(EXIT_FAILURE); break;
       }
 
   if (op == '\0')
     usage(EXIT_FAILURE);
+
+  if (op == 'u' && recursive == true)
+    handler = &_handle_file_update_recursive;
 
   for (; optind < argc; optind++)
     {
