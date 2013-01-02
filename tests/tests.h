@@ -12,3 +12,5 @@ static void handler(int sig, siginfo_t *siginfo, void *context)
   memset (&act, '\0', sizeof(act)); \
   act.sa_sigaction = &handler; \
   sigaction(SIGABRT, &act, NULL);
+
+#define TEST_FILE "/tmp/xattr-filename.bin"
