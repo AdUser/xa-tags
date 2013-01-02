@@ -235,8 +235,6 @@ _real_file_update(const char *path, uuid_t * uuid, struct stat *st)
       return 1;
     }
 
-  stat(files.buf, st);
-
   if (st->st_nlink == 1)
     {
       if (strncmp(files.buf, path, PATH_MAX) != 0)
@@ -265,6 +263,9 @@ _handle_file_update(const char *path, const char *unused)
 {
   struct stat st;
   uuid_t uuid = { 0, 0, 0 };
+
+  if (stat(path, &st) != 0)
+    return;
 
   if (file_uuid_get(path, &uuid) > 0)
     return;
