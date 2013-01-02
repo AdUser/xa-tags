@@ -289,26 +289,29 @@ main(int argc, char **argv)
     usage(EXIT_FAILURE);
 
   while ((opt = getopt(argc, argv, "vhq" "cl" "a:d:s:" "f:F:" "T:" "u")) != -1)
-    {
-      op = opt;
-      str = optarg;
-      switch (opt)
-        {
-          case 'a' : handler = &_handle_tag_add; break;
-          case 'd' : handler = &_handle_tag_del; break;
-          case 's' : handler = &_handle_tag_set; break;
-          case 'c' : handler = &_handle_tag_clr; break;
-          case 'l' : handler = &_handle_tag_lst; break;
-          case 'f' : handler = &_handle_file_search_tag;  break;
-          case 'F' : handler = &_handle_file_search_path; break;
-          case 'T' : handler = &_handle_tag_search; break;
-          case 'u' : handler = &_handle_file_update; break;
-          case 'v' : verbosity = log_extra; break;
-          case 'q' : verbosity = log_quiet; break;
-          case 'h' : usage(EXIT_SUCCESS); break;
-          default  : usage(EXIT_FAILURE); break;
-        }
-    }
+    switch (opt)
+      {
+        /* operations */
+        case 'a' : op = opt; str = optarg; handler = &_handle_tag_add; break;
+        case 'd' : op = opt; str = optarg; handler = &_handle_tag_del; break;
+        case 's' : op = opt; str = optarg; handler = &_handle_tag_set; break;
+        case 'c' : op = opt; str = optarg; handler = &_handle_tag_clr; break;
+        case 'l' : op = opt; str = optarg; handler = &_handle_tag_lst; break;
+#ifdef UNIQ_TAGS_LIST
+        case 'T' : op = opt; str = optarg; handler = &_handle_tag_search; break;
+#endif
+        case 'f' : op = opt; str = optarg; handler = &_handle_file_search_tag;  break;
+        case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
+        case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
+        /* options */
+        case 'v' : verbosity = log_extra; break;
+        case 'q' : verbosity = log_quiet; break;
+        case 'h' : usage(EXIT_SUCCESS); break;
+        default  : usage(EXIT_FAILURE); break;
+      }
+
+  if (op == '\0')
+    usage(EXIT_FAILURE);
 
   for (; optind < argc; optind++)
     {
