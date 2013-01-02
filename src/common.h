@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <fts.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
 #include <libgen.h>
@@ -18,6 +19,7 @@
 #include <sys/socket.h>
 #include <attr/xattr.h>
 #include <sys/un.h>
+#include <time.h>
 
 #ifdef HAVE_GETTEXT
   #include <libintl.h>
