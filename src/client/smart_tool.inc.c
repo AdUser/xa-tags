@@ -419,7 +419,7 @@ main(int argc, char **argv)
       case 'l' :
       case 'u' :
         if (files.items < 1)
-          usage(EXIT_FAILURE);
+          exit(EXIT_FAILURE);
         while ((ret = data_items_walk(&files, &item)) > 0)
           handler(item, str);
         break;
