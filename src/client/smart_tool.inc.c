@@ -142,6 +142,7 @@ _handle_tag_lst(const char *path, const char *unused)
   data_t tmp_tags; /* temporary tags set */
 
   memset(&all_tags, 0x0, sizeof(data_t));
+  memset(&tmp_tags, 0x0, sizeof(data_t));
 
   if (file_uuid_get(path, &uuid) != 0)
     return;
