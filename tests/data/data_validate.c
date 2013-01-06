@@ -15,10 +15,12 @@ int main()
   /* DATA_T_MSG */
   CALLOC(data, 1, sizeof(data_t));
   data->type = DATA_T_MSG;
-  data->buf = "\
+  test = "\
 THIS IS SAMPLE\n\
 TWO-LINE TEXT\n";
+  STRNDUP(data->buf, test, 4096);
   data->len = strlen(data->buf);
+  data->items = 2;
 
   ret = data_validate(data, errors, 0);
   assert(ret == 0);
