@@ -15,6 +15,9 @@ _handle_tag_add(const char *path, const char *str)
   data_items_merge(&tags, ' ');
 
   file_tags_set(path, &tags);
+
+  data_clear(&tags);
+  data_clear(&new_tags);
 }
 
 void
@@ -37,6 +40,9 @@ _handle_tag_del(const char *path, const char *str)
   data_items_merge(&tags, ' ');
 
   file_tags_set(path, &tags);
+
+  data_clear(&tags);
+  data_clear(&new_tags);
 }
 
 void
@@ -61,6 +67,8 @@ _handle_tag_set(const char *path, const char *str)
   data_parse_tags(&tags, str);
 
   file_tags_set(path, &tags);
+
+  data_clear(&tags);
 }
 
 void
@@ -78,7 +86,9 @@ _handle_tag_lst(const char *path, const char *unused)
   data_items_merge(&tags, ' ');
 
   printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
- }
+
+  data_clear(&tags);
+}
 
 void
 _handle_search_by_tag(const char *path, const char *str)
@@ -136,8 +146,8 @@ _handle_search_by_tag(const char *path, const char *str)
       }
 
   fts_close(fts);
-
   free(buf);
+  data_clear(&search_tags);
 }
 
 int
