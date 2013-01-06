@@ -18,8 +18,9 @@ typedef struct data_t
       DATA_M_UUID_TAGS,
       DATA_M_UUID_FILE
     } type;
-  size_t len; /* len assumes '(item + \0) * items, but without extra \0' */
-  char *buf; /* [item 1\0item2\0\0] */
+  size_t len;  /* assumes '(item + \0) * items */
+  size_t size; /* available size in buffer (bytes) */
+  char *buf; /* [item 1\0item2\0] or NULL */
 } data_t;
 
 /** API functions */

@@ -217,39 +217,44 @@ data_validate(data_t *data, data_t *errors, int strict)
   * 0 - all ok
   * 1 - error occured
   *
-  * item_len - optional, if 0 - use strlen(item)
+  * item_len - optional, if <= 0 - use strlen(item)
   */
 int
 data_item_add(data_t *data, char *item, size_t item_len)
 {
-  size_t len = 0;
   char *t = NULL;
 
   ASSERT(data != NULL, MSG_M_NULLPTR);
 
-  len = (item_len > 0) ? item_len : strlen(item);
-  if (data->len == 0)
+  if (item_len <= 0)
+    item_len = strlen(item);
+
+  item_len += 1; /* trailing '\0' */
+
+  data->items += 1;
+
+  /* check buffer size */
+  if (item_len > data->size - data->len)
     {
-      CALLOC(data->buf, len + 1 + 1, sizeof(char));
-      memcpy(data->buf, item, len);
-      data->buf[len] = '\0';
-      data->len += len + 1;
-      data->items++;
-      return 0;
-    }
-  else
-    {
-      t = realloc(data->buf, data->len + len + 1 + 1);
-      ASSERT(t != NULL, MSG_M_REALLOC);
+      if (data->size == 0)
+        data->size = (item_len > 512) ? item_len : 512;
+      else
+        data->size *= 2;
+
+/*      REALLOC(t, data->buf, data->size); */
+      if ((t = realloc(data->buf, data->size)) == NULL)
+        msg(msg_error, MSG_M_REALLOC, __FILE__, __LINE__);
       data->buf = t;
-      memcpy(&data->buf[data->len], item, len);
-      memset(&data->buf[data->len + len], '\0', 2 * sizeof(char));
-      data->len += len + 1;
-      data->items++;
-      return 0;
     }
 
-  return 1;
+  memcpy(&data->buf[data->len], item, item_len);
+  data->buf[data->len + item_len - 1] = '\0';
+  data->len += item_len;
+
+  if (data->items > 2)
+    data->flags |= DATA_MULTI;
+
+  return 0;
 }
 
 int
@@ -257,10 +262,9 @@ data_item_del(data_t *data, char *item)
 {
   char *p = NULL;
   size_t item_len = 0;
+  size_t move_size = 0;
 
   ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
-
-  item_len = strlen(item) + 1;
 
   if (data->items == 0)
     return 0; /* nothing to do */
@@ -268,12 +272,15 @@ data_item_del(data_t *data, char *item)
   if ((p = data_item_search(data, item)) == NULL)
     return 0; /* nothing to do */
 
-  memmove(p, p + item_len, data->len - (p - data->buf) - item_len + 1);
-  REALLOC(p, data->buf, data->len - item_len + 1);
-  data->buf = p;
+  item_len = strlen(item) + 1;
+
+  move_size  = data->len;
+  move_size -= p - data->buf;
+  move_size -= item_len;
+  memmove(p, p + item_len, move_size);
 
   data->len -= item_len;
-
+  data->buf[data->len] = '\0';
   data->items -= 1;
 
   return 0;
@@ -370,7 +377,7 @@ data_item_search(data_t *data, const char *item)
     if (p == NULL)
       return NULL;
 
-    if (*(p - 1) == '\0')
+    if (p > data->buf && *(p - 1) == '\0')
       return p;
 
     p += item_len;

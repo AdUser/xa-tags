@@ -14,7 +14,7 @@ int main()
   data_items_merge(data, '\n');
   assert(data->items == 1);
   assert(data->len == 18);
-  assert(memcmp(data->buf, "test1\ntest2\ntest3\0\0", 19) == 0);
+  assert(memcmp(data->buf, "test1\ntest2\ntest3\0", 18) == 0);
 
   return 0;
 }

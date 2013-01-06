@@ -15,35 +15,35 @@ int main()
   ret = data_item_add(data, "test3", 0);
   ret = data_item_add(data, "test4", 0);
   assert(data->len == 24);
-  assert(memcmp(data->buf, "test1\0test2\0test3\0test4\0\0", 25) == 0);
+  assert(memcmp(data->buf, "test1\0test2\0test3\0test4\0", 24) == 0);
 
   /** delete item from end */
   ret = data_item_del(data, "test4");
   assert(ret == 0);
   assert(data->items == 3);
   assert(data->len == 18);
-  assert(memcmp(data->buf, "test1\0test2\0test3\0\0", 19) == 0);
+  assert(memcmp(data->buf, "test1\0test2\0test3\0", 18) == 0);
 
   /** delete item from middle */
   ret = data_item_del(data, "test2");
   assert(ret == 0);
   assert(data->items == 2);
   assert(data->len == 12);
-  assert(memcmp(data->buf, "test1\0test3\0\0", 13) == 0);
+  assert(memcmp(data->buf, "test1\0test3\0", 12) == 0);
 
   /** try to delete nonexistent item */
   ret = data_item_del(data, "test2");
   assert(ret == 0);
   assert(data->items == 2);
   assert(data->len == 12);
-  assert(memcmp(data->buf, "test1\0test3\0\0", 13) == 0);
+  assert(memcmp(data->buf, "test1\0test3\0", 12) == 0);
 
   /** delete item from beginning */
   ret = data_item_del(data, "test1");
   assert(ret == 0);
   assert(data->items == 1);
   assert(data->len == 6);
-  assert(memcmp(data->buf, "test3\0\0", 7) == 0);
+  assert(memcmp(data->buf, "test3\0", 6) == 0);
 
   /** delete last item in list */
   ret = data_item_del(data, "test3");

@@ -19,7 +19,7 @@ int main()
 THIS IS SAMPLE\n\
 TWO-LINE TEXT\n";
   STRNDUP(data->buf, test, 4096);
-  data->len = strlen(data->buf);
+  data->len = strlen(data->buf) + 1;
   data->items = 2;
 
   ret = data_validate(data, errors, 0);

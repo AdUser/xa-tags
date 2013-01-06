@@ -19,7 +19,7 @@ int main()
   data_item_add(data1, "test12", 0);
   data_item_add(data1, "test123", 0);
   assert(data1->len == 21);
-  assert(memcmp(data1->buf, "test1\0test12\0test123\0\0", 22) == 0);
+  assert(memcmp(data1->buf, "test1\0test12\0test123\0", 21) == 0);
 
   ret = data_items_walk(data1, &item);
   assert(ret == 1);
@@ -42,7 +42,7 @@ int main()
   data_item_add(data2, "test32", 0);
   data_item_add(data2, "test321", 0);
   assert(data2->len == 21);
-  assert(memcmp(data2->buf, "test3\0test32\0test321\0\0", 22) == 0);
+  assert(memcmp(data2->buf, "test3\0test32\0test321\0", 21) == 0);
 
   ret = data_items_walk(data2, &item);
   assert(ret == 1);

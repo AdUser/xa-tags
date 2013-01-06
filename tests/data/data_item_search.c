@@ -17,7 +17,7 @@ int main()
   data_item_add(data, "string", 0);
   data_item_add(data, "ring",   0);
   assert(data->len == 17);
-  assert(memcmp(data->buf, "test\0string\0ring\0\0", 18) == 0);
+  assert(memcmp(data->buf, "test\0string\0ring\0", 17) == 0);
 
   item1 = data_item_search(data, "test");
   assert(item1 != NULL);
