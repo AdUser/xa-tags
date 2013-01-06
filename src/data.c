@@ -151,8 +151,7 @@ data_validate(data_t *data, data_t *errors, int strict)
 
   if (data->type == DATA_EMPTY)
     {
-      FREE(data->buf);
-      data->len = 0;
+      data_clear(data);
       return 0;
     }
 
