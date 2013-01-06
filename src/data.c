@@ -223,6 +223,7 @@ int
 data_item_add(data_t *data, char *item, size_t item_len)
 {
   char *t = NULL;
+  const uint16_t chunk_size = 512;
 
   ASSERT(data != NULL, MSG_M_NULLPTR);
 
@@ -236,14 +237,9 @@ data_item_add(data_t *data, char *item, size_t item_len)
   /* check buffer size */
   if (item_len > data->size - data->len)
     {
-      if (data->size == 0)
-        data->size = (item_len > 512) ? item_len : 512;
-      else
-        data->size *= 2;
+      data->size += (item_len > chunk_size) ? item_len : chunk_size;
 
-/*      REALLOC(t, data->buf, data->size); */
-      if ((t = realloc(data->buf, data->size)) == NULL)
-        msg(msg_error, MSG_M_REALLOC, __FILE__, __LINE__);
+      REALLOC(t, data->buf, data->size);
       data->buf = t;
     }
 
