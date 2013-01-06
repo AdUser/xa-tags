@@ -154,7 +154,7 @@ _handle_tag_lst(const char *path, const char *unused)
 #endif
 
   data_items_merge(&all_tags, ' ');
-  printf("%s: %s\n", path, (all_tags.len > 0) ? all_tags.buf : "");
+  printf("%s: %s\n", path, (all_tags.items > 0) ? all_tags.buf : "");
 
   data_clear(&all_tags);
   data_clear(&tmp_tags);

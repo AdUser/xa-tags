@@ -71,6 +71,10 @@ _handle_tag_lst(const char *path, const char *unused)
   memset(&tags, 0, sizeof(data_t));
 
   file_tags_get(path, &tags);
+
+  if (tags.items == 0)
+    return;
+
   data_items_merge(&tags, ' ');
 
   printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
