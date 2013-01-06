@@ -69,12 +69,14 @@ file_tags_set(const char *path, data_t *tags)
 {
   errno = 0;
 
-  data_items_merge(tags, ' ');
+  if (tags->items < 1)
+    {
+      removexattr(path, XATTR_TAGS);
+      return 0;
+    }
 
-  if (tags->len > 1)
-    setxattr(path, XATTR_TAGS, tags->buf, tags->len - 1, 0);
-  else
-    removexattr(path, XATTR_TAGS);
+  data_items_merge(tags, ' ');
+  setxattr(path, XATTR_TAGS, tags->buf, tags->len - 1, 0);
 
   if (errno != 0)
     {
