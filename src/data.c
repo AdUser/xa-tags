@@ -141,11 +141,8 @@ _validate_tags(char *tags, data_t *errors)
 int
 data_validate(data_t *data, data_t *errors, int strict)
  {
-  char *t = NULL;
   char *item = NULL;
-  size_t item_len = 0;
   int skip_item = 0;
-  size_t read = 0;
 
   ASSERT(data != NULL, MSG_M_NULLPTR);
 
@@ -155,11 +152,8 @@ data_validate(data_t *data, data_t *errors, int strict)
       return 0;
     }
 
-  /* TODO: replace with data_items_walk() */
-  item = data->buf;
-  while(read < data->len)
+  while(data_items_walk(data, &item) > 0)
     {
-      item_len = strlen(item) + 1;
       switch (data->type)
         {
           case DATA_T_MSG :
@@ -195,24 +189,17 @@ data_validate(data_t *data, data_t *errors, int strict)
 
       if (skip_item)
         {
-          if ((data->len -= item_len) == 0)
-            {
-              data_clear(data);
-              return 1;
-            }
-
-          memmove(item, item + item_len, data->len - read);
-          t = realloc(data->buf, data->len);
-          ASSERT(t != NULL, MSG_M_REALLOC);
-          data->buf = t;
-          item = &data->buf[read]; /* reset pointer after realloc() */
+          data_item_del(data, item);
+          if ((item > data->buf) && (item < (data->buf + data->len)))
+            item -= 2; /* TODO: hack around data_items_walk */
           skip_item = 0;
-          if (data->items > 0)
-            data->items--;
-          continue;
         }
-      read += item_len;
-      item = &data->buf[read];
+
+      if ((data->items) == 0)
+        {
+          data_clear(data);
+          return 1;
+        }
     }
 
   if (data->items < 2 && data->flags & DATA_MULTI)
@@ -352,7 +339,7 @@ data_items_walk(const data_t *data, char **item)
 
   len = strlen(*item) + 1;
 
-  if (*item + len == data->buf + data->len)
+  if (*item + len >= data->buf + data->len)
     return 0;
 
   *item += len;
