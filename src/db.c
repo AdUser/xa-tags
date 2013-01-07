@@ -337,19 +337,23 @@ db_file_search_tag(char *str, data_t *results)
   return 0;
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - general error
+ * 2 - no such_uuid
+ */
 int
 db_tags_get(uuid_t *uuid, data_t *tags)
 {
   sqlite3_stmt *stmt = NULL;
-  size_t len = 0;
   int ret = 0;
 
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
 
-  data_clear(tags);
+  if (tags->items > 0)
+    data_clear(tags);
 
-  len = strlen(SQL_T_GET);
-  if (sqlite3_prepare_v2(db_conn, SQL_T_GET, len, &stmt, NULL) != SQLITE_OK)
+  if (sqlite3_prepare_v2(db_conn, SQL_T_GET, strlen(SQL_T_GET), &stmt, NULL) != SQLITE_OK)
     {
       msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
@@ -357,26 +361,24 @@ db_tags_get(uuid_t *uuid, data_t *tags)
 
   sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
-  ret = sqlite3_step(stmt);
-  if (ret == SQLITE_DONE)
+  switch (sqlite3_step(stmt))
     {
-      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(uuid));
-      sqlite3_finalize(stmt);
-      return 1;
+      case SQLITE_ROW :
+        data_parse_tags(tags, (char *) sqlite3_column_text(stmt, 3));
+        ret = 0;
+        break;
+      case SQLITE_DONE :
+        ret = 2;
+        break;
+      default :
+        msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+        ret = 1;
+        break;
     }
-
-  if (ret != SQLITE_ROW)
-    {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
-      sqlite3_finalize(stmt);
-      return 1;
-    }
-
-  data_parse_tags(tags, (char *) sqlite3_column_text(stmt, 3));
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return ret;
 }
 
 int
