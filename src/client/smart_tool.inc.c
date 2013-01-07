@@ -195,11 +195,7 @@ _handle_file_search_tag(const char *unused, const char *str)
   if (tags.items == 0)
     return;
 
-  /* TODO: unimplemented */
-  if (tags.items >= 2)
-    msg(msg_warn, "Search by multiple tags unimplemented, only first will be used.\n");
-
-  db_file_search_tag(tags.buf, &results);
+  db_file_search_tag(&tags, &results);
 
   if (results.items == 0)
     return;
