@@ -296,11 +296,13 @@ db_file_search_path(const char *str, data_t *results)
 }
 
 int
-db_file_search_tag(char *str, data_t *results)
+db_file_search_tag(const data_t *tags, data_t *results)
 {
   sqlite3_stmt *stmt;
+  char *item = NULL;
   size_t len = 0;
   int ret = 0;
+  bool match_all = true;
   char buf[PATH_MAX] = { 0 };
 
   len = strlen(SQL_T_SEARCH);
@@ -310,7 +312,7 @@ db_file_search_tag(char *str, data_t *results)
       return 1;
     }
 
-  len = snprintf(buf, MAXLINE, "%% %s %%", str);
+  len = snprintf(buf, MAXLINE, "%% %s %%", tags->buf);
   while (len --> 0)
     if (buf[len] == '*')
       buf[len] = '%';
@@ -319,8 +321,18 @@ db_file_search_tag(char *str, data_t *results)
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-      len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
-      data_item_add(results, buf, len);
+      item = tags->buf;
+      match_all = true;
+      snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 1));
+      while (match_all && data_items_walk(tags, &item) > 0)
+        if (strstr(buf, item) == NULL)
+          match_all = false;
+
+      if (match_all)
+        {
+          len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
+          data_item_add(results, buf, len);
+        }
     }
 
   if (ret != SQLITE_DONE)
