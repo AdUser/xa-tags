@@ -37,7 +37,7 @@
 #define SQL_D_STAT \
   "SELECT " \
     "(SELECT COUNT(*) FROM " TAGS_TABLE ") as 'uniq_tags', " \
-    "(SELECT COUNT(*) FROM " MAIN_TABLE ")     as 'file_records'"
+    "(SELECT COUNT(*) FROM " MAIN_TABLE ") as 'file_records'"
 
 /* DB create statements */
 #define SQL_DB_CREATE_COMMON \
