@@ -25,8 +25,6 @@ uuid_generate(uuid_t *uuid, const char *path)
 {
   ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
 
-  uuid->id = 0; /* generated automatically after insert */
-
   if (strrchr(path, '/') == NULL)
     return 1; /* path MUST contain at least one slash */
 
