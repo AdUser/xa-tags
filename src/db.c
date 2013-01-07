@@ -119,10 +119,9 @@ int
 db_file_add(const char *path, uuid_t *new_uuid)
 {
   sqlite3_stmt *stmt = NULL;
-  size_t len = 0;
+  int ret = 0;
 
-  len = strlen(SQL_F_ADD);
-  if (sqlite3_prepare_v2(db_conn, SQL_F_ADD, len, &stmt, NULL) != SQLITE_OK)
+  if (sqlite3_prepare_v2(db_conn, SQL_F_ADD, strlen(SQL_F_ADD), &stmt, NULL) != SQLITE_OK)
     {
       msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
@@ -134,20 +133,21 @@ db_file_add(const char *path, uuid_t *new_uuid)
   sqlite3_bind_int(stmt, 2, new_uuid->fname);
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
 
-  if (sqlite3_step(stmt) != SQLITE_DONE)
+  switch (sqlite3_step(stmt))
     {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
-      sqlite3_finalize(stmt);
-      return 1;
+      case SQLITE_DONE :
+        new_uuid->id = (uint64_t) sqlite3_last_insert_rowid(db_conn);
+        ASSERT(new_uuid->id != 0, "Successfull insert, but zero id returned.\n");
+        break;
+      default :
+        msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+        ret = 1;
+        break;
     }
-
-  new_uuid->id = (uint64_t) sqlite3_last_insert_rowid(db_conn);
-
-  ASSERT(new_uuid->id != 0, "Successfull insert, but zero id returned.\n");
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return ret;
 }
 
 int
