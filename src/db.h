@@ -10,7 +10,7 @@
 
 /* FILE request type */
 #define SQL_F_ADD \
-  "INSERT INTO " MAIN_TABLE " (crc_dname, crc_fname, filename) VALUES (?, ?, ?)"
+  "INSERT INTO " MAIN_TABLE " (file_id, crc_dname, crc_fname, filename) VALUES (?, ?, ?, ?)"
 #define SQL_F_DEL \
   "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
 #define SQL_F_GET \
