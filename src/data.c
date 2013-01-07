@@ -390,6 +390,15 @@ data_clear(data_t *data)
   memset(data, 0x0, sizeof(data_t));
 }
 
+void
+data_copy(data_t *to, data_t *from)
+{
+  memcpy(to, from, sizeof(data_t));
+  to->buf = NULL;
+  CALLOC(to->buf, from->size, sizeof(char));
+  memcpy(to->buf, from->buf, from->len);
+}
+
 int
 data_parse_tags(data_t *data, const char *tags)
 {
