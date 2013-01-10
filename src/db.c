@@ -190,6 +190,7 @@ db_file_del(const uuid_t *uuid)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
+  int ret = 0;
 
   len = strlen(SQL_F_DEL);
   if (sqlite3_prepare_v2(db_conn, SQL_F_DEL, len, &stmt, NULL) != SQLITE_OK)
@@ -200,16 +201,12 @@ db_file_del(const uuid_t *uuid)
 
   sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
-  if (sqlite3_step(stmt) != SQLITE_DONE)
-    {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
-      sqlite3_finalize(stmt);
-      return 1;
-    }
+  if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
+    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
 /** return values:
@@ -237,15 +234,11 @@ db_file_get(const uuid_t *uuid, char *path)
     snprintf(path, PATH_MAX, "%s", sqlite3_column_text(stmt, 0));
 
   if (ret != SQLITE_DONE)
-    {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
-      sqlite3_finalize(stmt);
-      return 1;
-    }
+    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
 int
