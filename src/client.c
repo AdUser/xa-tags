@@ -45,6 +45,11 @@ usage(int exitcode)
 
 enum loglevel verbosity = log_normal;
 
+#define F_RECURSE    1 << 0
+#define F_KEEPCONV   1 << 1
+
+uint8_t flags = 0;
+
 #if   MODE ==  DUMB_TOOL
   #include "client/dumb_tool.inc.c"
 #elif MODE == SMART_TOOL
