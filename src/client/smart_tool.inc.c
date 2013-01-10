@@ -317,7 +317,6 @@ main(int argc, char **argv)
   char *item = NULL;
   char buf[PATH_MAX];
   void (*handler)(const char *, const char *) = NULL;
-  bool recursive = false;
 
   memset(&files, 0, sizeof(data_t));
 
@@ -342,16 +341,13 @@ main(int argc, char **argv)
         /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
-        case 'r' : recursive = true; break;
+        case 'r' : flags |= F_RECURSE; break;
         case 'h' : usage(EXIT_SUCCESS); break;
         default  : usage(EXIT_FAILURE); break;
       }
 
   if (op == '\0')
     usage(EXIT_FAILURE);
-
-  if (op == 'u' && recursive == true)
-    handler = &_handle_file_update_recursive;
 
   for (; optind < argc; optind++)
     {
@@ -397,7 +393,7 @@ main(int argc, char **argv)
         if (files.items < 1)
           exit(EXIT_FAILURE);
         while ((ret = data_items_walk(&files, &item)) > 0)
-          handler(item, str);
+          (flags & F_RECURSE) ? _ftw(item, str, handler) : handler(item, str);
         break;
       default :
         usage(EXIT_FAILURE);
