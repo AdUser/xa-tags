@@ -253,6 +253,11 @@ data_item_add(data_t *data, char *item, size_t item_len)
   return 0;
 }
 
+/** return values:
+ * 0 - nothing to do
+ * 1 - deleted
+ * 2 - error
+ */
 int
 data_item_del(data_t *data, char *item)
 {
@@ -279,7 +284,7 @@ data_item_del(data_t *data, char *item)
   data->buf[data->len] = '\0';
   data->items -= 1;
 
-  return 0;
+  return 1;
 }
 
 void
