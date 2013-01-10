@@ -2,7 +2,6 @@ void
 _handle_tag_add(const char *path, const char *str)
 {
   uuid_t uuid = { 0, 0, 0 };
-  data_t sel_tags; /* selected tags */
   data_t all_tags; /* resulting tags set */
   data_t tmp_tags; /* temporary tags set */
 
@@ -11,7 +10,6 @@ _handle_tag_add(const char *path, const char *str)
   if (strlen(str) == 0)
     return; /* nothing to do*/
 
-  memset(&sel_tags, 0, sizeof(data_t));
   memset(&all_tags, 0, sizeof(data_t));
   memset(&tmp_tags, 0, sizeof(data_t));
 
@@ -33,15 +31,14 @@ _handle_tag_add(const char *path, const char *str)
   data_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_parse_tags(&sel_tags, str);
-  data_merge(&all_tags, &sel_tags);
+  data_parse_tags(&tmp_tags, str);
+  data_merge(&all_tags, &tmp_tags);
 
   db_tags_set(&uuid, &all_tags);
 #ifdef INLINE_TAGS
   file_tags_set(path, &all_tags);
 #endif
 
-  data_clear(&sel_tags);
   data_clear(&all_tags);
   data_clear(&tmp_tags);
 }
