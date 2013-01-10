@@ -79,6 +79,8 @@
   _("Failed to prepare statement: %s.\n")
 #define MSG_D_FAILEXEC \
   _("Failed to exec statement: %s.\n")
+#define MSG_D_BADINPUT \
+  _("Malformed or incorrect data on input: %s.\n")
 
 #define MSG_D_NOUUID     \
   _("No such uuid: %s.\n")

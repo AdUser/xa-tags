@@ -410,6 +410,7 @@ db_tags_set(uuid_t *uuid, data_t *tags)
   char *p = NULL;
 
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
+  ASSERT(tags->items != 0, MSG_D_BADINPUT);
 
   len = strlen(SQL_T_SET);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SET, len, &stmt, NULL) != SQLITE_OK)
@@ -419,8 +420,7 @@ db_tags_set(uuid_t *uuid, data_t *tags)
     }
 
 #ifdef UNIQ_TAGS_LIST
-  if (db_tag_add_uniq(tags) > 0)
-    return 1;
+  db_tag_add_uniq(tags);
 #endif
 
   CALLOC(p, tags->len + 2, sizeof(char));
