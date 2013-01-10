@@ -48,6 +48,7 @@ _handle_tag_del(const char *path, const char *str)
 {
   char *item = NULL;
   uuid_t uuid;
+  bool save = false;
   data_t all_tags; /* resulting tags set */
   data_t tmp_tags; /* temporary tags set */
 
@@ -63,6 +64,10 @@ _handle_tag_del(const char *path, const char *str)
     return;
 
   db_tags_get(&uuid, &all_tags);
+
+  if (all_tags.items == 0)
+    return; /* nothing to delete */
+
 #ifdef INLINE_TAGS
   file_tags_get(path, &tmp_tags);
   data_merge(&all_tags, &tmp_tags);
@@ -71,9 +76,15 @@ _handle_tag_del(const char *path, const char *str)
   data_parse_tags(&tmp_tags, str);
 
   while(data_items_walk(&tmp_tags, &item) > 0)
-    data_item_del(&all_tags, item);
+    if (data_item_del(&all_tags, item) == 1)
+      save = true;
 
-  db_tags_set(&uuid, &all_tags);
+  if (save == true && all_tags.items > 0)
+    db_tags_set(&uuid, &all_tags);
+
+  if (save == true && all_tags.items == 0)
+    db_file_del(&uuid);
+
 #ifdef INLINE_TAGS
   file_tags_set(path, &all_tags);
 #endif
