@@ -225,55 +225,13 @@ _handle_file_search_path(const char *unused, const char *substr)
 
 /* update operations */
 
-/** return codes:
- * 0 - all ok
- * 1 - error
- */
-int
-_real_file_update(const char *path, uuid_t * uuid, struct stat *st)
-{
-  uuid_t uuid_linked = { 0, 0, 0 };
-  data_t files;
-
-  memset(&files, 0, sizeof(data_t));
-
-  if (db_file_get(uuid, &files) > 0)
-    return 1;
-
-  if (files.items == 0)
-    {
-      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(uuid));
-      return 1;
-    }
-
-  if (st->st_nlink == 1)
-    {
-      if (strncmp(files.buf, path, PATH_MAX) != 0)
-        {
-          db_file_update(path, uuid);
-          msg(msg_info, MSG_F_UPDATED, path);
-        }
-    }
-
-  if (st->st_nlink > 1)
-    {
-      if ((file_uuid_get(files.buf, &uuid_linked) == 0)
-          && (uuid_linked.id == uuid->id))
-        msg(msg_warn, MSG_F_LINKED, path, files.buf);
-      else
-        db_file_update(path, uuid);
-    }
-
-  data_clear(&files);
-
-  return 0;
-}
-
 void
-_handle_file_update(const char *path, const char *unused)
+_handle_file_update(const char *path, const char *str)
 {
   struct stat st;
   uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid_linked = { 0, 0, 0 };
+  char buf[PATH_MAX] = { 0 };
 
   if (stat(path, &st) != 0)
     return;
@@ -281,14 +239,33 @@ _handle_file_update(const char *path, const char *unused)
   if (file_uuid_get(path, &uuid) > 0)
     return;
 
-  _real_file_update(path, &uuid, &st);
+  if (db_file_get(&uuid, buf) > 0)
+    {
+      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(&uuid));
+      return;
+    }
+
+  if (st.st_nlink == 1 || S_ISDIR(st.st_mode))
+    if (strncmp(buf, path, PATH_MAX) != 0)
+      {
+        db_file_update(path, &uuid);
+        msg(msg_info, MSG_F_UPDATED, path);
+      }
+
+  if (st.st_nlink > 1)
+    {
+      if ((file_uuid_get(buf, &uuid_linked) == 0)
+          && (uuid_linked.id == uuid.id))
+        msg(msg_warn, MSG_F_LINKED, path, buf);
+      else
+        db_file_update(path, &uuid);
+    }
 }
 
 void
 _handle_file_update_recursive(const char *path, const char *unused)
 {
   struct stat st;
-  uuid_t uuid = { 0, 0, 0 };
   char buf[PATH_MAX];
   /* fts-related variables */
   const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR;
@@ -300,8 +277,7 @@ _handle_file_update_recursive(const char *path, const char *unused)
 
   if (S_ISREG(st.st_mode))
     {
-      if (file_uuid_get(path, &uuid) == 0)
-        _real_file_update(path, &uuid, &st);
+      _handle_file_update(path, NULL);
       return;
     }
 
@@ -316,18 +292,16 @@ _handle_file_update_recursive(const char *path, const char *unused)
 
   while ((ftsent = fts_read(fts)) != NULL)
     {
-      if (file_uuid_get(ftsent->fts_path, &uuid) > 0)
-         continue;
-
       if (ftsent->fts_info & FTS_F)
-        _real_file_update(ftsent->fts_path, &uuid, ftsent->fts_statp);
+        _handle_file_update(ftsent->fts_path, NULL);
 
       if (ftsent->fts_info & (FTS_DP | FTS_D))
         {
           snprintf(buf, PATH_MAX, "%s/", ftsent->fts_path);
-          _real_file_update(buf, &uuid, ftsent->fts_statp);
+          _handle_file_update(buf, NULL);
         }
     }
+
   fts_close(fts);
 }
 
