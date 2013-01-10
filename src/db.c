@@ -212,8 +212,13 @@ db_file_del(const uuid_t *uuid)
   return 0;
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ * note: 'path' must be PATH_MAX bytes in size
+ */
 int
-db_file_get(const uuid_t *uuid, data_t *results)
+db_file_get(const uuid_t *uuid, char *path)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
@@ -229,7 +234,7 @@ db_file_get(const uuid_t *uuid, data_t *results)
   sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
-    data_item_add(results, (char *) sqlite3_column_text(stmt, 0), 0);
+    snprintf(path, PATH_MAX, "%s", sqlite3_column_text(stmt, 0));
 
   if (ret != SQLITE_DONE)
     {
