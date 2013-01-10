@@ -23,7 +23,7 @@ _handle_tag_add(const char *path, const char *str)
   db_tags_get(&uuid, &all_tags);
 
   /* this allow import existing uuid's */
-  if (all_tags.items == 0)
+  if (all_tags.items == 0 && uuid.id == 0)
     db_file_add(path, &uuid);
 
 #ifdef INLINE_TAGS
