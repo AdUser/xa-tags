@@ -60,12 +60,7 @@ _handle_tag_del(const char *path, const char *str)
   memset(&tmp_tags, 0, sizeof(data_t));
 
   if (file_uuid_get(path, &uuid) > 0)
-    {
-      if (db_file_add(path, &uuid) > 0)
-        return;
-      if (file_uuid_set(path, &uuid) > 0)
-        return;
-    }
+    return;
 
   db_tags_get(&uuid, &all_tags);
 #ifdef INLINE_TAGS
