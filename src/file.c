@@ -32,7 +32,7 @@ file_tags_get(const char *path, data_t *tags)
   /* determine needed buf size */
   size = 1 + getxattr(path, XATTR_TAGS, buf, 0);
   if (errno != 0)
-     {
+    {
       if (errno != ENOATTR)
         msg(msg_warn, "%s -- %s\n", path, strerror(errno));
       return 1;
