@@ -110,8 +110,11 @@ _handle_search_by_tag(const char *path, const char *str)
     if (strstr(file_tags.buf, tmp) == NULL)
       match = false;
 
-  if (match)
+  if (match && verbosity > log_normal)
     _handle_tag_lst(path, NULL);
+
+  if (match && verbosity <= log_normal)
+    printf("%s\n", path);
 
   data_clear(&file_tags);
   data_clear(&search_tags);
