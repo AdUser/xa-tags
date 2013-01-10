@@ -49,6 +49,45 @@ usage(int exitcode)
   exit(exitcode);
 }
 
+void
+_ftw(const char *path, const char *str, void (*handler)(const char *, const char *))
+{
+  struct stat st;
+  /* fts-related variables */
+  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR;
+  char *fts_argv[2];
+  FTS *fts = NULL;
+  FTSENT *ftsent = NULL;
+
+  stat(path, &st);
+
+  if (S_ISREG(st.st_mode))
+    {
+      handler(path, str);
+      return;
+    }
+
+  if (!S_ISDIR(st.st_mode))
+    return;
+
+  fts_argv[0] = (char * const) path;
+  fts_argv[1] = NULL;
+
+  if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
+    msg(msg_error, MSG_F_FAILOPEN, path);
+
+  while ((ftsent = fts_read(fts)) != NULL)
+    {
+      if (ftsent->fts_info & FTS_F)
+        handler(ftsent->fts_path, str);
+
+      if (ftsent->fts_info & (FTS_DP | FTS_D))
+        handler(ftsent->fts_path, str);
+    }
+
+  fts_close(fts);
+}
+
 #if   MODE ==  DUMB_TOOL
   #include "client/dumb_tool.inc.c"
 #elif MODE == SMART_TOOL
