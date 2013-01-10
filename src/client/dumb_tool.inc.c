@@ -30,7 +30,8 @@ _handle_tag_del(const char *path, const char *str)
   memset(&new_tags, 0, sizeof(data_t));
   memset(&tags,     0, sizeof(data_t));
 
-  file_tags_get(path, &tags);
+  if (file_tags_get(path, &tags) > 0)
+    return;
 
   data_parse_tags(&new_tags, str);
 
@@ -78,9 +79,7 @@ _handle_tag_lst(const char *path, const char *unused)
 
   memset(&tags, 0, sizeof(data_t));
 
-  file_tags_get(path, &tags);
-
-  if (tags.items == 0)
+  if (file_tags_get(path, &tags) > 0)
     return;
 
   data_items_merge(&tags, ' ');
