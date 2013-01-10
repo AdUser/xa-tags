@@ -133,7 +133,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "vqh" "cl" "a:d:s:f:")) != -1)
+  while ((opt = getopt(argc, argv, "rvqh" "cl" "a:d:s:" "f:")) != -1)
     switch (opt)
       {
         /* operations */
@@ -146,6 +146,7 @@ main(int argc, char **argv)
         /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
+        case 'r' : flags |= F_RECURSE; break;
         case 'h' : usage(EXIT_SUCCESS); break;
         default  : usage(EXIT_FAILURE); break;
       }
@@ -164,7 +165,7 @@ main(int argc, char **argv)
 
   /* init */
   while ((ret = data_items_walk(&files, &item)) > 0)
-    handler(item, tags);
+    (flags & F_RECURSE) ? _ftw(item, tags, handler) : handler(item, tags);
 
   data_clear(&files);
 
