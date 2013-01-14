@@ -328,7 +328,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvhq" "cl" "a:d:s:" "f:F:" "T:" "u")) != -1)
+  while ((opt = getopt(argc, argv, "rvhq" "cl" "a:d:s:" "f:F:" "T:" "u" "mMk")) != -1)
     switch (opt)
       {
         /* operations */
@@ -343,6 +343,11 @@ main(int argc, char **argv)
         case 'f' : op = opt; str = optarg; handler = &_handle_file_search_tag;  break;
         case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
         case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
+#ifndef INLINE_TAGS
+        case 'm' : op = opt; str = optarg; handler = &_handle_file_migrate_to_db; break;
+        case 'M' : op = opt; str = optarg; handler = &_handle_file_migrate_from_db; break;
+        case 'k' : flags |= F_KEEPCONV; break;
+#endif
         /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
@@ -395,6 +400,10 @@ main(int argc, char **argv)
       case 'c' :
       case 'l' :
       case 'u' :
+#ifndef INLINE_TAGS
+      case 'm' :
+      case 'M' :
+#endif
         if (files.items < 1)
           exit(EXIT_FAILURE);
         while ((ret = data_items_walk(&files, &item)) > 0)

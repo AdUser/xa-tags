@@ -44,8 +44,13 @@ usage(int exitcode)
   #include "client/usage_search.inc.c"
   #include "client/usage_update.inc.c"
 #endif
-
   fprintf(stdout, "\n");
+
+#ifndef INLINE_TAGS
+  #include "client/usage_convert_storage.inc.c"
+  fprintf(stdout, "\n");
+#endif
+
   exit(exitcode);
 }
 
