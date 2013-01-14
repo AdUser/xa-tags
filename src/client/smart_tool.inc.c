@@ -262,6 +262,54 @@ _handle_file_update(const char *path, const char *str)
     }
 }
 
+/* #ifndef INLINE_TAGS */
+void
+_handle_file_migrate_to_db(const char *path, const char *unused)
+{
+  uuid_t uuid = { 0, 0, 0 };
+  data_t tags;
+  int ret = 0;
+
+  if (file_tags_get(path, &tags) > 0)
+    return;
+
+  if (db_file_add(path, &uuid) > 0)
+    return;
+
+  ret = db_tags_set(&uuid, &tags);
+
+  data_clear(&tags);
+
+  if (ret == 0 && !(flags & F_KEEPCONV))
+    file_tags_clr(path);
+}
+
+void
+_handle_file_migrate_from_db(const char *path, const char *unused)
+{
+  uuid_t uuid = { 0, 0, 0 };
+  data_t tags;
+  int ret = 0;
+
+  if (file_uuid_get(path, &uuid) > 0)
+    return;
+
+  if (db_tags_get(&uuid, &tags) > 0)
+    return;
+
+  ret = file_tags_set(path, &tags);
+
+  data_clear(&tags);
+
+  if (ret == 0 && !(flags & F_KEEPCONV))
+    {
+      db_tags_set(&uuid, &tags);
+      db_file_del(&uuid);
+      /* file_uuid_clr(path); */
+    }
+}
+/* #endif */
+
 int
 main(int argc, char **argv)
 {
