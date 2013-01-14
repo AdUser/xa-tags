@@ -262,49 +262,6 @@ _handle_file_update(const char *path, const char *str)
     }
 }
 
-void
-_handle_file_update_recursive(const char *path, const char *unused)
-{
-  struct stat st;
-  char buf[PATH_MAX];
-  /* fts-related variables */
-  const int fts_flags = FTS_PHYSICAL | FTS_NOCHDIR;
-  FTS *fts = NULL;
-  FTSENT *ftsent = NULL;
-  char *fts_argv[2];
-
-  stat(path, &st);
-
-  if (S_ISREG(st.st_mode))
-    {
-      _handle_file_update(path, NULL);
-      return;
-    }
-
-  if (!S_ISDIR(st.st_mode))
-    return;
-
-  fts_argv[0] = (char * const) path;
-  fts_argv[1] = NULL;
-
-  if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
-    msg(msg_error, MSG_F_FAILOPEN, path);
-
-  while ((ftsent = fts_read(fts)) != NULL)
-    {
-      if (ftsent->fts_info & FTS_F)
-        _handle_file_update(ftsent->fts_path, NULL);
-
-      if (ftsent->fts_info & (FTS_DP | FTS_D))
-        {
-          snprintf(buf, PATH_MAX, "%s/", ftsent->fts_path);
-          _handle_file_update(buf, NULL);
-        }
-    }
-
-  fts_close(fts);
-}
-
 int
 main(int argc, char **argv)
 {
