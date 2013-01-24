@@ -306,6 +306,9 @@ data_items_merge(data_t *data, char glue)
   size_t i = 0;
   size_t len = 0;
 
+  if (data->items < 2)
+    return;
+
   if (data->len > 0)
     len = data->len - 1;
 
