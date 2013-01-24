@@ -272,6 +272,8 @@ _handle_file_migrate_to_db(const char *path, const char *unused)
   data_t tags;
   int ret = 0;
 
+  memset(&tags, 0x0, sizeof(data_t));
+
   if (file_tags_get(path, &tags) > 0)
     return;
 
