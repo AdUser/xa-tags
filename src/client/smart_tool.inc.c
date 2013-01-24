@@ -302,11 +302,7 @@ _handle_file_migrate_from_db(const char *path, const char *unused)
   data_clear(&tags);
 
   if (ret == 0 && !(flags & F_KEEPCONV))
-    {
-      db_tags_set(&uuid, &tags);
-      db_file_del(&uuid);
-      /* file_uuid_clr(path); */
-    }
+    db_file_del(&uuid);
 }
 /* #endif */
 
