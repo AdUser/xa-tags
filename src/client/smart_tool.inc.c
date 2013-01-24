@@ -291,6 +291,8 @@ _handle_file_migrate_from_db(const char *path, const char *unused)
   data_t tags;
   int ret = 0;
 
+  memset(&tags, 0x0, sizeof(data_t));
+
   if (file_uuid_get(path, &uuid) > 0)
     return;
 
@@ -340,8 +342,8 @@ main(int argc, char **argv)
         case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
         case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
 #ifndef INLINE_TAGS
-        case 'm' : op = opt; str = optarg; handler = &_handle_file_migrate_to_db; break;
-        case 'M' : op = opt; str = optarg; handler = &_handle_file_migrate_from_db; break;
+        case 'm' : op = opt; str = NULL;   handler = &_handle_file_migrate_to_db; break;
+        case 'M' : op = opt; str = NULL;   handler = &_handle_file_migrate_from_db; break;
         case 'k' : flags |= F_KEEPCONV; break;
 #endif
         /* options */
