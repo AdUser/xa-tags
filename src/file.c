@@ -178,3 +178,16 @@ file_uuid_clr(const char *path)
 
   return 0;
 }
+
+/** return values:
+ * 0 - not supported
+ * 1 - supported
+ */
+int
+file_xattr_supported(const char *path)
+{
+  errno = 0;
+  listxattr(path, XATTR_UUID, strlen(XATTR_UUID));
+
+  return (errno == ENOTSUP) ? 0 : 1;
+}
