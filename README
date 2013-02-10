@@ -1,6 +1,6 @@
 xa-tags is the util, allows you to store and manage sets of custom tags associated with file.
 
-Designed and written with eye on high portability, small resource consumption and minimum dependencies. In fact, this software can even run on your wifi-router.
+Designed and written with eye on high portability, small resource consumption and minimum dependencies. In fact, this software can even run on your router.
 
 Four operational modes planned: two as standalone tool and two as client-server.
 
