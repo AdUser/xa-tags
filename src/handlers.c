@@ -32,8 +32,8 @@ _handle_req_hello(conn_t *conn)
     FREE(buf);
     if (len > buf_len) buf_len = len + 1;
     CALLOC(buf, buf_len, sizeof(char));
-    len = snprintf(buf, buf_len, MSG_I_HELLO,
-                   PROGNAME, VERSION_MAJOR, VERSION_MINOR);
+    len = snprintf(buf, buf_len, "%s v%u.%u %s\n",
+                   PROGNAME, VERSION_MAJOR, VERSION_MINOR, MSG_I_HELLO);
   } while (len > buf_len);
 
   resp->status = STATUS_OK;
@@ -62,7 +62,7 @@ _handle_req_bye(conn_t *conn)
     FREE(buf);
     if (len > buf_len) buf_len = len + 1;
     CALLOC(buf, buf_len, sizeof(char));
-    len = snprintf(buf, buf_len, MSG_I_BYE);
+    len = snprintf(buf, buf_len, "%s\n", MSG_I_BYE);
   } while (len > buf_len);
 
   resp->status = STATUS_OK;
@@ -136,7 +136,7 @@ _handle_req_file_del(conn_t *conn, const ipc_req_t *req)
       memset(&uuid, 0x0, sizeof(uuid_t));
       if (uuid_parse(&uuid, item) != 0)
         {
-          buf_len = snprintf(buf, MAXLINE, "%s -- %s\n", MSG_I_BADUUID, item);
+          buf_len = snprintf(buf, MAXLINE, COMMON_ERR_FMTN, MSG_I_BADUUID, item);
           data_item_add(&resp.data, buf, buf_len);
           continue;
         }

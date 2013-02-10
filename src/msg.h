@@ -1,88 +1,103 @@
+/*  no trailing '\n', please! */
+
+/* used in fatal errors, expects (__FILE__, __LINE__, custom message) */
+#define COMMON_AST_FMT "%s:%i -- %s\n"
+/* used in data validation, expects (error string, bad data) */
+#define COMMON_ERR_FMT  "%s -- %s"
+#define COMMON_ERR_FMTN "%s -- %s\n"
+#define COMMON_MSG_FMT  "%s: %s"
+#define COMMON_MSG_FMTN "%s: %s\n"
+
 /** log messages: FILE:LINE -- message  *
   * usable with ASSERT() macros         */
-#define MSG_M_OOM        _("%s:%i -- Can't allocate memory.\n")
-#define MSG_M_NULLPTR    _("%s:%i -- Unexpected NULL pointer.\n")
-#define MSG_M_REALLOC    _("%s:%i -- realloc() failed.\n")
+#define MSG_M_OOM        gettext("Can't allocate memory.")
+#define MSG_M_NULLPTR    gettext("Unexpected NULL pointer.")
+#define MSG_M_REALLOC    gettext("realloc() failed.")
 
 /** IPC messages */
-/*  no trailing '\n', please */
 
 #define MSG_I_HELLO      \
-  _("Hi! %s v%u.%u glad to meet you.")
+  gettext("glad to meet you.")
 #define MSG_I_BYE        \
-  _("Sya!")
+  gettext("Sya!")
 
 /** parsing errors */
+/* trailing dot! */
 #define MSG_I_BADREQ     \
-  _("Parsing failed, unknown request type.")
+  gettext("Parsing failed, unknown request type.")
 #define MSG_I_BADOP      \
-  _("Parsing failed, unknown operation for this type.")
+  gettext("Parsing failed, unknown operation for this type.")
 #define MSG_I_EXPREQ     \
-  _("Parsing failed, request expected.")
+  gettext("Parsing failed, request expected.")
 #define MSG_I_EXPOP      \
-  _("Parsing failed, operation expected.")
+  gettext("Parsing failed, operation expected.")
 #define MSG_I_EXPDELIM   \
-  _("Parsing failed, expected ':', '>' char.")
+  gettext("Parsing failed, expected ':', '>' char.")
 #define MSG_I_EXPDATA    \
-  _("Parsing failed, data expected.")
+  gettext("Parsing failed, data expected.")
 
 /** data validation errors */
+/* no trailing dot also, please */
 #define MSG_I_BADPATH    \
-  _("Malformed path")
+  gettext("Malformed path")
 #define MSG_I_BADUUID    \
-  _("Malformed UUID")
+  gettext("Malformed UUID")
 #define MSG_I_BADCHARS   \
-  _("Unallowed chars")
+  gettext("Unallowed chars")
 #define MSG_I_EXPPATH    \
-  _("Empty data, expected path")
+  gettext("Empty data, expected path")
 #define MSG_I_EXPTAGS    \
-  _("Empty data, expected one or more tags")
+  gettext("Empty data, expected one or more tags")
 
 /** request processing errors */
 #define MSG_I_NOBATCH    \
-  _("No batch reqests allowed.")
+  gettext("No batch reqests allowed.")
 #define MSG_I_PARTREQ    \
-  _("Request processed partly.")
+  gettext("Request processed partly.")
 #define MSG_I_ABORTREQ   \
-  _("Request discarded.")
+  gettext("Request discarded.")
 
 #define MSG_I_DBRDONLY   \
-  _("Database opened readonly. Request aborted.\n")
+  gettext("Database opened readonly. Request aborted.")
 
 /** connection errors */
 #define MSG_I_TIMEOUT    \
-  _("Connection timeout.")
+  gettext("Connection timeout.")
 
 /** other errors */
 #define MSG_U_UNKNERR    \
-  _("Internal error occured.")
+  gettext("Internal error occured")
 
 #define MSG_U_HOMEUNSET  \
-  _("$HOME variable unset, i don't know, where to look for database.")
+  gettext("$HOME variable unset, don't know where to look for database.")
 
 /* file handle messages */
+/* no trailing dot also, please */
 #define MSG_F_UPDATED    \
-  _("File updated: %s\n")
+  gettext("File updated")
 #define MSG_F_LINKED     \
-  _("Hardlinked file, ignored: %s (%s)\n")
+  gettext("Hardlinked file, ignored")
 #define MSG_F_FAILOPEN   \
-  _("Can't open: %s\n")
+  gettext("Can't open")
 #define MSG_F_NOTSUPP    \
-  _("xattrs disabled or not supported\n")
+  gettext("xattrs disabled or not supported")
 
 /** database errors */
+/* no trailing dot also, please */
 #define MSG_D_FAILOPEN \
-  _("Failed to open database: %s\n")
+  gettext("Failed to open database")
 #define MSG_D_FAILCLOSE \
-  _("Failed to close database: %s\n")
+  gettext("Failed to close database")
 #define MSG_D_FAILCREATE \
-  _("Failed to init database: %s\n")
+  gettext("Failed to init database")
 #define MSG_D_FAILPREPARE \
-  _("Failed to prepare statement: %s\n")
+  gettext("Failed to prepare statement")
 #define MSG_D_FAILEXEC \
-  _("Failed to exec statement: %s\n")
+  gettext("Failed to exec statement")
 #define MSG_D_BADINPUT \
-  _("Malformed or incorrect data on input: %s\n")
+  gettext("Malformed or incorrect data on input")
+#define MSG_D_ZEROUUID \
+  gettext("Successfull insert, but zero uuid returned")
 
 #define MSG_D_NOUUID     \
-  _("No such uuid: %s.\n")
+  gettext("No such uuid")

@@ -68,32 +68,32 @@ db_open(void)
       mkdir_r(opts.db.path, 0755);
       flags |= SQLITE_OPEN_CREATE;
       if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
-        msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
       if (sqlite3_exec(db_conn, SQL_DB_CREATE_COMMON, NULL, NULL, &err) != SQLITE_OK)
-        msg(msg_error, MSG_D_FAILCREATE, err);
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
 #ifdef UNIQ_TAGS_LIST
       if (sqlite3_exec(db_conn, SQL_DB_CREATE_UNIQ,   NULL, NULL, &err) != SQLITE_OK)
-        msg(msg_error, MSG_D_FAILCREATE, err);
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
 #endif
       if (sqlite3_exec(db_conn, SQL_DB_INIT,   NULL, NULL, &err) != SQLITE_OK)
-        msg(msg_error, MSG_D_FAILCREATE, err);
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
       FREE(err);
       sqlite3_close(db_conn);
       errno = 0;
 #else
       err = strerror(errno);
-      msg(msg_error, "%s -- %s\n", err, opts.db.path);
+      msg(msg_error, COMMON_ERR_FMTN, err, opts.db.path);
 #endif
     }
 
   if (errno != 0)
-    msg(msg_error, "%s\n", strerror(errno));
+    msg(msg_error, COMMON_ERR_FMTN, MSG_U_UNKNERR, strerror(errno));
 
   if (opts.db.readonly == true)
     flags = SQLITE_OPEN_READONLY;
 
   if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
-    msg(msg_error, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
+    msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
 
 #ifdef ASYNC_DB_WRITE
   sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
@@ -108,7 +108,7 @@ db_close(void)
 #endif
 
   if (sqlite3_close(db_conn) != SQLITE_OK)
-    msg(msg_error, MSG_D_FAILCLOSE, sqlite3_errmsg(db_conn));
+    msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCLOSE, sqlite3_errmsg(db_conn));
 }
 
 /** return values:
@@ -123,7 +123,7 @@ db_file_add(const char *path, uuid_t *new_uuid)
 
   if (sqlite3_prepare_v2(db_conn, SQL_F_ADD, strlen(SQL_F_ADD), &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -140,10 +140,10 @@ db_file_add(const char *path, uuid_t *new_uuid)
     {
       case SQLITE_DONE :
         new_uuid->id = (uint64_t) sqlite3_last_insert_rowid(db_conn);
-        ASSERT(new_uuid->id != 0, "Successfull insert, but zero id returned.\n");
+        ASSERT(new_uuid->id != 0, MSG_D_ZEROUUID);
         break;
       default :
-        msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+        msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
         ret = 1;
         break;
     }
@@ -162,7 +162,7 @@ db_file_update(const char *path, uuid_t *uuid)
   len = strlen(SQL_F_UPDATE);
   if (sqlite3_prepare_v2(db_conn, SQL_F_UPDATE, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -175,7 +175,7 @@ db_file_update(const char *path, uuid_t *uuid)
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
       return 1;
     }
@@ -195,14 +195,14 @@ db_file_del(const uuid_t *uuid)
   len = strlen(SQL_F_DEL);
   if (sqlite3_prepare_v2(db_conn, SQL_F_DEL, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
   sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
-    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+    msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
 
   sqlite3_finalize(stmt);
 
@@ -224,7 +224,7 @@ db_file_get(const uuid_t *uuid, char *path)
   len = strlen(SQL_F_GET);
   if (sqlite3_prepare_v2(db_conn, SQL_F_GET, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -234,7 +234,7 @@ db_file_get(const uuid_t *uuid, char *path)
     snprintf(path, PATH_MAX, "%s", sqlite3_column_text(stmt, 0));
 
   if (ret != SQLITE_DONE)
-    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+    msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
 
   sqlite3_finalize(stmt);
 
@@ -253,7 +253,7 @@ db_file_search_path(const char *str, data_t *results)
   len = strlen(SQL_F_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_F_SEARCH, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -277,7 +277,7 @@ db_file_search_path(const char *str, data_t *results)
 
   if (ret != SQLITE_DONE)
     {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       data_clear(results);
       sqlite3_finalize(stmt);
 
@@ -306,7 +306,7 @@ db_file_search_tag(const data_t *tags, data_t *results)
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -335,7 +335,7 @@ db_file_search_tag(const data_t *tags, data_t *results)
 
   if (ret != SQLITE_DONE)
     {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
       data_clear(results);
       return 1;
@@ -368,7 +368,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
 
   if (sqlite3_prepare_v2(db_conn, SQL_T_GET, strlen(SQL_T_GET), &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -384,7 +384,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
         ret = 2;
         break;
       default :
-        msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+        msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
         ret = 1;
         break;
     }
@@ -408,7 +408,7 @@ db_tags_set(uuid_t *uuid, data_t *tags)
   len = strlen(SQL_T_SET);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SET, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -426,7 +426,7 @@ db_tags_set(uuid_t *uuid, data_t *tags)
   sqlite3_bind_int64(stmt, 2, (sqlite3_int64) uuid->id);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
-    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+    msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
 
   FREE(p);
   sqlite3_finalize(stmt);
@@ -448,7 +448,7 @@ db_tag_add_uniq(data_t *tags)
   len = strlen(SQL_T_UNIQ_ADD);
   if (sqlite3_prepare_v2(db_conn, SQL_T_UNIQ_ADD, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -461,7 +461,7 @@ db_tag_add_uniq(data_t *tags)
 
       if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
         {
-          msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+          msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
           break;
         }
 
@@ -488,7 +488,7 @@ db_tags_find(const char *str, data_t *results)
   len = strlen(SQL_T_FIND);
   if (sqlite3_prepare_v2(db_conn, SQL_T_FIND, len, &stmt, NULL) != SQLITE_OK)
     {
-      msg(msg_warn, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
       return 1;
     }
 
@@ -506,7 +506,7 @@ db_tags_find(const char *str, data_t *results)
 
   if (ret != SQLITE_DONE)
     {
-      msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
       data_clear(results);
       return 1;

@@ -23,9 +23,8 @@
 
 #ifdef HAVE_GETTEXT
   #include <libintl.h>
-  #define _(x) gettext((x))
 #else
-  #define _(x) (x)
+  #define gettext(x) (x)
 #endif
 
 #ifdef HAVE_SQLITE3

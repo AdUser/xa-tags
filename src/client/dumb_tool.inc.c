@@ -84,7 +84,7 @@ _handle_tag_lst(const char *path, const char *unused)
 
   data_items_merge(&tags, ' ');
 
-  printf("%s: %s\n", path, (tags.len > 0) ? tags.buf : "");
+  printf(COMMON_MSG_FMTN, path, (tags.len > 0) ? tags.buf : "");
 
   data_clear(&tags);
 }
@@ -160,7 +160,7 @@ main(int argc, char **argv)
       if (stat(argv[optind], &st) == 0)
         data_item_add(&files, argv[optind], 0);
       else
-        printf("%s -- %s\n", argv[optind], strerror(errno));
+        printf(COMMON_ERR_FMTN, argv[optind], strerror(errno));
     }
 
   if (files.items < 1)

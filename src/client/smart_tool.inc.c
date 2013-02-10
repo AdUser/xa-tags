@@ -161,7 +161,7 @@ _handle_tag_lst(const char *path, const char *unused)
   data_items_merge(&all_tags, ' ');
 
   if (all_tags.items > 0 || verbosity > log_normal)
-    printf("%s: %s\n", path, (all_tags.items > 0) ? all_tags.buf : "");
+    printf(COMMON_MSG_FMTN, path, (all_tags.items > 0) ? all_tags.buf : "");
 
   data_clear(&all_tags);
   data_clear(&tmp_tags);
@@ -243,7 +243,7 @@ _handle_file_update(const char *path, const char *str)
 
   if (db_file_get(&uuid, buf) > 0)
     {
-      msg(msg_warn, MSG_D_NOUUID, uuid_id_printf(&uuid));
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_NOUUID, uuid_id_printf(&uuid));
       return;
     }
 
@@ -251,14 +251,14 @@ _handle_file_update(const char *path, const char *str)
     if (strncmp(buf, path, PATH_MAX) != 0)
       {
         db_file_update(path, &uuid);
-        msg(msg_info, MSG_F_UPDATED, path);
+        msg(msg_info, COMMON_MSG_FMTN, MSG_F_UPDATED, path);
       }
 
   if (st.st_nlink > 1)
     {
       if ((file_uuid_get(buf, &uuid_linked) == 0)
           && (uuid_linked.id == uuid.id))
-        msg(msg_warn, MSG_F_LINKED, path, buf);
+        msg(msg_warn, COMMON_MSG_FMT "(%s)\n", MSG_F_LINKED, path, buf);
       else
         db_file_update(path, &uuid);
     }
@@ -382,7 +382,7 @@ main(int argc, char **argv)
           FREE(item);
         }
       else
-        printf("%s -- %s\n", argv[optind], strerror(errno));
+        printf(COMMON_ERR_FMTN, argv[optind], strerror(errno));
     }
 
   /* init */

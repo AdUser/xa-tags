@@ -37,7 +37,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
   FREE(t2);
   CALLOC(t2, len, sizeof(char));
 
-  if ((ret = snprintf(t2, len, "%s -- %s", error, t1)) > len)
+  if ((ret = snprintf(t2, len, COMMON_ERR_FMT, error, t1)) > len)
     {
       len = ret + 1;
       goto again;
@@ -80,10 +80,7 @@ _validate_path(char *path, data_t *errors)
   /* empty string */
   for (p = path; isblank(*p); p++);
   if (*p == '\0')
-    {
-      data_item_add(errors, MSG_I_EXPPATH, 0);
-      return 1;
-    }
+    return _add_val_error(errors, MSG_I_EXPPATH, path, 0);
 
   /* allowed paths must begin with '/' or '~/' */
   if (*p != '/' && strncmp("~/", p, 2) != 0)
@@ -114,10 +111,7 @@ _validate_tags(char *tags, data_t *errors)
   /* empty string */
   for (p = tags; isblank(*p); p++);
   if (*p == '\0')
-    {
-      data_item_add(errors, MSG_I_EXPTAGS, 0);
-      return 1;
-    }
+    return _add_val_error(errors, MSG_I_EXPTAGS, tags, 0);
 
   /* quote in tags */
   for (p = tags; *p != '\0'; p++)

@@ -34,7 +34,7 @@ file_tags_get(const char *path, data_t *tags)
   if (errno != 0)
     {
       if (errno != ENOATTR)
-        msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 1;
     }
 
@@ -47,7 +47,7 @@ file_tags_get(const char *path, data_t *tags)
   if (errno != 0)
     {
       if (errno != ENOATTR)
-        msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       FREE(buf);
       return 1;
     }
@@ -80,7 +80,7 @@ file_tags_set(const char *path, data_t *tags)
 
   if (errno != 0)
     {
-      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 1;
     }
 
@@ -98,7 +98,7 @@ file_tags_clr(const char *path)
   removexattr(path, XATTR_TAGS);
   if (errno != 0 && errno != ENOATTR)
     {
-      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 1;
     }
 
@@ -126,13 +126,13 @@ file_uuid_get(const char *path, uuid_t *uuid)
 
   if (errno != 0 && errno != ENOATTR)
     {
-      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 2;
     }
 
   if (uuid_id_validate(buf) == 1)
     {
-      msg(msg_warn, "%s -- %s\n", path, MSG_I_BADUUID);
+      msg(msg_warn, COMMON_ERR_FMTN, path, MSG_I_BADUUID);
       memset(uuid, 0, sizeof(uuid_t));
       return 2;
     }
@@ -154,7 +154,7 @@ file_uuid_set(const char *path, uuid_t *uuid)
 
   if (errno != 0)
     {
-      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 1;
     }
 
@@ -172,7 +172,7 @@ file_uuid_clr(const char *path)
   removexattr(path, XATTR_UUID);
   if (errno != 0 && errno != ENOATTR)
     {
-      msg(msg_warn, "%s -- %s\n", path, strerror(errno));
+      msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
       return 1;
     }
 

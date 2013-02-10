@@ -79,13 +79,13 @@ _ftw(const char *path, const char *str, void (*handler)(const char *, const char
   fts_argv[1] = NULL;
 
   if ((fts = fts_open(fts_argv, fts_flags, NULL)) == NULL)
-    msg(msg_error, MSG_F_FAILOPEN, path);
+    msg(msg_error, COMMON_ERR_FMTN, MSG_F_FAILOPEN, path);
 
   while ((ftsent = fts_read(fts)) != NULL)
     {
       if (file_xattr_supported(ftsent->fts_path) == 0)
         {
-          msg(msg_warn, "%s -- %s\n", ftsent->fts_path, MSG_F_NOTSUPP);
+          msg(msg_warn, COMMON_ERR_FMTN, ftsent->fts_path, MSG_F_NOTSUPP);
           continue;
         }
 
