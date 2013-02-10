@@ -1,0 +1,66 @@
+# 01. list on empty attr
+./xa-tags -l test.bin
+>>>
+>>>=0
+
+# 02. add one tag
+./xa-tags -a "test1" test.bin
+>>>=0
+
+# 03. add more tags (note duplicate)
+./xa-tags -a "test2 test2 test3" test.bin
+>>>=0
+
+# 04. expect three uniq tags
+./xa-tags -l test.bin
+>>>
+test.bin: test1 test2 test3
+>>>=0
+
+# 05. delete first tag
+./xa-tags -d "test1" test.bin
+>>>=0
+
+# 06. delete last tag
+./xa-tags -d "test3" test.bin
+>>>=0
+
+# 07. expect one tag 'test2'
+./xa-tags -l test.bin
+>>>
+test.bin: test2
+>>>=0
+
+# 08. delete last tag
+./xa-tags -d "test2" test.bin
+>>>=0
+
+# 09. delete on empty attr
+./xa-tags -d "test2" test.bin
+>>>=0
+
+# 10. expect empty attr
+./xa-tags -l test.bin
+>>>=0
+
+# 11. set tags
+./xa-tags -s "test1 test2" test.bin
+>>>=0
+
+# 12. really?
+getfattr -n user.xat.tags test.bin
+>>>
+# file: test.bin
+user.xat.tags="test1 test2"
+
+>>>=0
+
+# 13. clear
+./xa-tags -c test.bin
+>>>=0
+
+# 14. check
+getfattr -n user.xat.tags test.bin
+>>>
+>>>=0
+
