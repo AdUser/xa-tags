@@ -83,6 +83,12 @@ _ftw(const char *path, const char *str, void (*handler)(const char *, const char
 
   while ((ftsent = fts_read(fts)) != NULL)
     {
+      if (file_xattr_supported(ftsent->fts_path) == 0)
+        {
+          msg(msg_warn, "%s -- %s\n", ftsent->fts_path, MSG_F_NOTSUPP);
+          continue;
+        }
+
       if (ftsent->fts_info & FTS_F)
         handler(ftsent->fts_path, str);
 

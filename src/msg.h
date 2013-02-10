@@ -67,6 +67,8 @@
   _("Hardlinked file, ignored: %s (%s)\n")
 #define MSG_F_FAILOPEN   \
   _("Can't open: %s\n")
+#define MSG_F_NOTSUPP    \
+  _("xattrs disabled or not supported\n")
 
 /** database errors */
 #define MSG_D_FAILOPEN \
