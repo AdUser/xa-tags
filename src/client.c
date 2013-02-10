@@ -43,13 +43,13 @@ usage(int exitcode)
 #if MODE >= SMART_TOOL
   #include "client/usage_search.inc.c"
   #include "client/usage_update.inc.c"
-#endif
   fprintf(stdout, "\n");
 
 #ifndef INLINE_TAGS
   #include "client/usage_convert_storage.inc.c"
-  fprintf(stdout, "\n");
 #endif
+#endif
+  fprintf(stdout, "\n");
 
   exit(exitcode);
 }
