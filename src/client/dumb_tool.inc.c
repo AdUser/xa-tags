@@ -133,6 +133,12 @@ main(int argc, char **argv)
 
   memset(&files, 0, sizeof(data_t));
 
+#ifdef HAVE_GETTEXT
+  setlocale (LC_ALL, "");
+  bindtextdomain(PROGNAME, LOCALEDIR);
+  textdomain(PROGNAME);
+#endif
+
   if (argc < 2)
     usage(EXIT_FAILURE);
 
