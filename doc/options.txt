@@ -1,0 +1,20 @@
+==== Althabetic order ====
+
+^ letter ^ arg   ^ description
+| a      | <str> | Add tag.
+| b      | <str> | Path to database. (default: autodetect)
+| c      |       | Delete all tags (clear).
+| d      | <str> | Delete tag.
+| f      | <str> | Search for file(s) with given tag(s).
+| F      | <str> | Search for file(s) with given substring in path.
+| h      |       | This help.
+| k      |       | Don't delete converted tags from old place.
+| l      |       | List tags.
+| m      |       | Move embedded tags to database.
+| M      |       | Move tags from database to separate xattr.
+| q      |       | Be less verbose.
+| r      |       | Handle files recursive.
+| s      | <str> | Set for file this set of tags.
+| T      | <str> | Search for existing tag (for complete list - use '*').
+| u      |       | Update location in database for given file or dir.
+| v      |       | Be more verbose.
