@@ -22,6 +22,7 @@
 #include <time.h>
 
 #ifdef HAVE_GETTEXT
+  #include <locale.h>
   #include <libintl.h>
 #else
   #define gettext(x) (x)
