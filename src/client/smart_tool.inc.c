@@ -325,12 +325,13 @@ main(int argc, char **argv)
   char buf[PATH_MAX];
   void (*handler)(const char *, const char *) = NULL;
 
+  memset(&opts, 0x0, sizeof(opts));
   memset(&files, 0, sizeof(data_t));
 
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvhq" "cl" "a:d:s:" "f:F:" "T:" "u" "mMk")) != -1)
+  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "u" "mMk")) != -1)
     switch (opt)
       {
         /* operations */
@@ -354,6 +355,7 @@ main(int argc, char **argv)
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
         case 'r' : flags |= F_RECURSE; break;
+        case 'b' : opts.db.path = optarg; break;
         case 'h' : usage(EXIT_SUCCESS); break;
         default  : usage(EXIT_FAILURE); break;
       }
@@ -384,7 +386,8 @@ main(int argc, char **argv)
     }
 
   /* init */
-  opts.db.path = db_find_path_user();
+  if (opts.db.path == NULL)
+    opts.db.path = db_find_path_user();
   db_open();
 
   switch (op)
