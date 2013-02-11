@@ -151,7 +151,7 @@ main(int argc, char **argv)
         case 's' : handler = &_handle_tag_set; tags = optarg; break;
         case 'c' : handler = &_handle_tag_clr; break;
         case 'l' : handler = &_handle_tag_lst; break;
-        case 'f' : handler = &_handle_search_by_tag; tags = optarg; break;
+        case 'f' : handler = &_handle_search_by_tag; tags = optarg; flags |= F_RECURSE; break;
         /* options */
         case 'v' : verbosity = log_extra; break;
         case 'q' : verbosity = log_quiet; break;
