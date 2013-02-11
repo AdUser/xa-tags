@@ -7,6 +7,7 @@ rm -f CMakeCache.txt
 rm -f DartConfiguration.tcl
 rm -f ./po/*.mo
 rm -f ./po/*.pot
+rm -f ./tests/scripts/*.test.out
 
 find ./ -type d -a -name Testing    -exec rm -rf {} +
 find ./ -type d -a -name CMakeFiles -exec rm -rf {} +

@@ -1,0 +1,82 @@
+# 01. prepare
+touch test.bin
+>>>=0
+
+# 02. list on empty attr
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+>>>=0
+
+# 03. db created?
+stat db.sqlite3
+>>>=0
+
+# 04. add one tag
+../../src/xa-tags -b db.sqlite3 -a "test1" test.bin
+>>>=0
+
+# 05. add more tags (note duplicate)
+../../src/xa-tags -b db.sqlite3 -a "test2 test2 test3" test.bin
+>>>=0
+
+# 06. expect three uniq tags
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+${CMAKE_CURRENT_SOURCE_DIR}/test.bin: test1 test2 test3
+>>>=0
+
+# 07. delete first tag
+../../src/xa-tags -b db.sqlite3 -d "test1" test.bin
+>>>=0
+
+# 08. delete last tag
+../../src/xa-tags -b db.sqlite3 -d "test3" test.bin
+>>>=0
+
+# 09. expect one tag 'test2'
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+${CMAKE_CURRENT_SOURCE_DIR}/test.bin: test2
+>>>=0
+
+# 10. delete last tag
+../../src/xa-tags -b db.sqlite3 -d "test2" test.bin
+>>>=0
+
+# 11. delete on empty attr
+../../src/xa-tags -b db.sqlite3 -d "test2" test.bin
+>>>=0
+
+# 12. expect empty attr
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>=0
+
+# 13. set tags
+../../src/xa-tags -b db.sqlite3 -s "test1 test2" test.bin
+>>>=0
+
+# 14. really?
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+${CMAKE_CURRENT_SOURCE_DIR}/test.bin: test1 test2
+>>>=0
+
+# 15. clear
+../../src/xa-tags -b db.sqlite3 -c test.bin
+>>>=0
+
+# 16. check
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+>>>=0
+
+# 17. update on unchanged file
+../../src/xa-tags -b db.sqlite3 -l test.bin
+>>>
+>>>=0
+
+# 18. check
+
+# ??. cleanup
+rm -rf test.bin db.sqlite3
+>>>=0
