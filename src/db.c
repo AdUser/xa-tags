@@ -403,7 +403,6 @@ db_tags_set(uuid_t *uuid, data_t *tags)
   char *p = NULL;
 
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
-  ASSERT(tags->items != 0, MSG_D_BADINPUT);
 
   len = strlen(SQL_T_SET);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SET, len, &stmt, NULL) != SQLITE_OK)

@@ -79,11 +79,8 @@ _handle_tag_del(const char *path, const char *str)
     if (data_item_del(&all_tags, item) == 1)
       save = true;
 
-  if (save == true && all_tags.items > 0)
+  if (save == true)
     db_tags_set(&uuid, &all_tags);
-
-  if (save == true && all_tags.items == 0)
-    db_file_del(&uuid);
 
 #ifdef INLINE_TAGS
   file_tags_set(path, &all_tags);
@@ -96,10 +93,13 @@ _handle_tag_del(const char *path, const char *str)
 void
 _handle_tag_clr(const char *path, const char *tags)
 {
+  data_t new_tags;
   uuid_t uuid = { 0, 0, 0 };
 
+  memset(&new_tags, 0x0, sizeof(data_t));
+
   if (file_uuid_get(path, &uuid) == 0)
-    db_file_del(&uuid);
+    db_tags_set(&uuid, &new_tags);
 
   file_uuid_clr(path);
 #ifdef INLINE_TAGS
