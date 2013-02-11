@@ -92,7 +92,8 @@ _ftw(const char *path, const char *str, void (*handler)(const char *, const char
       if (ftsent->fts_info & FTS_F)
         handler(ftsent->fts_path, str);
 
-      if (ftsent->fts_info & (FTS_DP | FTS_D))
+      /* note: we ignore postorder directories */
+      if (ftsent->fts_info & FTS_D)
         handler(ftsent->fts_path, str);
     }
 
