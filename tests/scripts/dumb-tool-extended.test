@@ -11,37 +11,41 @@ touch test2/test2.bin
 >>>=0
 
 # 04. prepare
-./xa-tags -a "tag1 tag2" test1.bin
+../../src/xa-tags -a "tag1 tag2" test1.bin
 >>>=0
 
 # 05. prepare
-./xa-tags -a "tag2 tag4" test3.bin
+../../src/xa-tags -a "tag2 tag4" test3.bin
 >>>=0
 
 # 06. prepare
-./xa-tags -r -a "common" test2
+../../src/xa-tags -r -a "common" test2
 >>>=0
 
-# 07. search for known tag (without recursion)
-./xa-tags -f "common" .
->>>
->>>=0
-
-# 07. search for known tag (with recursion)
-./xa-tags  -r -f "common" .
+# 07. search for known tag
+../../src/xa-tags -f "common" .
 >>>
 ./test2
 ./test2/test2.bin
 >>>=0
 
-# 08. search nonexistent tag (without recursion)
-./xa-tags -f "wut?" .
+# 08. search nonexistent tag
+../../src/xa-tags -f "wut?" .
 >>>
 >>>=0
 
-# 08. search nonexistent tag (without recursion)
-./xa-tags -r -f "wut?" .
+# 09. search
+../../src/xa-tags -f "tag2" . | sort
 >>>
+./test1.bin
+./test3.bin
+>>>=0
+
+# 10. fuzzy search
+../../src/xa-tags -f 'ag' . | sort
+>>>
+./test1.bin
+./test3.bin
 >>>=0
 
 # cleanup
