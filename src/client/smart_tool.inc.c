@@ -204,7 +204,7 @@ _handle_file_search_tag(const char *unused, const char *str)
   if (tags.items == 0)
     return;
 
-  while (db_file_search_tag(&tags, &lim, &results) == 1)
+  while (db_file_search_tag(&tags, &lim, &results, NULL) == 1)
     {
       if (results.items == 0)
         continue;

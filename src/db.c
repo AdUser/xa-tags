@@ -330,7 +330,8 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
  * So, trust only return value, not number of items.
  */
 int
-db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results)
+db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
+                   int (*cb)(const char *, const char *))
 {
   sqlite3_stmt *stmt;
   char *item = NULL;
@@ -340,7 +341,7 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results)
   bool match_all = true;
   char buf[PATH_MAX] = { 0 };
 
-  ASSERT(tags != NULL && lim != NULL && results != NULL, MSG_M_NULLPTR);
+  ASSERT(tags != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -373,24 +374,34 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results)
 
       if (match_all)
         {
-          len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
-          data_item_add(results, buf, len);
+          if (results != NULL)
+            {
+              len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
+              data_item_add(results, buf, len);
+            }
+          if (cb != NULL)
+            cb((char *) sqlite3_column_text(stmt, 0),
+               (char *) sqlite3_column_text(stmt, 1));
         }
-
-      lim->offset++;
     }
+
+  lim->offset += rows;
 
   if (ret != SQLITE_DONE)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      if (results != NULL)
+        data_clear(results);
       sqlite3_finalize(stmt);
-      data_clear(results);
       return 2;
     }
 
-  if (results->items > 1)
-    results->flags |= DATA_MULTI;
-  results->type = DATA_L_FILES;
+  if (results != NULL)
+    {
+      if (results->items > 1)
+        results->flags |= DATA_MULTI;
+      results->type = DATA_L_FILES;
+    }
 
   sqlite3_finalize(stmt);
 
