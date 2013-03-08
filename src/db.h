@@ -69,6 +69,8 @@
 "INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
 "INSERT INTO " MAIN_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
 
+#define MAX_QUERY_LIMIT 250
+
 typedef struct query_limits_t
 {
   uint16_t offset;
