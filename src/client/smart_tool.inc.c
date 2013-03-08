@@ -194,6 +194,7 @@ _handle_file_search_tag(const char *unused, const char *str)
 {
   data_t tags;
   data_t results;
+  query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
   memset(&tags,    0, sizeof(data_t));
   memset(&results, 0, sizeof(data_t));
@@ -203,13 +204,17 @@ _handle_file_search_tag(const char *unused, const char *str)
   if (tags.items == 0)
     return;
 
-  db_file_search_tag(&tags, &results);
+  while (db_file_search_tag(&tags, &lim, &results) == 1)
+    {
+      if (results.items == 0)
+        continue;
 
-  if (results.items == 0)
-    return;
+      data_items_merge(&results, '\n');
+      printf("%s\n", results.buf);
+    }
 
-  data_items_merge(&results, '\n');
-  printf("%s\n", results.buf);
+  data_clear(&results);
+  data_clear(&tags);
 }
 
 void

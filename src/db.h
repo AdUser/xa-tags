@@ -26,7 +26,7 @@
 #define SQL_T_SET \
   "UPDATE " MAIN_TABLE " SET tags = ? WHERE file_id = ?"
 #define SQL_T_SEARCH \
-  "SELECT filename, tags FROM " MAIN_TABLE " WHERE tags LIKE ?"
+  "SELECT filename, tags FROM " MAIN_TABLE " WHERE tags LIKE ? LIMIT ? OFFSET ?"
 #define SQL_T_FIND \
   "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
 /* service operations */
@@ -87,7 +87,7 @@ int db_file_update(const char *path, uuid_t *uuid);
 int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, char *path);
 int db_file_search_path(const char *str, query_limits_t *lim, data_t *results);
-int db_file_search_tag(const data_t *tags, data_t *results);
+int db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results);
 
 int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(uuid_t *uuid, data_t *tags);

@@ -306,22 +306,37 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results)
   return (results->items == MAX_QUERY_LIMIT) ? 1 : 0;
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - more data expected
+ * 2 - error
+ */
+/* NOTE: unlike other functions with limits support,
+ * this one MAY return zero items during sequent calls.
+ * So, trust only return value, not number of items.
+ */
 int
-db_file_search_tag(const data_t *tags, data_t *results)
+db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results)
 {
   sqlite3_stmt *stmt;
   char *item = NULL;
   size_t len = 0;
   int ret = 0;
+  int rows = 0;
   bool match_all = true;
   char buf[PATH_MAX] = { 0 };
+
+  ASSERT(tags != NULL && lim != NULL && results != NULL, MSG_M_NULLPTR);
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
-      return 1;
+      return 2;
     }
+
+  if (results != NULL)
+    data_clear(results);
 
   len = snprintf(buf, MAXLINE, "%% %s %%", tags->buf);
   while (len --> 0)
@@ -329,9 +344,12 @@ db_file_search_tag(const data_t *tags, data_t *results)
       buf[len] = '%';
 
   sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
+  sqlite3_bind_int(stmt, 2, lim->limit);
+  sqlite3_bind_int(stmt, 3, lim->offset);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
+      rows++;
       item = tags->buf;
       match_all = true;
       snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 1));
@@ -344,6 +362,8 @@ db_file_search_tag(const data_t *tags, data_t *results)
           len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
           data_item_add(results, buf, len);
         }
+
+      lim->offset++;
     }
 
   if (ret != SQLITE_DONE)
@@ -351,7 +371,7 @@ db_file_search_tag(const data_t *tags, data_t *results)
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
       data_clear(results);
-      return 1;
+      return 2;
     }
 
   if (results->items > 1)
@@ -360,7 +380,7 @@ db_file_search_tag(const data_t *tags, data_t *results)
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return (rows == 0) ? 0 : 1;
 }
 
 /** return values:
