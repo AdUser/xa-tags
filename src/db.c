@@ -473,8 +473,13 @@ db_tag_add_uniq(data_t *tags)
   return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
+/** return values:
+ * 0 - all ok
+ * 1 - more data expected
+ * 2 - error
+ */
 int
-db_tags_find(const char *str, data_t *results)
+db_tags_find(const char *str, query_limits_t *lim, data_t *results)
 {
   sqlite3_stmt *stmt = NULL;
   char buf[PATH_MAX]; /* not exactly 'path', but size should be reasonable */
@@ -482,25 +487,31 @@ db_tags_find(const char *str, data_t *results)
   size_t len = 0;
   int ret = 0;
 
-  ASSERT(str != NULL && results != NULL, MSG_M_NULLPTR);
+  ASSERT(str != NULL && lim != NULL && results != NULL, MSG_M_NULLPTR);
 
   len = strlen(SQL_T_FIND);
   if (sqlite3_prepare_v2(db_conn, SQL_T_FIND, len, &stmt, NULL) != SQLITE_OK)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
-      return 1;
+      return 2;
     }
+
+  if (results != NULL)
+    data_clear(results);
 
   strncpy(buf, str, PATH_MAX);
   for (p = buf; *p != '\0'; p++)
     if (*p == '*') *p = '%';
 
   sqlite3_bind_text(stmt, 1, buf, len, SQLITE_TRANSIENT);
+  sqlite3_bind_int(stmt, 2, lim->limit);
+  sqlite3_bind_int(stmt, 3, lim->offset);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
       len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
       data_item_add(results, buf, len);
+      lim->offset++;
     }
 
   if (ret != SQLITE_DONE)
@@ -508,12 +519,12 @@ db_tags_find(const char *str, data_t *results)
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
       data_clear(results);
-      return 1;
+      return 2;
     }
 
   sqlite3_finalize(stmt);
 
-  return 0;
+  return (results->items == MAX_QUERY_LIMIT) ? 1 : 0;
 }
 
 void

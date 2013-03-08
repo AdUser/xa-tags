@@ -28,7 +28,7 @@
 #define SQL_T_SEARCH \
   "SELECT filename, tags FROM " MAIN_TABLE " WHERE tags LIKE ?"
 #define SQL_T_FIND \
-  "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ?"
+  "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
 /* service operations */
 #define SQL_T_UNIQ_ADD \
   "INSERT OR IGNORE INTO " TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
@@ -91,7 +91,7 @@ int db_file_search_tag(const data_t *tags, data_t *results);
 
 int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(uuid_t *uuid, data_t *tags);
-int db_tags_find(const char *str, data_t *results);
+int db_tags_find(const char *str, query_limits_t *lim, data_t *results);
 
 #ifdef UNIQ_TAGS_LIST
 int db_tag_add_uniq(data_t *tags);

@@ -172,14 +172,20 @@ _handle_tag_search(const char *unused, const char *tag)
 {
   char *p = NULL;
   data_t results;
+  query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
   memset(&results, 0x0, sizeof(data_t));
 
-  db_tags_find(tag, &results);
+  while (db_tags_find(tag, &lim, &results) < 2)
+    {
+      if (results.items == 0)
+        break;
 
-  if (results.items > 0)
-    while(data_items_walk(&results, &p) > 0)
-      printf("%s\n", p);
+      while(data_items_walk(&results, &p) > 0)
+        printf("%s\n", p);
+    }
+
+  data_clear(&results);
 }
 
 /* extended operations */
