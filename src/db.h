@@ -16,7 +16,7 @@
 #define SQL_F_GET \
   "SELECT filename FROM " MAIN_TABLE " WHERE file_id = ?"
 #define SQL_F_SEARCH \
-  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ?"
+  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ? LIMIT ? OFFSET ?"
 #define SQL_F_UPDATE \
   "UPDATE " MAIN_TABLE " SET crc_dname = ?, crc_fname = ?, filename = ? WHERE file_id = ?"
 
@@ -86,7 +86,7 @@ int db_file_add(const char *path, uuid_t *new_uuid);
 int db_file_update(const char *path, uuid_t *uuid);
 int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, char *path);
-int db_file_search_path(const char *str, data_t *results);
+int db_file_search_path(const char *str, query_limits_t *lim, data_t *results);
 int db_file_search_tag(const data_t *tags, data_t *results);
 
 int db_tags_get(uuid_t *uuid, data_t *tags);

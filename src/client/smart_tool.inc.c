@@ -216,19 +216,23 @@ void
 _handle_file_search_path(const char *unused, const char *substr)
 {
   data_t results;
+  query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
   memset(&results, 0, sizeof(data_t));
 
   if (strlen(substr) == 0)
     return;
 
-  db_file_search_path(substr, &results);
+  while (db_file_search_path(substr, &lim, &results) < 2)
+    {
+      if (results.items == 0)
+        break;
 
-  if (results.items == 0)
-    return;
+      data_items_merge(&results, '\n');
+      printf("%s\n", results.buf);
+    }
 
-  data_items_merge(&results, '\n');
-  printf("%s\n", results.buf);
+  data_clear(&results);
 }
 
 /* update operations */
