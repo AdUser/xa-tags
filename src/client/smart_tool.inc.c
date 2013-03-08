@@ -111,7 +111,7 @@ void
 _handle_tag_set(const char *path, const char *str)
 {
   data_t tags;
-  uuid_t uuid;
+  uuid_t uuid = { 0, 0, 0 };
   int ret = 0;
 
   memset(&tags, 0, sizeof(data_t));

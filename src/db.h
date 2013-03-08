@@ -48,7 +48,7 @@
 ");" \
 "CREATE TABLE " MAIN_TABLE \
 "(" \
-"  file_id   INTEGER PRIMARY KEY," \
+"  file_id   INTEGER PRIMARY KEY AUTOINCREMENT," \
 "  crc_dname INTEGER NOT NULL DEFAULT 0,"  \
 "  crc_fname INTEGER NOT NULL DEFAULT 0,"  \
 "  filename  TEXT    NOT NULL DEFAULT ''," \
