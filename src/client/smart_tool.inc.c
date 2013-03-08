@@ -228,7 +228,7 @@ _handle_file_search_path(const char *unused, const char *substr)
   if (strlen(substr) == 0)
     return;
 
-  while (db_file_search_path(substr, &lim, &results) < 2)
+  while (db_file_search_path(substr, &lim, &results, NULL) < 2)
     {
       if (results.items == 0)
         break;

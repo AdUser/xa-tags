@@ -247,15 +247,17 @@ db_file_get(const uuid_t *uuid, char *path)
  * 2 - error
  */
 int
-db_file_search_path(const char *str, query_limits_t *lim, data_t *results)
+db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
+                    int (*cb)(const char *, const uuid_t *))
 {
   sqlite3_stmt *stmt = NULL;
   uuid_t uuid = { 0, 0, 0 };
   size_t len = 0;
   int ret = 0;
+  int rows = 0;
   char buf[PATH_MAX + UUID_CHAR_LEN + 3] = { 0 };
 
-  ASSERT(str != NULL && lim != NULL && results != NULL, MSG_M_NULLPTR);
+  ASSERT(str != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
   len = strlen(SQL_F_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_F_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -279,31 +281,43 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results)
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
+      rows++;
       uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
-      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1),
-      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2),
-      len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
-                                 &uuid, (char *) sqlite3_column_text(stmt, 3));
-      data_item_add(results, buf, len);
-      lim->offset++;
+      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1);
+      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2);
+
+      if (results != NULL)
+        {
+          len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
+                                     &uuid, (char *) sqlite3_column_text(stmt, 3));
+          data_item_add(results, buf, len);
+        }
+
+      if (cb != NULL)
+        cb((char *) sqlite3_column_text(stmt, 3), &uuid);
     }
+  lim->offset += rows;
 
   if (ret != SQLITE_DONE)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
-      data_clear(results);
+      if (results != NULL)
+        data_clear(results);
       sqlite3_finalize(stmt);
 
       return 2;
     }
 
-  if (results->items > 1)
-    results->flags |= DATA_MULTI;
-  results->type = DATA_M_UUID_FILE;
+  if (results != NULL)
+    {
+      if (results->items > 1)
+        results->flags |= DATA_MULTI;
+      results->type = DATA_M_UUID_FILE;
+    }
 
   sqlite3_finalize(stmt);
 
-  return (results->items == MAX_QUERY_LIMIT) ? 1 : 0;
+  return (rows == lim->limit) ? 1 : 0;
 }
 
 /** return values:
