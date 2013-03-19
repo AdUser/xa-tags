@@ -14,6 +14,7 @@
 | M      |       | Move tags from database to separate xattr.
 | q      |       | Be less verbose.
 | r      |       | Handle files recursive.
+| R      |       | Restore labels on selected files or dir.
 | s      | <str> | Set for file this set of tags.
 | T      | <str> | Search for existing tag (for complete list - use '*').
 | u      |       | Update location in database for given file or dir.

@@ -294,7 +294,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
         }
 
       if (cb != NULL)
-        cb((char *) sqlite3_column_text(stmt, 3), &uuid);
+        cb((const char *) sqlite3_column_text(stmt, 3), &uuid);
     }
   lim->offset += rows;
 

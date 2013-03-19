@@ -245,6 +245,34 @@ _handle_file_search_path(const char *unused, const char *substr)
 }
 
 /* update operations */
+void
+_handle_labels_restore(const char *path, const char *unused)
+{
+  query_limits_t lim = { 0, MAX_QUERY_LIMIT };
+  int ret = 0;
+  int (*cb)(const char *, const uuid_t *) = &file_uuid_set;
+  char *buf = NULL;
+  size_t len = strlen(path);
+  struct stat st;
+
+  if (len == 0)
+    return;
+
+  stat(path, &st);
+
+  CALLOC(buf, len + 2, sizeof(char));
+
+  if (S_ISDIR(st.st_mode) && (flags & F_RECURSE))
+    snprintf(buf, len + 1, "%s%c", path, '%');
+  else
+    snprintf(buf, len + 1, "%s", path);
+
+  while ((ret = db_file_search_path(buf, &lim, NULL, cb)) < 2)
+    if (ret == 0)
+      break;
+
+  FREE(buf);
+}
 
 void
 _handle_file_update(const char *path, const char *str)
@@ -356,7 +384,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "u" "mMk")) != -1)
+  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "Ru" "mMk")) != -1)
     switch (opt)
       {
         /* operations */
@@ -371,6 +399,7 @@ main(int argc, char **argv)
         case 'f' : op = opt; str = optarg; handler = &_handle_file_search_tag;  break;
         case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
         case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
+        case 'R' : op = opt; str = optarg; handler = &_handle_labels_restore; break;
 #ifndef INLINE_TAGS
         case 'm' : op = opt; str = NULL;   handler = &_handle_file_migrate_to_db; break;
         case 'M' : op = opt; str = NULL;   handler = &_handle_file_migrate_from_db; break;
@@ -438,6 +467,12 @@ main(int argc, char **argv)
           exit(EXIT_FAILURE);
         while ((ret = data_items_walk(&files, &item)) > 0)
           (flags & F_RECURSE) ? _ftw(item, str, handler) : handler(item, str);
+        break;
+      case 'R' :
+        if (files.items < 1)
+          exit(EXIT_FAILURE);
+        while ((ret = data_items_walk(&files, &item)) > 0)
+          handler(item, NULL); /* without recursion */
         break;
       default :
         usage(EXIT_FAILURE);
