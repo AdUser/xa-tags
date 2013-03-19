@@ -147,7 +147,7 @@ file_uuid_get(const char *path, uuid_t *uuid)
  *  1 - if error occured
  */
 int
-file_uuid_set(const char *path, uuid_t *uuid)
+file_uuid_set(const char *path, const uuid_t *uuid)
 {
   errno = 0;
   setxattr(path, XATTR_UUID, uuid_id_printf(uuid), UUID_CHAR_LEN, 0);
