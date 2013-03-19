@@ -325,10 +325,6 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
  * 1 - more data expected
  * 2 - error
  */
-/* NOTE: unlike other functions with limits support,
- * this one MAY return zero items during sequent calls.
- * So, trust only return value, not number of items.
- */
 int
 db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
                    int (*cb)(const char *, const char *))
@@ -358,36 +354,44 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
     if (buf[len] == '*')
       buf[len] = '%';
 
-  sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
-  sqlite3_bind_int(stmt, 2, lim->limit);
-  sqlite3_bind_int(stmt, 3, lim->offset);
-
-  while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
+  do /* loop, until we get 'limit' items or lesser than 'limit' rows from query */
     {
-      rows++;
-      item = tags->buf;
-      match_all = true;
-      snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 1));
-      while (match_all && data_items_walk(tags, &item) > 0)
-        if (strstr(buf, item) == NULL)
-          match_all = false;
+      sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
+      sqlite3_bind_int(stmt,  2, lim->limit);
+      sqlite3_bind_int(stmt,  3, lim->offset);
 
-      if (match_all)
+      for (rows = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
-          if (results != NULL)
+          rows++;
+          item = tags->buf;
+          match_all = true;
+          snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 1));
+          while (match_all && data_items_walk(tags, &item) > 0)
+            if (strstr(buf, item) == NULL)
+              match_all = false;
+
+          if (match_all)
             {
-              len = snprintf(buf, PATH_MAX, (char *) sqlite3_column_text(stmt, 0));
-              data_item_add(results, buf, len);
+              if (results != NULL)
+                {
+                  len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
+                  data_item_add(results, buf, len);
+                }
+              if (cb != NULL)
+                cb((char *) sqlite3_column_text(stmt, 0),
+                   (char *) sqlite3_column_text(stmt, 1));
             }
-          if (cb != NULL)
-            cb((char *) sqlite3_column_text(stmt, 0),
-               (char *) sqlite3_column_text(stmt, 1));
+
+          if (results->items == lim->limit)
+            break;
         }
+      lim->offset += rows;
+      sqlite3_reset(stmt);
+      sqlite3_clear_bindings(stmt);
     }
+  while (results->items < lim->limit && rows == lim->limit);
 
-  lim->offset += rows;
-
-  if (ret != SQLITE_DONE)
+  if (ret != SQLITE_DONE && ret != SQLITE_ROW)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       if (results != NULL)
@@ -405,7 +409,7 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
 
   sqlite3_finalize(stmt);
 
-  return (rows == 0) ? 0 : 1;
+  return (results->items == lim->limit) ? 1 : 0;
 }
 
 /** return values:
