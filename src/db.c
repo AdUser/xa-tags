@@ -246,6 +246,9 @@ db_file_get(const uuid_t *uuid, char *path)
  * 1 - more data expected
  * 2 - error
  */
+/**
+ * NOTE: 'str' may contain '*' chars, if you want fuzzy search
+ */
 int
 db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
                     int (*cb)(const char *, const uuid_t *))
@@ -269,8 +272,8 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
   if (results != NULL)
     data_clear(results);
 
-  len = snprintf(buf, PATH_MAX + 3, "%%%s%%", str);
-
+  strncpy(buf, str, PATH_MAX + 1);
+  len = strlen(buf);
   while (len --> 0)
     if (buf[len] == '*')
       buf[len] = '%';

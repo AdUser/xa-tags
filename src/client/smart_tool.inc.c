@@ -226,13 +226,18 @@ _handle_file_search_path(const char *unused, const char *substr)
 {
   data_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
+  char *buf;
+  size_t len = strlen(substr);
 
   memset(&results, 0, sizeof(data_t));
+  CALLOC(buf, len + 4, sizeof(char));
+
+  snprintf(buf, len + 3, "%c%s%c", '*', substr, '*');
 
   if (strlen(substr) == 0)
     return;
 
-  while (db_file_search_path(substr, &lim, &results, NULL) < 2)
+  while (db_file_search_path(buf, &lim, &results, NULL) < 2)
     {
       if (results.items == 0)
         break;
@@ -242,6 +247,7 @@ _handle_file_search_path(const char *unused, const char *substr)
     }
 
   data_clear(&results);
+  FREE(buf);
 }
 
 /* update operations */
@@ -249,9 +255,9 @@ void
 _handle_labels_restore(const char *path, const char *unused)
 {
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
-  int ret = 0;
   int (*cb)(const char *, const uuid_t *) = &file_uuid_set;
   char *buf = NULL;
+  char c = '\0';
   size_t len = strlen(path);
   struct stat st;
 
@@ -263,13 +269,11 @@ _handle_labels_restore(const char *path, const char *unused)
   CALLOC(buf, len + 2, sizeof(char));
 
   if (S_ISDIR(st.st_mode) && (flags & F_RECURSE))
-    snprintf(buf, len + 1, "%s%c", path, '%');
-  else
-    snprintf(buf, len + 1, "%s", path);
+    c = '*';
 
-  while ((ret = db_file_search_path(buf, &lim, NULL, cb)) < 2)
-    if (ret == 0)
-      break;
+  snprintf(buf, len + 1, "%s%c", path, c);
+
+  while (db_file_search_path(buf, &lim, NULL, cb) == 1);
 
   FREE(buf);
 }
