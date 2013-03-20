@@ -382,6 +382,8 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
                    (char *) sqlite3_column_text(stmt, 1));
             }
 
+            /* NOTE: if we simple wait until 'for' loop ends,     *
+             * number of items in result will float around limit. */
           if (results->items == lim->limit)
             break;
         }
