@@ -462,7 +462,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
 }
 
 int
-db_tags_set(uuid_t *uuid, data_t *tags)
+db_tags_set(const uuid_t *uuid, data_t *tags)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
