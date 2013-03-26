@@ -90,16 +90,31 @@ _handle_tag_del(const char *path, const char *str)
   data_clear(&tmp_tags);
 }
 
+int
+_cb_tag_clear(const char *unused, const uuid_t *uuid)
+{
+  static data_t tags;
+
+  memset(&tags, 0x0, sizeof(data_t));
+  db_tags_set(uuid, &tags);
+
+  return 0;
+}
+
 void
 _handle_tag_clr(const char *path, const char *tags)
 {
+  struct stat st;
+  query_limits_t lim = { 0, 250 };
   data_t new_tags;
   uuid_t uuid = { 0, 0, 0 };
 
   memset(&new_tags, 0x0, sizeof(data_t));
 
-  if (file_uuid_get(path, &uuid) == 0)
+  if (stat(path, &st) == 0 && file_uuid_get(path, &uuid) == 0)
     db_tags_set(&uuid, &new_tags);
+  else
+    db_file_search_path(path, &lim, NULL, _cb_tag_clear);
 
   file_uuid_clr(path);
 #ifdef INLINE_TAGS
@@ -438,6 +453,10 @@ main(int argc, char **argv)
 
           data_item_add(&files, buf, 0);
           FREE(item);
+        }
+      else if (op == 'c')
+        {
+          data_item_add(&files, argv[optind], 0);
         }
       else
         printf(COMMON_ERR_FMTN, argv[optind], strerror(errno));
