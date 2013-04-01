@@ -317,7 +317,7 @@ _handle_file_update(const char *path, const char *str)
     {
       if ((file_uuid_get(buf, &uuid_linked) == 0)
           && (uuid_linked.id == uuid.id))
-        msg(msg_warn, COMMON_MSG_FMT "(%s)\n", MSG_F_LINKED, path, buf);
+        msg(msg_warn, COMMON_MSG_FMTN, MSG_F_LINKED, path);
       else
         db_file_update(path, &uuid);
     }
