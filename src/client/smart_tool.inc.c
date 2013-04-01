@@ -92,12 +92,7 @@ _handle_tag_del(const char *path, const char *str)
 int
 _cb_tag_clear(const char *unused, const uuid_t *uuid)
 {
-  static data_t tags;
-
-  memset(&tags, 0x0, sizeof(data_t));
-  db_tags_set(uuid, &tags);
-
-  return 0;
+  return db_file_del(uuid);
 }
 
 void
@@ -105,20 +100,19 @@ _handle_tag_clr(const char *path, const char *tags)
 {
   struct stat st;
   query_limits_t lim = { 0, 250 };
-  data_t new_tags;
   uuid_t uuid = { 0, 0, 0 };
 
-  memset(&new_tags, 0x0, sizeof(data_t));
-
   if (stat(path, &st) == 0 && file_uuid_get(path, &uuid) == 0)
-    db_tags_set(&uuid, &new_tags);
-  else
-    db_file_search_path(path, &lim, NULL, _cb_tag_clear);
-
-  file_uuid_clr(path);
+    {
+      db_file_del(&uuid);
+      file_uuid_clr(path);
 #ifdef INLINE_TAGS
-  file_tags_clr(path);
+      file_tags_clr(path);
 #endif
+      return;
+    }
+
+  db_file_search_path(path, &lim, NULL, _cb_tag_clear);
 }
 
 void
