@@ -13,18 +13,17 @@ _handle_tag_add(const char *path, const char *str)
   memset(&all_tags, 0, sizeof(data_t));
   memset(&tmp_tags, 0, sizeof(data_t));
 
-  if (file_uuid_get(path, &uuid) > 0)
+  file_uuid_get(path, &uuid);
+
+  if (uuid.id != 0)
+    db_tags_get(&uuid, &all_tags);
+
+  if (uuid.id == 0)
     {
-      if (db_file_add(path, &uuid) > 0)
+      if (db_file_add(path, &uuid) > 0 ||
+          file_uuid_set(path, &uuid) > 0)
         return;
-      file_uuid_set(path, &uuid);
     }
-
-  db_tags_get(&uuid, &all_tags);
-
-  /* this allow import existing uuid's */
-  if (all_tags.items == 0 && uuid.id != 0)
-    db_file_add(path, &uuid);
 
 #ifdef INLINE_TAGS
   file_tags_get(path, &tmp_tags);
