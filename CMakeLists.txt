@@ -1,5 +1,5 @@
 SET(CNAME "xa-tags")
-SET(VERSION 0.2)
+SET(VERSION 0.3)
 SET(EMAIL "ad_user@lavabit.com")
 
 PROJECT(${CNAME} C)
