@@ -279,7 +279,7 @@ _handle_labels_restore(const char *path, const char *unused)
   if (S_ISDIR(st.st_mode) && (flags & F_RECURSE))
     c = '*';
 
-  snprintf(buf, len + 1, "%s%c", path, c);
+  snprintf(buf, len + 2, "%s%c", path, c);
 
   while (db_file_search_path(buf, &lim, NULL, cb) == 1);
 
