@@ -73,7 +73,7 @@
 
 typedef struct query_limits_t
 {
-  uint16_t offset;
+  uint64_t offset;
   uint16_t limit;
 } query_limits_t;
 
