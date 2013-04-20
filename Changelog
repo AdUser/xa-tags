@@ -1,5 +1,23 @@
+2013-??-?? v0.4:
+  Release goal: unleash our search capabilities!
+
+2013-04-20 v0.3:
+  Release goal: make it usable!
+  Main changes and added features:
+    + 'labels restore' operation
+    + 'location update' operation
+    + experimental 'migration' feature (move tags from inodes to db and back)
+    + added '-v' and '-q' options
+    + added recursion to all operations
+    + added a lot of tests
+    + basic l10n support (not tested yet)
+    * improved search operations
+    * speed improvements
+    * API cleanup
+    * bugfixes
+
 2012-11-05 v0.2:
-  Relese goal: make it work already!
+  Release goal: make it work already!
   Main changes and added features:
     * API cleanup
     * debugging and testing
