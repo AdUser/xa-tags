@@ -32,6 +32,10 @@
   #include <sqlite3.h>
 #endif
 
+#ifdef REGEX_SEARCH
+  #include <regex.h>
+#endif
+
 #include "data.h"
 #include "uuid.h"
 #include "db.h"
@@ -39,6 +43,7 @@
 #include "buf.h"
 #include "conn.h"
 #include "proto.h"
+#include "search.h"
 #include "log.h"
 #include "msg.h"
 #include "options.h"
