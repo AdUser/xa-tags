@@ -28,6 +28,7 @@ OPTION(OPT_I18N   "Build without localization support" ON)
 OPTION(OPT_ASYNC_DB "Allow collection and batch execution of write requests" ON)
 OPTION(OPT_DB_AUTOCREATE "Create and initialize database automatically if missing" OFF)
 OPTION(OPT_UNIQ_TAGS_LIST "Create and maintain list of used tags" ON)
+OPTION(OPT_REGEX_SEARCH "Regex search support" ON)
 # also, this variables may be usefull:
 # CMAKE_BUILD_TYPE        : Debug | Release
 # CMAKE_INSTALL_PREFIX    : /usr  | /usr/local | ...
@@ -79,6 +80,10 @@ ENDIF (OPT_DB_AUTOCREATE STREQUAL "ON")
 IF    (OPT_UNIQ_TAGS_LIST STREQUAL "ON")
   ADD_DEFINITIONS( -DUNIQ_TAGS_LIST )
 ENDIF (OPT_UNIQ_TAGS_LIST STREQUAL "ON")
+
+IF    (OPT_REGEX_SEARCH STREQUAL "ON")
+  ADD_DEFINITIONS( -DREGEX_SEARCH )
+ENDIF (OPT_REGEX_SEARCH STREQUAL "ON")
 
 ## checks
 IF     (MODE STREQUAL  "DUMB_TOOL")
@@ -144,6 +149,7 @@ MESSAGE (STATUS "  Use daemon:             ${OPT_DAEMON}")
 MESSAGE (STATUS "  Inline tags:            ${OPT_INLINE_TAGS}")
 MESSAGE (STATUS "  Autocreate db:          ${OPT_DB_AUTOCREATE}")
 MESSAGE (STATUS "  List of used tags:      ${OPT_UNIQ_TAGS_LIST}")
+MESSAGE (STATUS "  Regex search support:   ${OPT_REGEX_SEARCH}")
 MESSAGE (STATUS "------------------------------------------")
 
 ADD_SUBDIRECTORY (src)
