@@ -10,9 +10,9 @@ search_parse_terms(search_t * const search, const data_t *terms)
   size_t item_len = 0;
   data_t strings;
   enum { undef, string, regexp } type;
+#ifdef REGEX_SEARCH
   char *buf = NULL;
   size_t buf_size = 4096;
-#ifdef REGEX_SEARCH
   int regex_flags;
   int errcode = 0;
 #endif
@@ -113,7 +113,9 @@ search_parse_terms(search_t * const search, const data_t *terms)
 void
 search_free(search_t * const search)
 {
+#ifdef REGEX_SEARCH
   uint8_t i = 0;
+#endif
 
   data_clear(&search->strings_buf);
 
