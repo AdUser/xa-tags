@@ -25,10 +25,10 @@ int main()
   data_clear(&terms);
 
   search_free(&search);
-  assert(search.strings_buf.items == 0);
-  assert(search.strings_buf.buf == NULL);
+  assert(search.str_buf.items == 0);
+  assert(search.str_buf.buf == NULL);
 #ifdef REGEX_SEARCH
-  assert(search.regexps_cnt == 0);
+  assert(search.rxp_cnt == 0);
 #endif
 
   return 0;

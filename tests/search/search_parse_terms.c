@@ -21,26 +21,26 @@ int main()
 
   ret = search_parse_terms(&search, &terms);
   assert(ret == 0);
-  assert(search.strings_neg[0] == false);
-  assert(search.strings_neg[1] == false);
-  assert(search.strings_neg[2] == true);
-  assert(search.strings_neg[3] == false);
-  assert(search.strings_buf.items == 3);
-  assert(memcmp(search.strings_buf.buf, "alice\0mary\0bob\0", 15) == 0);
+  assert(search.str_flags[0] == SEARCH_NONE);
+  assert(search.str_flags[1] == SEARCH_NONE);
+  assert(search.str_flags[2] == SEARCH_NEG);
+  assert(search.str_flags[3] == SEARCH_NONE);
+  assert(search.str_buf.items == 3);
+  assert(memcmp(search.str_buf.buf, "alice\0mary\0bob\0", 15) == 0);
 #ifdef REGEX_SEARCH
-  assert(search.regexps_cnt == 2);
-  assert(search.regexps_neg[0] == true);
-  assert(search.regexps_neg[1] == false);
-  assert(search.regexps_neg[2] == false);
-  assert(memcmp(&search.regexps_buf[0], &search.regexps_buf[2], sizeof(regex_t)) != 0);
-  assert(memcmp(&search.regexps_buf[1], &search.regexps_buf[2], sizeof(regex_t)) != 0);
+  assert(search.rxp_cnt == 2);
+  assert(search.rxp_flags[0] == SEARCH_NEG);
+  assert(search.rxp_flags[1] == SEARCH_NONE);
+  assert(search.rxp_flags[2] == SEARCH_NONE);
+  assert(memcmp(&search.rxp_buf[0], &search.rxp_buf[2], sizeof(regex_t)) != 0);
+  assert(memcmp(&search.rxp_buf[1], &search.rxp_buf[2], sizeof(regex_t)) != 0);
 #endif
 
   data_clear(&terms);
-  data_clear(&search.strings_buf);
+  data_clear(&search.str_buf);
 #ifdef REGEX_SEARCH
-  regfree(&search.regexps_buf[0]);
-  regfree(&search.regexps_buf[1]);
+  regfree(&search.rxp_buf[0]);
+  regfree(&search.rxp_buf[1]);
 #endif
 
   return 0;

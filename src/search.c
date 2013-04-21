@@ -5,7 +5,7 @@ search_parse_terms(search_t * const search, const data_t *terms)
 {
   char *item = NULL;
   char *flags = NULL;
-  bool neg = false;
+  uint8_t term_flags = 0;
   size_t item_len = 0;
   data_t strings;
   enum { undef, string, regexp } type;
@@ -22,13 +22,13 @@ search_parse_terms(search_t * const search, const data_t *terms)
     {
       item_len = strlen(item);
 
-      /* negation flag */
-      neg = false;
-      if (*item == '-')
+      /* flags */
+      term_flags = 0;
+      if (*item == '-' || *item == '=')
         {
+          term_flags = (*item == '-') ? SEARCH_NEG : SEARCH_EXACT;
           item++;
           item_len--;
-          neg = true;
         }
 
       /* detect type */
@@ -42,22 +42,22 @@ search_parse_terms(search_t * const search, const data_t *terms)
       switch (type)
         {
           case string :
-            if (search->strings_buf.items >= MAX_SEARCH_COND)
+            if (search->str_buf.items >= MAX_SEARCH_COND)
               {
                 msg(msg_warn, COMMON_MSG_FMTN, MSG_S_MAXREACHED, item);
                 continue;
               }
-            search->strings_neg[search->strings_buf.items] = neg;
-            data_item_add(&search->strings_buf, item, item_len);
+            search->str_flags[search->str_buf.items] = term_flags;
+            data_item_add(&search->str_buf, item, item_len);
             break;
           case regexp :
 #ifdef REGEX_SEARCH
-            if (search->regexps_cnt >= MAX_SEARCH_COND)
+            if (search->rxp_cnt >= MAX_SEARCH_COND)
               {
                 msg(msg_warn, COMMON_MSG_FMTN, MSG_S_MAXREACHED, item);
                 continue;
               }
-            search->regexps_neg[search->regexps_cnt] = neg;
+            search->rxp_flags[search->rxp_cnt] = term_flags & ~(SEARCH_EXACT);
             buf_size = flags - item;
             CALLOC(buf, buf_size, sizeof(char));
             strncpy(buf, item + 1, flags - item - 1);
@@ -69,18 +69,18 @@ search_parse_terms(search_t * const search, const data_t *terms)
                 else
                   msg(msg_warn, COMMON_MSG_FMTN, item);
               }
-            errcode = regcomp(&search->regexps_buf[search->regexps_cnt], buf, regex_flags);
+            errcode = regcomp(&search->rxp_buf[search->rxp_cnt], buf, regex_flags);
             FREE(buf);
             if (errcode != 0)
               {
                 buf_size = 4096;
                 CALLOC(buf, buf_size, sizeof(char));
-                regerror(errcode, &search->regexps_buf[search->regexps_cnt], buf, buf_size);
+                regerror(errcode, &search->rxp_buf[search->rxp_cnt], buf, buf_size);
                 msg(msg_warn, COMMON_MSG_FMTN, MSG_S_RXCOMPFAIL, buf);
                 FREE(buf);
                 return 1;
               }
-            search->regexps_cnt += 1;
+            search->rxp_cnt += 1;
 #else
             msg(msg_info, "%s.\n", MSG_S_RXDISABLED);
             msg(msg_warn, COMMON_MSG_FMTN, MSG_S_RXIGNORE, item);
@@ -105,11 +105,11 @@ search_free(search_t * const search)
   uint8_t i = 0;
 #endif
 
-  data_clear(&search->strings_buf);
+  data_clear(&search->str_buf);
 
 #ifdef REGEX_SEARCH
-  for (i = 0; i < search->regexps_cnt; i++)
-    regfree(&search->regexps_buf[i]);
+  for (i = 0; i < search->rxp_cnt; i++)
+    regfree(&search->rxp_buf[i]);
 #endif
 
   memset(search, 0x0, sizeof(search_t));
