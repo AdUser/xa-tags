@@ -16,6 +16,7 @@ SET(SRC_FILES_CLIENT
     "uuid.c"
     "data.c"
     "file.c"
+    "search.c"
     )
 
 # main targets
