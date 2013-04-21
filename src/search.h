@@ -1,21 +1,20 @@
-/* typedefs */
+/** typedefs */
 
 #define MAX_SEARCH_COND 32
 
 typedef struct search_t
 {
-  uint8_t  strings_cnt;
   bool     strings_neg[MAX_SEARCH_COND];
-  char    *strings[MAX_SEARCH_COND];
-  char    *strings_buf;
+  char    *strings_idx[MAX_SEARCH_COND];
+  data_t   strings_buf;
 #ifdef REGEX_SEARCH
   uint8_t   regexps_cnt;
   bool      regexps_neg[MAX_SEARCH_COND];
-  regex_t (*regexps)[MAX_SEARCH_COND];
+  regex_t   regexps_buf[MAX_SEARCH_COND];
 #endif
 } search_t;
 
-/* functions */
+/** functions */
 
 /** return value:
  * 0 - on success
