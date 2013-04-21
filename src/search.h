@@ -5,7 +5,6 @@
 typedef struct search_t
 {
   bool     strings_neg[MAX_SEARCH_COND];
-  char    *strings_idx[MAX_SEARCH_COND];
   data_t   strings_buf;
 #ifdef REGEX_SEARCH
   uint8_t   regexps_cnt;

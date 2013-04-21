@@ -3,7 +3,6 @@
 int
 search_parse_terms(search_t * const search, const data_t *terms)
 {
-  int i = 0;
   char *item = NULL;
   char *flags = NULL;
   bool neg = false;
@@ -94,15 +93,6 @@ search_parse_terms(search_t * const search, const data_t *terms)
             break;
         }
 
-    }
-
-  /* build string index */
-  if (search->strings_buf.items > 0)
-    {
-      item = NULL;
-      i = 0;
-      for (i = 0; data_items_walk(&search->strings_buf, &item) > 0; i++)
-        search->strings_idx[i] = item;
     }
 
   return 0;
