@@ -1,3 +1,5 @@
+-- db creation statements (v1)
+
 -- service table
 DROP TABLE IF EXISTS s_info;
 CREATE TABLE s_info (
