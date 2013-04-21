@@ -26,4 +26,5 @@ parse_search_terms(search_t * const search, const data_t *terms);
 /**
  * gracefully free all allocated memory
  */
-void search_free(search_t * const search);
+void
+search_free(search_t * const search);

@@ -109,3 +109,18 @@ parse_search_terms(search_t * const search, const data_t *terms)
 
   return 0;
 }
+
+void
+search_free(search_t * const search)
+{
+  uint8_t i = 0;
+
+  data_clear(&search->strings_buf);
+
+#ifdef REGEX_SEARCH
+  for (i = 0; i < search->regexps_cnt; i++)
+    regfree(&search->regexps_buf[i]);
+#endif
+
+  memset(search, 0x0, sizeof(search_t));
+}
