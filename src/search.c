@@ -45,8 +45,7 @@ search_parse_terms(search_t * const search, const data_t *terms)
           case string :
             if (search->strings_buf.items >= MAX_SEARCH_COND)
               {
-                msg(msg_warn, "Maximum search conditions (%d) reached, ignoring: %s\n",
-                    MAX_SEARCH_COND, item);
+                msg(msg_warn, COMMON_MSG_FMTN, MSG_S_MAXREACHED, item);
                 continue;
               }
             search->strings_neg[search->strings_buf.items] = neg;
@@ -56,8 +55,7 @@ search_parse_terms(search_t * const search, const data_t *terms)
 #ifdef REGEX_SEARCH
             if (search->regexps_cnt >= MAX_SEARCH_COND)
               {
-                msg(msg_warn, "Maximum search conditions (%d) reached, ignoring: %s\n",
-                    MAX_SEARCH_COND, item);
+                msg(msg_warn, COMMON_MSG_FMTN, MSG_S_MAXREACHED, item);
                 continue;
               }
             search->regexps_neg[search->regexps_cnt] = neg;
@@ -70,7 +68,7 @@ search_parse_terms(search_t * const search, const data_t *terms)
                 if (*flags == 'i')
                   regex_flags |= REG_ICASE;
                 else
-                  msg(msg_warn, "Unknown flag '%c' in this regex: %s. Ignoring.\n", item);
+                  msg(msg_warn, COMMON_MSG_FMTN, item);
               }
             errcode = regcomp(&search->regexps_buf[search->regexps_cnt], buf, regex_flags);
             FREE(buf);
@@ -79,20 +77,20 @@ search_parse_terms(search_t * const search, const data_t *terms)
                 buf_size = 4096;
                 CALLOC(buf, buf_size, sizeof(char));
                 regerror(errcode, &search->regexps_buf[search->regexps_cnt], buf, buf_size);
-                msg(msg_warn, "Regex compilation error: %s", buf);
+                msg(msg_warn, COMMON_MSG_FMTN, MSG_S_RXCOMPFAIL, buf);
                 FREE(buf);
                 return 1;
               }
             search->regexps_cnt += 1;
 #else
-            msg(msg_info, "Well, i know what are you want, but this feature was compiled out.\n");
-            msg(msg_warn, "Ignoring regex in search: %s\n", item);
+            msg(msg_info, "%s.\n", MSG_S_RXDISABLED);
+            msg(msg_warn, COMMON_MSG_FMTN, MSG_S_RXIGNORE, item);
             continue;
 #endif
             break;
           case undef :
           default :
-            msg(msg_error, "Undefined type for the search token: %s\n", item);
+            msg(msg_error, COMMON_MSG_FMTN, MSG_S_UNKNTYPE, item);
             break;
         }
 
