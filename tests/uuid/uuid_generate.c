@@ -13,24 +13,21 @@ int main()
   ret = uuid_generate(&uuid, test);
   assert(ret == 0);
   assert(uuid.id == 0);
-  assert(uuid.dname == 0x5AE9);
-  assert(uuid.fname == 0x8D35);
+  assert(uuid.dirname_hash == 0xEAD3);
 
   uuid.id = 10;
   test = "/path/to/some/";
   ret = uuid_generate(&uuid, test);
   assert(ret == 0);
   assert(uuid.id == 10);
-  assert(uuid.dname == 0x5AE9);
-  assert(uuid.fname == 0xFFFF);
+  assert(uuid.dirname_hash == 0xEAD3);
 
   uuid.id = 0;
   test = "/path/to/some";
   ret = uuid_generate(&uuid, test);
   assert(ret == 0);
   assert(uuid.id == 0);
-  assert(uuid.dname == 0xED90);
-  assert(uuid.fname == 0xAB46);
+  assert(uuid.dirname_hash == 0xB6FF);
 
   return 0;
 }

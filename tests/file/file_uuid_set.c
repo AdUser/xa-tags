@@ -2,8 +2,8 @@
 
 int main()
 {
-  uuid_t uuid_set = { 0, 0, 0 };
-  uuid_t uuid_get = { 0, 0, 0 };
+  uuid_t uuid_set = { 0, 0 };
+  uuid_t uuid_get = { 0, 0 };
 
   SIGCATCH_INIT
 

@@ -5,8 +5,7 @@ typedef struct uuid_t
   {
     uint64_t id;
     /* auxillary fields */
-    uint16_t dname;
-    uint16_t fname;
+    uint16_t dirname_hash;
   } uuid_t;
 
 /** API functions */

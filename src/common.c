@@ -81,10 +81,9 @@ get_path_checksums(uuid_t * const uuid, const char *path)
   if ((p = strrchr(path, '/')) == NULL)
     return;
 
-  p += 1; /* "/path/to/some/file" */
-          /*              --^     */
-  uuid->dname = crc16(path, p - path);
-  uuid->fname = crc16(p, strlen(p));
+  /* "/path/to/some/file" */
+  /*  ^-- crc16 --^       */
+  uuid->dirname_hash = crc16(path, p - path);
 }
 
 /** string functions */

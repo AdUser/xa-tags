@@ -146,8 +146,8 @@ db_file_add(const char *path, uuid_t *new_uuid)
   /* this is safe, because sqlite interprets unbound values as NULL */
   if (new_uuid->id != 0)
     sqlite3_bind_int64(stmt, 1, new_uuid->id);
-  sqlite3_bind_int(stmt, 2, new_uuid->dname);
-  sqlite3_bind_int(stmt, 3, new_uuid->fname);
+  sqlite3_bind_int(stmt, 2, new_uuid->dirname_hash);
+  sqlite3_bind_int(stmt, 3, 0);
   sqlite3_bind_text(stmt, 4, path, -1, SQLITE_STATIC);
 
   switch (sqlite3_step(stmt))
@@ -182,8 +182,8 @@ db_file_update(const char *path, uuid_t *uuid)
 
   get_path_checksums(uuid, path);
 
-  sqlite3_bind_int(stmt, 1, uuid->dname);
-  sqlite3_bind_int(stmt, 2, uuid->fname);
+  sqlite3_bind_int(stmt, 1, uuid->dirname_hash);
+  sqlite3_bind_int(stmt, 2, 0);
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
   sqlite3_bind_int64(stmt, 4, (sqlite3_int64) uuid->id);
 
@@ -268,7 +268,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
                     int (*cb)(const char *, const uuid_t *))
 {
   sqlite3_stmt *stmt = NULL;
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   size_t len = 0;
   int ret = 0;
   int rows = 0;
@@ -300,8 +300,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
     {
       rows++;
       uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
-      uuid.dname = (uint16_t) sqlite3_column_int(stmt, 1);
-      uuid.fname = (uint16_t) sqlite3_column_int(stmt, 2);
+      uuid.dirname_hash = (uint16_t) sqlite3_column_int(stmt, 1);
 
       if (results != NULL)
         {

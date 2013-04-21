@@ -2,7 +2,7 @@
 
 int main()
 {
-  uuid_t uuid  = { 0, 0, 0 };
+  uuid_t uuid  = { 0, 0 };
   uint64_t expected = 0;
   char *test1 = "1d7cfbc9a518c4f9";
   char *test2 = "1D7CFBC9A518C4F9";

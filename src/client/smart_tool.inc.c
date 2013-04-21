@@ -1,7 +1,7 @@
 void
 _handle_tag_add(const char *path, const char *str)
 {
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   data_t all_tags; /* resulting tags set */
   data_t tmp_tags; /* temporary tags set */
 
@@ -100,7 +100,7 @@ _handle_tag_clr(const char *path, const char *tags)
 {
   struct stat st;
   query_limits_t lim = { 0, 250 };
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
 
   if (stat(path, &st) == 0 && file_uuid_get(path, &uuid) == 0)
     {
@@ -118,7 +118,7 @@ void
 _handle_tag_set(const char *path, const char *str)
 {
   data_t tags;
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   int ret = 0;
 
   memset(&tags, 0, sizeof(data_t));
@@ -149,7 +149,7 @@ _handle_tag_set(const char *path, const char *str)
 void
 _handle_tag_lst(const char *path, const char *unused)
 {
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   data_t all_tags; /* resulting tags set */
   data_t tmp_tags; /* temporary tags set */
 
@@ -289,8 +289,8 @@ void
 _handle_file_update(const char *path, const char *str)
 {
   struct stat st;
-  uuid_t uuid = { 0, 0, 0 };
-  uuid_t uuid_linked = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
+  uuid_t uuid_linked = { 0, 0 };
   char buf[PATH_MAX] = { 0 };
 
   if (stat(path, &st) != 0)
@@ -326,7 +326,7 @@ _handle_file_update(const char *path, const char *str)
 void
 _handle_file_migrate_to_db(const char *path, const char *unused)
 {
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   data_t tags;
   int ret = 0;
 
@@ -349,7 +349,7 @@ _handle_file_migrate_to_db(const char *path, const char *unused)
 void
 _handle_file_migrate_from_db(const char *path, const char *unused)
 {
-  uuid_t uuid = { 0, 0, 0 };
+  uuid_t uuid = { 0, 0 };
   data_t tags;
   int ret = 0;
 
