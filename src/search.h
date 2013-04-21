@@ -22,3 +22,8 @@ typedef struct search_t
  */
 int
 parse_search_tags(search_t * const search, const data_t *conds);
+
+/**
+ * gracefully free all allocated memory
+ */
+void search_free(search_t * const search);
