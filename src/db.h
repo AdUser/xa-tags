@@ -1,7 +1,7 @@
 #define DB_USER_PATH ".local/cache/" PROGNAME "/"
 #define DB_SYSTEM_PATH "/var/lib/" PROGNAME "/"
 #define DB_FILENAME "xa-tags.db"
-#define DB_VERSION "2"
+#define DB_VERSION "1"
 #define INFO_TABLE "s_info"
 #define MAIN_TABLE "d_files"
 #define TAGS_TABLE "d_uniq_tags"
@@ -68,6 +68,9 @@
 #define SQL_DB_INIT \
 "INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
 "INSERT INTO " MAIN_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
+
+#define SQL_DB_CHECKVERSION \
+"SELECT version == " DB_VERSION " FROM " INFO_TABLE ";"
 
 #define MAX_QUERY_LIMIT 250
 

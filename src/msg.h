@@ -112,6 +112,9 @@
   gettext("Malformed or incorrect data on input")
 #define MSG_D_ZEROUUID \
   gettext("Successfull insert, but zero uuid returned")
-
 #define MSG_D_NOUUID     \
   gettext("No such uuid")
+#define MSG_D_NOVERSION \
+  gettext("failed to determine db version")
+#define MSG_D_VERMISMATCH \
+  gettext("Database version mismatch. Expected version")

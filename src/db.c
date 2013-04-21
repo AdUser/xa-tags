@@ -54,6 +54,18 @@ db_find_path_system(void)
   return p;
 }
 
+int
+_db_check_version(void *unused, int columns, char **col_values, char **col_names)
+{
+  if (columns < 1)
+    msg(msg_error, COMMON_MSG_FMTN, MSG_D_FAILOPEN, MSG_D_NOVERSION);
+
+  if (col_values[0][0] != '1')
+    msg(msg_error, COMMON_MSG_FMTN, MSG_D_VERMISMATCH, DB_VERSION);
+
+  return 0;
+}
+
 void
 db_open(void)
 {
@@ -94,6 +106,8 @@ db_open(void)
 
   if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
     msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
+
+  sqlite3_exec(db_conn, SQL_DB_CHECKVERSION, _db_check_version, NULL, NULL);
 
 #ifdef ASYNC_DB_WRITE
   sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
