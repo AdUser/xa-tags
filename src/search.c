@@ -1,7 +1,7 @@
 #include "common.h"
 
 int
-parse_search_terms(search_t * const search, const data_t *terms)
+search_parse_terms(search_t * const search, const data_t *terms)
 {
   int i = 0;
   char *item = NULL;

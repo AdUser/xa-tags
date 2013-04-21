@@ -21,7 +21,7 @@ typedef struct search_t
  * 1 - on error
  */
 int
-parse_search_terms(search_t * const search, const data_t *terms);
+search_parse_terms(search_t * const search, const data_t *terms);
 
 /**
  * gracefully free all allocated memory

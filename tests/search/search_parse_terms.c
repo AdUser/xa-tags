@@ -19,7 +19,7 @@ int main()
   data_item_add(&terms, "/nyan_cat/i", 0);
 #endif
 
-  ret = parse_search_terms(&search, &terms);
+  ret = search_parse_terms(&search, &terms);
   assert(ret == 0);
   assert(search.strings_neg[0] == false);
   assert(search.strings_neg[1] == false);

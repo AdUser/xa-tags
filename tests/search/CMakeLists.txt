@@ -7,8 +7,8 @@ SET(SRC_FILES
     "${SRC_DIR}/search.c"
     )
 
-ADD_EXECUTABLE("parse_search_terms"  ${SRC_FILES} "parse_search_terms.c")
+ADD_EXECUTABLE("search_parse_terms"  ${SRC_FILES} "search_parse_terms.c")
 ADD_EXECUTABLE("search_free"         ${SRC_FILES} "search_free.c")
 
-ADD_TEST("search/parse_search_terms"       "parse_search_terms")
+ADD_TEST("search/parse_terms"       "search_parse_terms")
 ADD_TEST("search/free"              "search_free")
