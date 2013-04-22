@@ -3,30 +3,30 @@
 #define DB_FILENAME "xa-tags.db"
 #define DB_VERSION "1"
 #define INFO_TABLE "s_info"
-#define MAIN_TABLE "d_files"
+#define FILE_TABLE "d_files"
 #define TAGS_TABLE "d_uniq_tags"
 
 #define UUID_COL "file_id, crc_dname, crc_fname"
 
 /* FILE request type */
 #define SQL_F_ADD \
-  "INSERT INTO " MAIN_TABLE " (file_id, crc_dname, crc_fname, filename) VALUES (?, ?, ?, ?)"
+  "INSERT INTO " FILE_TABLE " (file_id, crc_dname, crc_fname, filename) VALUES (?, ?, ?, ?)"
 #define SQL_F_DEL \
-  "DELETE FROM " MAIN_TABLE " WHERE file_id = ?;"
+  "DELETE FROM " FILE_TABLE " WHERE file_id = ?;"
 #define SQL_F_GET \
-  "SELECT filename FROM " MAIN_TABLE " WHERE file_id = ?"
+  "SELECT filename FROM " FILE_TABLE " WHERE file_id = ?"
 #define SQL_F_SEARCH \
-  "SELECT " UUID_COL ", filename FROM " MAIN_TABLE " WHERE filename LIKE ? LIMIT ? OFFSET ?"
+  "SELECT " UUID_COL ", filename FROM " FILE_TABLE " WHERE filename LIKE ? LIMIT ? OFFSET ?"
 #define SQL_F_UPDATE \
-  "UPDATE " MAIN_TABLE " SET crc_dname = ?, crc_fname = ?, filename = ? WHERE file_id = ?"
+  "UPDATE " FILE_TABLE " SET crc_dname = ?, crc_fname = ?, filename = ? WHERE file_id = ?"
 
 /* TAG request type */
 #define SQL_T_GET \
-  "SELECT " UUID_COL ", tags FROM " MAIN_TABLE " WHERE file_id = ?"
+  "SELECT " UUID_COL ", tags FROM " FILE_TABLE " WHERE file_id = ?"
 #define SQL_T_SET \
-  "UPDATE " MAIN_TABLE " SET tags = ? WHERE file_id = ?"
+  "UPDATE " FILE_TABLE " SET tags = ? WHERE file_id = ?"
 #define SQL_T_SEARCH \
-  "SELECT filename, tags FROM " MAIN_TABLE " WHERE tags LIKE ? LIMIT ? OFFSET ?"
+  "SELECT filename, tags FROM " FILE_TABLE " WHERE tags LIKE ? LIMIT ? OFFSET ?"
 #define SQL_T_FIND \
   "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
 /* service operations */
@@ -37,7 +37,7 @@
 #define SQL_D_STAT \
   "SELECT " \
     "(SELECT COUNT(*) FROM " TAGS_TABLE ") as 'uniq_tags', " \
-    "(SELECT COUNT(*) FROM " MAIN_TABLE ") as 'file_records'"
+    "(SELECT COUNT(*) FROM " FILE_TABLE ") as 'file_records'"
 
 /* DB create statements */
 #define SQL_DB_CREATE_COMMON \
@@ -46,7 +46,7 @@
 "  version  INTEGER NOT NULL DEFAULT 0," \
 "  uuid_min INTEGER NOT NULL DEFAULT 0 " \
 ");" \
-"CREATE TABLE " MAIN_TABLE \
+"CREATE TABLE " FILE_TABLE \
 "(" \
 "  file_id   INTEGER PRIMARY KEY AUTOINCREMENT," \
 "  crc_dname INTEGER NOT NULL DEFAULT 0,"  \
@@ -54,8 +54,8 @@
 "  filename  TEXT    NOT NULL DEFAULT ''," \
 "  tags      TEXT    NOT NULL DEFAULT '' " \
 ");" \
-"CREATE INDEX IF NOT EXISTS i_crc_dname ON " MAIN_TABLE " (crc_dname);" \
-"CREATE INDEX IF NOT EXISTS i_crc_fname ON " MAIN_TABLE " (crc_fname);"
+"CREATE INDEX IF NOT EXISTS i_crc_dname ON " FILE_TABLE " (crc_dname);" \
+"CREATE INDEX IF NOT EXISTS i_crc_fname ON " FILE_TABLE " (crc_fname);"
 
 #define SQL_DB_CREATE_UNIQ \
 "CREATE TABLE " TAGS_TABLE \
@@ -67,7 +67,7 @@
 
 #define SQL_DB_INIT \
 "INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
-"INSERT INTO " MAIN_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
+"INSERT INTO " FILE_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
 
 #define SQL_DB_CHECKVERSION \
 "SELECT version == " DB_VERSION " FROM " INFO_TABLE ";"
