@@ -514,6 +514,32 @@ db_tags_set(const uuid_t *uuid, data_t *tags)
 }
 
 int
+db_tags_clr(const uuid_t *uuid)
+{
+  sqlite3_stmt *stmt = NULL;
+  size_t len = 0;
+  int ret = 0;
+
+  ASSERT(uuid != NULL, MSG_M_NULLPTR);
+
+  len = strlen(SQL_T_CLR);
+  if (sqlite3_prepare_v2(db_conn, SQL_T_CLR, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 1;
+    }
+
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+
+  if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
+    msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+
+  sqlite3_finalize(stmt);
+
+  return (ret == SQLITE_DONE) ? 0 : 1;
+}
+
+int
 db_tag_add_uniq(data_t *tags)
 {
   sqlite3_stmt *stmt = NULL;

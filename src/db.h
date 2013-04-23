@@ -25,6 +25,8 @@
   "SELECT " UUID_COL ", tags FROM " FILE_TABLE " WHERE file_id = ?"
 #define SQL_T_SET \
   "UPDATE " FILE_TABLE " SET tags = ? WHERE file_id = ?"
+#define SQL_T_CLR \
+  "DELETE FROM " TAGS_TABLE " WHERE rowid = ?"
 #define SQL_T_SEARCH \
   "SELECT filename, tags FROM " FILE_TABLE " WHERE tags LIKE ? LIMIT ? OFFSET ?"
 #define SQL_T_FIND \
@@ -96,6 +98,7 @@ int db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
 
 int db_tags_get(uuid_t *uuid, data_t *tags);
 int db_tags_set(const uuid_t *uuid, data_t *tags);
+int db_tags_clr(const uuid_t *uuid);
 int db_tags_find(const char *str, query_limits_t *lim, data_t *results);
 
 #ifdef UNIQ_TAGS_LIST
