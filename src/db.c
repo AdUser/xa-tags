@@ -81,7 +81,11 @@ db_open(void)
       flags |= SQLITE_OPEN_CREATE;
       if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
         msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
-      if (sqlite3_exec(db_conn, SQL_DB_CREATE_COMMON, NULL, NULL, &err) != SQLITE_OK)
+      if (sqlite3_exec(db_conn, SQL_DB_CREATE_1, NULL, NULL, &err) != SQLITE_OK)
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
+      if (sqlite3_exec(db_conn, SQL_DB_CREATE_2, NULL, NULL, &err) != SQLITE_OK)
+        msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
+      if (sqlite3_exec(db_conn, SQL_DB_CREATE_3, NULL, NULL, &err) != SQLITE_OK)
         msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILCREATE, err);
 #ifdef UNIQ_TAGS_LIST
       if (sqlite3_exec(db_conn, SQL_DB_CREATE_UNIQ,   NULL, NULL, &err) != SQLITE_OK)
@@ -147,8 +151,7 @@ db_file_add(const char *path, uuid_t *new_uuid)
   if (new_uuid->id != 0)
     sqlite3_bind_int64(stmt, 1, new_uuid->id);
   sqlite3_bind_int(stmt, 2, new_uuid->dirname_hash);
-  sqlite3_bind_int(stmt, 3, 0);
-  sqlite3_bind_text(stmt, 4, path, -1, SQLITE_STATIC);
+  sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
 
   switch (sqlite3_step(stmt))
     {
@@ -183,9 +186,8 @@ db_file_update(const char *path, uuid_t *uuid)
   get_path_checksums(uuid, path);
 
   sqlite3_bind_int(stmt, 1, uuid->dirname_hash);
-  sqlite3_bind_int(stmt, 2, 0);
-  sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
-  sqlite3_bind_int64(stmt, 4, (sqlite3_int64) uuid->id);
+  sqlite3_bind_text(stmt, 2, path, -1, SQLITE_STATIC);
+  sqlite3_bind_int64(stmt, 3, (sqlite3_int64) uuid->id);
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -305,7 +307,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
       if (results != NULL)
         {
           len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
-                                     &uuid, (char *) sqlite3_column_text(stmt, 3));
+                                     &uuid, (char *) sqlite3_column_text(stmt, 2));
           data_item_add(results, buf, len);
         }
 
@@ -346,14 +348,15 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
                    int (*cb)(const char *, const char *))
 {
   sqlite3_stmt *stmt;
-  char *item = NULL;
   size_t len = 0;
+  data_t terms;
   int ret = 0;
   int rows = 0;
-  bool match_all = true;
   char buf[PATH_MAX] = { 0 };
 
   ASSERT(tags != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
+
+  memset(&terms, 0x0, sizeof(data_t));
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -365,38 +368,28 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
   if (results != NULL)
     data_clear(results);
 
-  len = snprintf(buf, MAXLINE, "%% %s %%", tags->buf);
-  while (len --> 0)
-    if (buf[len] == '*')
-      buf[len] = '%';
+  data_copy(&terms, tags);
+  data_items_merge(&terms, ' ');
 
   do /* loop, until we get 'limit' items or lesser than 'limit' rows from query */
     {
-      sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
+      sqlite3_bind_text(stmt, 1, terms.buf, -1, SQLITE_TRANSIENT);
       sqlite3_bind_int(stmt,  2, lim->limit);
       sqlite3_bind_int(stmt,  3, lim->offset);
 
       for (rows = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
           rows++;
-          item = tags->buf;
-          match_all = true;
-          snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 1));
-          while (match_all && data_items_walk(tags, &item) > 0)
-            if (strstr(buf, item) == NULL)
-              match_all = false;
 
-          if (match_all)
+          if (results != NULL)
             {
-              if (results != NULL)
-                {
-                  len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
-                  data_item_add(results, buf, len);
-                }
-              if (cb != NULL)
-                cb((char *) sqlite3_column_text(stmt, 0),
-                   (char *) sqlite3_column_text(stmt, 1));
+              len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
+              data_item_add(results, buf, len);
             }
+
+          if (cb != NULL)
+            cb((char *) sqlite3_column_text(stmt, 0),
+               (char *) sqlite3_column_text(stmt, 1));
 
             /* NOTE: if we simple wait until 'for' loop ends,     *
              * number of items in result will float around limit. */
@@ -457,7 +450,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   switch (sqlite3_step(stmt))
     {
       case SQLITE_ROW :
-        data_parse_tags(tags, (char *) sqlite3_column_text(stmt, 3));
+        data_parse_tags(tags, (char *) sqlite3_column_text(stmt, 1));
         ret = 0;
         break;
       case SQLITE_DONE :
@@ -501,8 +494,8 @@ db_tags_set(const uuid_t *uuid, data_t *tags)
   p[0] = ' ';
   p[tags->len] = ' ';
 
-  sqlite3_bind_text(stmt, 1, p, tags->len + 2, SQLITE_STATIC);
-  sqlite3_bind_int64(stmt, 2, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_text(stmt,  2, p, tags->len + 2, SQLITE_STATIC);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
     msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));

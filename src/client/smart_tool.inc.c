@@ -105,6 +105,7 @@ _handle_tag_clr(const char *path, const char *tags)
   if (stat(path, &st) == 0 && file_uuid_get(path, &uuid) == 0)
     {
       db_file_del(&uuid);
+      db_tags_clr(&uuid);
 #ifdef INLINE_TAGS
       file_tags_clr(path);
 #endif

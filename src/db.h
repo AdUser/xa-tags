@@ -1,16 +1,18 @@
 #define DB_USER_PATH ".local/cache/" PROGNAME "/"
 #define DB_SYSTEM_PATH "/var/lib/" PROGNAME "/"
 #define DB_FILENAME "xa-tags.db"
-#define DB_VERSION "1"
+#define DB_VERSION "2"
 #define INFO_TABLE "s_info"
 #define FILE_TABLE "d_files"
-#define TAGS_TABLE "d_uniq_tags"
+#define TAGS_TABLE "d_tags"
+#define IDX_TAGS_TABLE "d_tags_idx"
+#define UNIQ_TAGS_TABLE "d_tags_uniq"
 
-#define UUID_COL "file_id, crc_dname, crc_fname"
+#define UUID_COL "file_id, dirname_hash"
 
 /* FILE request type */
 #define SQL_F_ADD \
-  "INSERT INTO " FILE_TABLE " (file_id, crc_dname, crc_fname, filename) VALUES (?, ?, ?, ?)"
+  "INSERT INTO " FILE_TABLE " (file_id, dirname_hash, filename) VALUES (?, ?, ?)"
 #define SQL_F_DEL \
   "DELETE FROM " FILE_TABLE " WHERE file_id = ?;"
 #define SQL_F_GET \
@@ -18,61 +20,70 @@
 #define SQL_F_SEARCH \
   "SELECT " UUID_COL ", filename FROM " FILE_TABLE " WHERE filename LIKE ? LIMIT ? OFFSET ?"
 #define SQL_F_UPDATE \
-  "UPDATE " FILE_TABLE " SET crc_dname = ?, crc_fname = ?, filename = ? WHERE file_id = ?"
+  "UPDATE " FILE_TABLE " SET dirname_hash = ?, filename = ? WHERE file_id = ?"
 
 /* TAG request type */
 #define SQL_T_GET \
-  "SELECT " UUID_COL ", tags FROM " FILE_TABLE " WHERE file_id = ?"
+  "SELECT rowid, tags FROM " TAGS_TABLE " WHERE rowid = ?"
 #define SQL_T_SET \
-  "UPDATE " FILE_TABLE " SET tags = ? WHERE file_id = ?"
+  "INSERT OR REPLACE INTO " TAGS_TABLE " (rowid, tags) VALUES (?, ?)"
 #define SQL_T_CLR \
   "DELETE FROM " TAGS_TABLE " WHERE rowid = ?"
 #define SQL_T_SEARCH \
-  "SELECT filename, tags FROM " FILE_TABLE " WHERE tags LIKE ? LIMIT ? OFFSET ?"
+  "SELECT filename, tags FROM " FILE_TABLE " JOIN " TAGS_TABLE \
+  " ON " FILE_TABLE ".file_id = " TAGS_TABLE ".rowid" \
+  " WHERE tags MATCH ? LIMIT ? OFFSET ?"
+#ifdef UNIQ_TAGS_LIST
 #define SQL_T_FIND \
-  "SELECT tag FROM " TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
+  "SELECT tag FROM " UNIQ_TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
+#endif
 /* service operations */
 #define SQL_T_UNIQ_ADD \
-  "INSERT OR IGNORE INTO " TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
+  "INSERT OR IGNORE INTO " UNIQ_TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
 
 /* DB request type */
 #define SQL_D_STAT \
   "SELECT " \
-    "(SELECT COUNT(*) FROM " TAGS_TABLE ") as 'uniq_tags', " \
+    "(SELECT COUNT(*) FROM " UNIQ_TAGS_TABLE ") as 'uniq_tags', " \
     "(SELECT COUNT(*) FROM " FILE_TABLE ") as 'file_records'"
 
 /* DB create statements */
-#define SQL_DB_CREATE_COMMON \
-"CREATE TABLE " INFO_TABLE \
-"(" \
-"  version  INTEGER NOT NULL DEFAULT 0," \
-"  uuid_min INTEGER NOT NULL DEFAULT 0 " \
-");" \
-"CREATE TABLE " FILE_TABLE \
-"(" \
-"  file_id   INTEGER PRIMARY KEY AUTOINCREMENT," \
-"  crc_dname INTEGER NOT NULL DEFAULT 0,"  \
-"  crc_fname INTEGER NOT NULL DEFAULT 0,"  \
-"  filename  TEXT    NOT NULL DEFAULT ''," \
-"  tags      TEXT    NOT NULL DEFAULT '' " \
-");" \
-"CREATE INDEX IF NOT EXISTS i_crc_dname ON " FILE_TABLE " (crc_dname);" \
-"CREATE INDEX IF NOT EXISTS i_crc_fname ON " FILE_TABLE " (crc_fname);"
+#define SQL_DB_CREATE_1 \
+  "DROP TABLE IF EXISTS " INFO_TABLE ";" \
+  "CREATE TABLE " INFO_TABLE " (" \
+  "  version   INTEGER NOT NULL DEFAULT 1," \
+  "  uuid_min  INTEGER NOT NULL DEFAULT 0"  \
+  ");"
+
+#define SQL_DB_CREATE_2 \
+  "DROP TABLE IF EXISTS " FILES_TABLE ";" \
+  "CREATE TABLE " FILES_TABLE " (" \
+  "  file_id      INTEGER PRIMARY KEY AUTOINCREMENT," \
+  "  dirname_hash INTEGER NOT NULL DEFAULT 0," \
+  "  filename     TEXT    NOT NULL DEFAULT ''" \
+  ");" \
+  "CREATE INDEX IF NOT EXISTS i_dirname_hash ON " FILES_TABLE " (dirname_hash);"
+
+#define SQL_DB_CREATE_3 \
+  "DROP TABLE IF EXISTS " TAGS_TABLE ";" \
+  "CREATE VIRTUAL TABLE " TAGS_TABLE " USING fts4 (tags, tokenize=simple);" \
+  "CREATE VIRTUAL TABLE " IDX_TAGS_TABLE " USING fts4aux (d_tags);"
 
 #define SQL_DB_CREATE_UNIQ \
-"CREATE TABLE " TAGS_TABLE \
-"(" \
-"  tag_id INTEGER NOT NULL DEFAULT 0,"  \
-"  tag    TEXT    NOT NULL DEFAULT ''," \
-"  PRIMARY KEY (tag_id)" \
-");"
+  "DROP TABLE IF EXISTS " UNIQ_TAGS_TABLE ";" \
+  "CREATE TABLE " UNIQ_TAGS_TABLE \
+  "(" \
+  "  tag_id INTEGER NOT NULL DEFAULT 0,"  \
+  "  tag    TEXT    NOT NULL DEFAULT ''," \
+  "  PRIMARY KEY (tag_id)" \
+  ");"
 
 #define SQL_DB_INIT \
-"INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
-"INSERT INTO " FILE_TABLE " (file_id, filename) SELECT uuid_min, '__PLACEHOLDER__' FROM " INFO_TABLE ";" \
+  "INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
+  "INSERT INTO " FILE_TABLE " (file_id, filename) SELECT uuid_min, '' FROM " INFO_TABLE ";" \
 
 #define SQL_DB_CHECKVERSION \
-"SELECT version == " DB_VERSION " FROM " INFO_TABLE ";"
+  "SELECT version == " DB_VERSION " FROM " INFO_TABLE ";"
 
 #define MAX_QUERY_LIMIT 250
 
