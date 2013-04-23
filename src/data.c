@@ -393,7 +393,7 @@ data_clear(data_t *data)
 }
 
 void
-data_copy(data_t *to, data_t *from)
+data_copy(data_t *to, const data_t *from)
 {
   memcpy(to, from, sizeof(data_t));
   to->buf = NULL;
