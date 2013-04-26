@@ -20,7 +20,7 @@
   * must always return 1
   */
 int
-_add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
+_add_val_error(list_t *errors, char *error, char *buf, size_t buf_len)
 {
   char *t1 = NULL;
   char *t2 = NULL;
@@ -43,7 +43,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
       goto again;
     }
 
-  data_item_add(errors, t2, ret);
+  list_item_add(errors, t2, ret);
   FREE(t1);
   FREE(t2);
 
@@ -55,7 +55,7 @@ _add_val_error(data_t *errors, char *error, char *buf, size_t buf_len)
   * 1 - error
   */
 int
-_validate_uuid(char *uuid, data_t *errors)
+_validate_uuid(char *uuid, list_t *errors)
 {
   if (uuid_id_validate(uuid) > 0)
     {
@@ -71,7 +71,7 @@ _validate_uuid(char *uuid, data_t *errors)
   * 1 - error
   */
 int
-_validate_path(char *path, data_t *errors)
+_validate_path(char *path, list_t *errors)
 {
   char *p = NULL;
 
@@ -102,7 +102,7 @@ _validate_path(char *path, data_t *errors)
   * 2 - unallowed symbol in tags
   */
 int
-_validate_tags(char *tags, data_t *errors)
+_validate_tags(char *tags, list_t *errors)
 {
   char  *p = NULL;
 
@@ -129,45 +129,45 @@ _validate_tags(char *tags, data_t *errors)
 
 /** return values:
   * 0 - all clear
-  * 1 - empty data set
+  * 1 - empty list
   * 2 - error
   */
 int
-data_validate(data_t *data, data_t *errors, int strict)
+list_validate(list_t *list, list_t *errors, int strict)
  {
   char *item = NULL;
   int skip_item = 0;
 
-  ASSERT(data != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL, MSG_M_NULLPTR);
 
-  if (data->type == DATA_EMPTY)
+  if (list->type == LIST_EMPTY)
     {
-      data_clear(data);
+      list_clear(list);
       return 0;
     }
 
-  while(data_items_walk(data, &item) > 0)
+  while(list_items_walk(list, &item) > 0)
     {
-      switch (data->type)
+      switch (list->type)
         {
-          case DATA_T_MSG :
+          case LIST_T_MSG :
             break;
-          case DATA_L_FILES :
+          case LIST_L_FILES :
             if (_validate_path(item, errors)) skip_item = 1;
             break;
-          case DATA_L_UUIDS :
+          case LIST_L_UUIDS :
             if (_validate_uuid(item, errors)) skip_item = 1;
             break;
-          case DATA_L_TAGS :
+          case LIST_L_TAGS :
             if (_validate_tags(item, errors)) skip_item = 1;
             break;
-          case DATA_M_UUID_TAGS :
+          case LIST_M_UUID_TAGS :
             if (_validate_uuid(item, errors) ||
                 _validate_tags(&item[UUID_CHAR_LEN + 1], errors) ||
                 !isblank(item[UUID_CHAR_LEN]))
                   skip_item = 1;
             break;
-          case DATA_M_UUID_FILE :
+          case LIST_M_UUID_FILE :
             if (_validate_uuid(item, errors) ||
                 _validate_path(&item[UUID_CHAR_LEN + 1], errors) ||
                 !isblank(item[UUID_CHAR_LEN]))
@@ -183,24 +183,24 @@ data_validate(data_t *data, data_t *errors, int strict)
 
       if (skip_item)
         {
-          data_item_del(data, item);
-          if ((item > data->buf) && (item < (data->buf + data->len)))
-            item -= 2; /* TODO: hack around data_items_walk */
+          list_item_del(list, item);
+          if ((item > list->buf) && (item < (list->buf + list->len)))
+            item -= 2; /* TODO: hack around list_items_walk */
           skip_item = 0;
         }
 
-      if ((data->items) == 0)
+      if ((list->items) == 0)
         {
-          data_clear(data);
+          list_clear(list);
           return 1;
         }
     }
 
-  if (data->items < 2 && data->flags & DATA_MULTI)
-    data->flags &= ~DATA_MULTI;
+  if (list->items < 2 && list->flags & LIST_MULTI)
+    list->flags &= ~LIST_MULTI;
 
-  if (data->items > 1 && !(data->flags & DATA_MULTI))
-    data->flags |= DATA_MULTI;
+  if (list->items > 1 && !(list->flags & LIST_MULTI))
+    list->flags |= LIST_MULTI;
 
   /* if we have no items - exit point inside 'if (skip_item)' */
 
@@ -214,35 +214,35 @@ data_validate(data_t *data, data_t *errors, int strict)
   * item_len - optional, if <= 0 - use strlen(item)
   */
 int
-data_item_add(data_t *data, char *item, size_t item_len)
+list_item_add(list_t *list, char *item, size_t item_len)
 {
   char *t = NULL;
   const uint16_t chunk_size = 512;
 
-  ASSERT(data != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL, MSG_M_NULLPTR);
 
   if (item_len <= 0)
     item_len = strlen(item);
 
   item_len += 1; /* trailing '\0' */
 
-  data->items += 1;
+  list->items += 1;
 
   /* check buffer size */
-  if (item_len > data->size - data->len)
+  if (item_len > list->size - list->len)
     {
-      data->size += (item_len > chunk_size) ? item_len : chunk_size;
+      list->size += (item_len > chunk_size) ? item_len : chunk_size;
 
-      REALLOC(t, data->buf, data->size);
-      data->buf = t;
+      REALLOC(t, list->buf, list->size);
+      list->buf = t;
     }
 
-  memcpy(&data->buf[data->len], item, item_len);
-  data->buf[data->len + item_len - 1] = '\0';
-  data->len += item_len;
+  memcpy(&list->buf[list->len], item, item_len);
+  list->buf[list->len + item_len - 1] = '\0';
+  list->len += item_len;
 
-  if (data->items > 2)
-    data->flags |= DATA_MULTI;
+  if (list->items > 2)
+    list->flags |= LIST_MULTI;
 
   return 0;
 }
@@ -253,65 +253,65 @@ data_item_add(data_t *data, char *item, size_t item_len)
  * 2 - error
  */
 int
-data_item_del(data_t *data, char *item)
+list_item_del(list_t *list, char *item)
 {
   char *p = NULL;
   size_t item_len = 0;
   size_t move_size = 0;
 
-  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL && item != NULL, MSG_M_NULLPTR);
 
-  if (data->items == 0)
+  if (list->items == 0)
     return 0; /* nothing to do */
 
-  if ((p = data_item_search(data, item)) == NULL)
+  if ((p = list_item_search(list, item)) == NULL)
     return 0; /* nothing to do */
 
   item_len = strlen(item) + 1;
 
-  move_size  = data->len;
-  move_size -= p - data->buf;
+  move_size  = list->len;
+  move_size -= p - list->buf;
   move_size -= item_len;
   memmove(p, p + item_len, move_size);
 
-  data->len -= item_len;
-  data->buf[data->len] = '\0';
-  data->items -= 1;
+  list->len -= item_len;
+  list->buf[list->len] = '\0';
+  list->items -= 1;
 
   return 1;
 }
 
 void
-data_items_split(data_t *data, char delim)
+list_items_split(list_t *list, char delim)
 {
   size_t i = 0;
 
-  for (i = 0; i < data->len; i++)
-    if (data->buf[i] == delim)
+  for (i = 0; i < list->len; i++)
+    if (list->buf[i] == delim)
       {
-        data->buf[i] = '\0';
-        data->items += 1;
+        list->buf[i] = '\0';
+        list->items += 1;
        }
 }
 
 void
-data_items_merge(data_t *data, char glue)
+list_items_merge(list_t *list, char glue)
 {
   size_t i = 0;
   size_t len = 0;
 
-  if (data->items < 2)
+  if (list->items < 2)
     return;
 
-  if (data->len > 0)
-    len = data->len - 1;
+  if (list->len > 0)
+    len = list->len - 1;
 
   for (i = 0; i < len; i++)
-    if (data->buf[i] == '\0')
+    if (list->buf[i] == '\0')
       {
-        data->buf[i] = glue;
-        if (data->items > 1)
-          data->items--;
+        list->buf[i] = glue;
+        if (list->items > 1)
+          list->items--;
        }
 }
 
@@ -321,30 +321,30 @@ data_items_merge(data_t *data, char glue)
   *  1 - next item processed
   */
 int
-data_items_walk(const data_t *data, char **item)
+list_items_walk(const list_t *list, char **item)
 {
   size_t len = 0;
 
-  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL && item != NULL, MSG_M_NULLPTR);
 
-  if (data->len == 0)
+  if (list->len == 0)
     return 0;
 
   if (*item == NULL)
     {
-      *item = data->buf;
+      *item = list->buf;
       return 1;
     }
 
-  if (*item < data->buf || *item > (data->buf + data->len))
+  if (*item < list->buf || *item > (list->buf + list->len))
     {
-      *item = data->buf;
+      *item = list->buf;
       return 1;
     }
 
   len = strlen(*item) + 1;
 
-  if (*item + len >= data->buf + data->len)
+  if (*item + len >= list->buf + list->len)
     return 0;
 
   *item += len;
@@ -354,28 +354,28 @@ data_items_walk(const data_t *data, char **item)
 
 /** returns pointer to found item or NULL */
 char *
-data_item_search(data_t *data, const char *item)
+list_item_search(list_t *list, const char *item)
 {
   char *p = NULL;
   size_t item_len = 0;
 
-  ASSERT(data != NULL && item != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL && item != NULL, MSG_M_NULLPTR);
 
-  if (data->items == 0)
+  if (list->items == 0)
     return NULL;
 
-  if (strcmp(item, data->buf) == 0)
-    return data->buf;
+  if (strcmp(item, list->buf) == 0)
+    return list->buf;
 
   item_len = strlen(item) + 1;
-  p = data->buf;
+  p = list->buf;
   do {
-    p = (char *) memmem(p, data->len - (p - data->buf), item, item_len);
+    p = (char *) memmem(p, list->len - (p - list->buf), item, item_len);
 
     if (p == NULL)
       return NULL;
 
-    if (p > data->buf && *(p - 1) == '\0')
+    if (p > list->buf && *(p - 1) == '\0')
       return p;
 
     p += item_len;
@@ -385,35 +385,35 @@ data_item_search(data_t *data, const char *item)
 }
 
 void
-data_clear(data_t *data)
+list_clear(list_t *list)
 {
-  ASSERT(data != NULL, MSG_M_NULLPTR);
-  FREE(data->buf);
-  memset(data, 0x0, sizeof(data_t));
+  ASSERT(list != NULL, MSG_M_NULLPTR);
+  FREE(list->buf);
+  memset(list, 0x0, sizeof(list_t));
 }
 
 void
-data_copy(data_t *to, const data_t *from)
+list_copy(list_t *to, const list_t *from)
 {
-  memcpy(to, from, sizeof(data_t));
+  memcpy(to, from, sizeof(list_t));
   to->buf = NULL;
   CALLOC(to->buf, from->size, sizeof(char));
   memcpy(to->buf, from->buf, from->len);
 }
 
 int
-data_parse_tags(data_t *data, const char *tags)
+list_parse_tags(list_t *list, const char *tags)
 {
   char *buf = NULL;
   char *s = NULL;
   char *e = NULL;
   size_t len = 0;
 
-  ASSERT(data != NULL && tags != NULL, MSG_M_NULLPTR);
+  ASSERT(list != NULL && tags != NULL, MSG_M_NULLPTR);
 
   STRNDUP(buf, tags, strlen(tags) + 1);
 
-  data_clear(data);
+  list_clear(list);
   s = buf;
   while (true)
     {
@@ -425,24 +425,24 @@ data_parse_tags(data_t *data, const char *tags)
       len = e - s;
       if (len > 0)
         {
-          data_item_add(data, s, len);
+          list_item_add(list, s, len);
           s += len;
         }
     }
 
   FREE(buf);
-  return (data->items > 0) ? 1 : 0;
+  return (list->items > 0) ? 1 : 0;
 }
 
 void
-data_merge(data_t *to, data_t *from)
+list_merge(list_t *to, list_t *from)
 {
   char *p = NULL;
   char *item = NULL;
 
   ASSERT(to != NULL && from != NULL, MSG_M_NULLPTR);
 
-  while (data_items_walk(from, &item) > 0)
-    if ((p = data_item_search(to, item)) == NULL)
-      data_item_add(to, item, 0);
+  while (list_items_walk(from, &item) > 0)
+    if ((p = list_item_search(to, item)) == NULL)
+      list_item_add(to, item, 0);
 }

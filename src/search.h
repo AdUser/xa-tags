@@ -9,7 +9,7 @@
 typedef struct search_t
 {
   uint8_t   str_flags[MAX_SEARCH_COND];
-  data_t    str_buf;
+  list_t    str_buf;
 #ifdef REGEX_SEARCH
   uint8_t   rxp_cnt;
   uint8_t   rxp_flags[MAX_SEARCH_COND];
@@ -24,7 +24,7 @@ typedef struct search_t
  * 1 - on error
  */
 int
-search_parse_terms(search_t * const search, const data_t *terms);
+search_parse_terms(search_t * const search, const list_t *terms);
 
 /**
  * gracefully free all allocated memory

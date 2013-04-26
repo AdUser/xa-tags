@@ -66,26 +66,26 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
     {
       case REQ_FILE :
         if (false) {}
-        CHECK_OP(buf, "ADD",     OP_F_ADD,     DATA_L_FILES, 2)
-        CHECK_OP(buf, "DEL",     OP_F_DEL,     DATA_L_UUIDS, 2)
-        CHECK_OP(buf, "GET",     OP_F_GET,     DATA_L_UUIDS, 2)
-        CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  DATA_L_FILES, 2)
-        CHECK_OP(buf, "UPDATE",  OP_F_UPDATE,  DATA_M_UUID_FILE, 2)
+        CHECK_OP(buf, "ADD",     OP_F_ADD,     LIST_L_FILES, 2)
+        CHECK_OP(buf, "DEL",     OP_F_DEL,     LIST_L_UUIDS, 2)
+        CHECK_OP(buf, "GET",     OP_F_GET,     LIST_L_UUIDS, 2)
+        CHECK_OP(buf, "SEARCH",  OP_F_SEARCH,  LIST_L_FILES, 2)
+        CHECK_OP(buf, "UPDATE",  OP_F_UPDATE,  LIST_M_UUID_FILE, 2)
         break;
       case REQ_TAG :
         if (false) {}
-        CHECK_OP(buf, "ADD",     OP_T_ADD,     DATA_M_UUID_TAGS, 2)
-        CHECK_OP(buf, "DEL",     OP_T_DEL,     DATA_M_UUID_TAGS, 2)
-        CHECK_OP(buf, "GET",     OP_T_GET,     DATA_L_UUIDS,     2)
-        CHECK_OP(buf, "SET",     OP_T_SET,     DATA_M_UUID_TAGS, 2)
-        CHECK_OP(buf, "CLR",     OP_T_CLR,     DATA_L_UUIDS,     2)
-        CHECK_OP(buf, "SEARCH",  OP_T_SEARCH,  DATA_L_TAGS,      2)
-        CHECK_OP(buf, "FIND",    OP_T_FIND,    DATA_L_TAGS,      2)
+        CHECK_OP(buf, "ADD",     OP_T_ADD,     LIST_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "DEL",     OP_T_DEL,     LIST_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "GET",     OP_T_GET,     LIST_L_UUIDS,     2)
+        CHECK_OP(buf, "SET",     OP_T_SET,     LIST_M_UUID_TAGS, 2)
+        CHECK_OP(buf, "CLR",     OP_T_CLR,     LIST_L_UUIDS,     2)
+        CHECK_OP(buf, "SEARCH",  OP_T_SEARCH,  LIST_L_TAGS,      2)
+        CHECK_OP(buf, "FIND",    OP_T_FIND,    LIST_L_TAGS,      2)
         break;
       case REQ_DB :
         if (false) {}
-        CHECK_OP(buf, "STAT",    OP_D_STAT,    DATA_EMPTY, 1)
-        CHECK_OP(buf, "CHECK",   OP_D_CHECK,   DATA_EMPTY, 1)
+        CHECK_OP(buf, "STAT",    OP_D_STAT,    LIST_EMPTY, 1)
+        CHECK_OP(buf, "CHECK",   OP_D_CHECK,   LIST_EMPTY, 1)
         break;
       default :
         break;
@@ -106,11 +106,11 @@ _check_delimiter(ipc_req_t *req, char c)
   switch (c)
     {
       case '>' :
-        req->data.flags |=  DATA_MULTI;
+        req->data.flags |=  LIST_MULTI;
         return 2;
         break;
       case ':' :
-        req->data.flags &= ~DATA_MULTI;
+        req->data.flags &= ~LIST_MULTI;
         return 1;
         break;
       case '\n' :
@@ -154,11 +154,11 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
       case  1 : /* short request types without parameters */
         goto ready;   break;
       case  0 : /* empty request type */
-        data_item_add(&conn->errors, MSG_I_EXPREQ, 0);
+        list_item_add(&conn->errors, MSG_I_EXPREQ, 0);
         goto skip;    break;
       case -1 : /* invalid request type */
       default :
-        data_item_add(&conn->errors, MSG_I_BADREQ, 0);
+        list_item_add(&conn->errors, MSG_I_BADREQ, 0);
         goto skip;    break;
     }
 
@@ -173,11 +173,11 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
       case  1 : /* short request types without parameters */
         goto ready;   break;
       case  0 : /* empty operation */
-        data_item_add(&conn->errors, MSG_I_EXPOP, 0);
+        list_item_add(&conn->errors, MSG_I_EXPOP, 0);
         goto skip;    break;
       case -1 : /* invalid operation fo this request */
       default :
-        data_item_add(&conn->errors, MSG_I_BADOP, 0);
+        list_item_add(&conn->errors, MSG_I_BADOP, 0);
         goto skip;    break;
     }
 
@@ -189,7 +189,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
       case  2 :
         if ((e = strstr(s, "\n\n")) == NULL)
           return 1; /* incomplete request */
-        req->data.flags |= DATA_MULTI;
+        req->data.flags |= LIST_MULTI;
         for (s++; isblank(*s); s++); /* skip leading spaces */
         goto extract_data; break;
       case  1 :
@@ -197,7 +197,7 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
         goto extract_data; break;
       case  0 :
       case -1 :
-        data_item_add(&conn->errors, MSG_I_EXPDELIM, 0);
+        list_item_add(&conn->errors, MSG_I_EXPDELIM, 0);
         goto skip; break;
     }
 
@@ -211,14 +211,14 @@ ipc_request_read(conn_t *conn, ipc_req_t *req)
 
     if (s == e)
       {
-        data_item_add(&conn->errors, MSG_I_EXPDATA, 0);
+        list_item_add(&conn->errors, MSG_I_EXPDATA, 0);
         buf_reduce(&conn->rd, (s + 1) - conn->rd.buf);
         return 2;
       }
-    data_item_add(&req->data, s, e - s);
-    if (req->data.flags & DATA_MULTI)
+    list_item_add(&req->data, s, e - s);
+    if (req->data.flags & LIST_MULTI)
       {
-        data_items_split(&req->data, '\n');
+        list_items_split(&req->data, '\n');
         buf_reduce(&conn->rd, (e + 2) - conn->rd.buf);
       }
     else
@@ -279,12 +279,12 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
 
   switch (resp->data.type)
     {
-      case DATA_EMPTY       : type = "";      break;
-      case DATA_T_MSG       : type = "MSG";   break;
-      case DATA_M_UUID_FILE : type = "FILES"; break;
-      case DATA_M_UUID_TAGS : type = "TAGS";  break;
-      case DATA_L_FILES     : /* we should responce */
-      case DATA_L_UUIDS     : /* only with mappings */
+      case LIST_EMPTY       : type = "";      break;
+      case LIST_T_MSG       : type = "MSG";   break;
+      case LIST_M_UUID_FILE : type = "FILES"; break;
+      case LIST_M_UUID_TAGS : type = "TAGS";  break;
+      case LIST_L_FILES     : /* we should responce */
+      case LIST_L_UUIDS     : /* only with mappings */
       default               : return 1;        break;
     }
 
@@ -292,7 +292,7 @@ ipc_responce_write(conn_t *conn, ipc_resp_t *resp)
   FREE(buf);
   CALLOC(buf, buf_len, sizeof(char));
 
-  if (resp->data.type != DATA_EMPTY)
+  if (resp->data.type != LIST_EMPTY)
     {
       ret = snprintf(buf, buf_len, "%s %s %s%s\n", \
                      status, type, \

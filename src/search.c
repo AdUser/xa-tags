@@ -1,13 +1,13 @@
 #include "common.h"
 
 int
-search_parse_terms(search_t * const search, const data_t *terms)
+search_parse_terms(search_t * const search, const list_t *terms)
 {
   char *item = NULL;
   char *flags = NULL;
   uint8_t term_flags = 0;
   size_t item_len = 0;
-  data_t strings;
+  list_t strings;
   enum { undef, string, regexp } type;
 #ifdef REGEX_SEARCH
   char *buf = NULL;
@@ -16,9 +16,9 @@ search_parse_terms(search_t * const search, const data_t *terms)
   int errcode = 0;
 #endif
 
-  memset(&strings, 0x0, sizeof(data_t));
+  memset(&strings, 0x0, sizeof(list_t));
 
-  while (data_items_walk(terms, &item) > 0)
+  while (list_items_walk(terms, &item) > 0)
     {
       item_len = strlen(item);
 
@@ -48,7 +48,7 @@ search_parse_terms(search_t * const search, const data_t *terms)
                 continue;
               }
             search->str_flags[search->str_buf.items] = term_flags;
-            data_item_add(&search->str_buf, item, item_len);
+            list_item_add(&search->str_buf, item, item_len);
             break;
           case regexp :
 #ifdef REGEX_SEARCH
@@ -105,7 +105,7 @@ search_free(search_t * const search)
   uint8_t i = 0;
 #endif
 
-  data_clear(&search->str_buf);
+  list_clear(&search->str_buf);
 
 #ifdef REGEX_SEARCH
   for (i = 0; i < search->rxp_cnt; i++)

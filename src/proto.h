@@ -41,7 +41,7 @@ typedef struct ipc_req_t
   {
     req_type_t type;
     req_op_t op;
-    data_t data;
+    list_t data;
   } ipc_req_t;
 
 /** response */
@@ -54,7 +54,7 @@ typedef enum resp_status_t
 typedef struct ipc_resp_t
   {
     resp_status_t status;
-    data_t data;
+    list_t data;
   } ipc_resp_t;
 
 /** API functions */

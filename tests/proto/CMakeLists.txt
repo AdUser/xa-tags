@@ -4,7 +4,7 @@ SET(SRC_FILES
     "${SRC_DIR}/proto.c"
     "${SRC_DIR}/buf.c"
     "${SRC_DIR}/log.c"
-    "${SRC_DIR}/data.c"
+    "${SRC_DIR}/list.c"
     "${SRC_DIR}/uuid.c"
     )
 

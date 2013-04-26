@@ -1,49 +1,49 @@
 void
 _handle_tag_add(const char *path, const char *str)
 {
-  data_t new_tags;
-  data_t tags;
+  list_t new_tags;
+  list_t tags;
 
-  memset(&new_tags, 0, sizeof(data_t));
-  memset(&tags,     0, sizeof(data_t));
+  memset(&new_tags, 0, sizeof(list_t));
+  memset(&tags,     0, sizeof(list_t));
 
   file_tags_get(path, &tags);
 
-  data_parse_tags(&new_tags, str);
-  data_merge(&tags, &new_tags);
+  list_parse_tags(&new_tags, str);
+  list_merge(&tags, &new_tags);
 
-  data_items_merge(&tags, ' ');
+  list_items_merge(&tags, ' ');
 
   file_tags_set(path, &tags);
 
-  data_clear(&tags);
-  data_clear(&new_tags);
+  list_clear(&tags);
+  list_clear(&new_tags);
 }
 
 void
 _handle_tag_del(const char *path, const char *str)
 {
   char *item = NULL;
-  data_t new_tags;
-  data_t tags;
+  list_t new_tags;
+  list_t tags;
 
-  memset(&new_tags, 0, sizeof(data_t));
-  memset(&tags,     0, sizeof(data_t));
+  memset(&new_tags, 0, sizeof(list_t));
+  memset(&tags,     0, sizeof(list_t));
 
   if (file_tags_get(path, &tags) > 0)
     return;
 
-  data_parse_tags(&new_tags, str);
+  list_parse_tags(&new_tags, str);
 
-  while (data_items_walk(&new_tags, &item) > 0)
-    data_item_del(&tags, item);
+  while (list_items_walk(&new_tags, &item) > 0)
+    list_item_del(&tags, item);
 
-  data_items_merge(&tags, ' ');
+  list_items_merge(&tags, ' ');
 
   file_tags_set(path, &tags);
 
-  data_clear(&tags);
-  data_clear(&new_tags);
+  list_clear(&tags);
+  list_clear(&new_tags);
 }
 
 void
@@ -55,9 +55,9 @@ _handle_tag_clr(const char *path, const char *unused)
 void
 _handle_tag_set(const char *path, const char *str)
 {
-  data_t tags;
+  list_t tags;
 
-  memset(&tags, 0, sizeof(data_t));
+  memset(&tags, 0, sizeof(list_t));
 
   if (strlen(str) == 0)
     {
@@ -65,48 +65,48 @@ _handle_tag_set(const char *path, const char *str)
       return;
     }
 
-  data_parse_tags(&tags, str);
+  list_parse_tags(&tags, str);
 
   file_tags_set(path, &tags);
 
-  data_clear(&tags);
+  list_clear(&tags);
 }
 
 void
 _handle_tag_lst(const char *path, const char *unused)
 {
-  data_t tags;
+  list_t tags;
 
-  memset(&tags, 0, sizeof(data_t));
+  memset(&tags, 0, sizeof(list_t));
 
   if (file_tags_get(path, &tags) > 0)
     return;
 
-  data_items_merge(&tags, ' ');
+  list_items_merge(&tags, ' ');
 
   printf(COMMON_MSG_FMTN, path, (tags.len > 0) ? tags.buf : "");
 
-  data_clear(&tags);
+  list_clear(&tags);
 }
 
 void
 _handle_search_by_tag(const char *path, const char *str)
 {
-  data_t file_tags;
-  data_t search_tags;
+  list_t file_tags;
+  list_t search_tags;
   char *tmp = NULL;
   bool match = true;
 
-  memset(&file_tags, 0, sizeof(data_t));
+  memset(&file_tags, 0, sizeof(list_t));
 
   if (file_tags_get(path, &file_tags) > 0)
     return;
 
-  data_items_merge(&file_tags, ' ');
-  memset(&search_tags, 0, sizeof(data_t));
-  data_parse_tags(&search_tags, str);
+  list_items_merge(&file_tags, ' ');
+  memset(&search_tags, 0, sizeof(list_t));
+  list_parse_tags(&search_tags, str);
 
-  for (tmp = NULL; data_items_walk(&search_tags, &tmp) > 0; )
+  for (tmp = NULL; list_items_walk(&search_tags, &tmp) > 0; )
     if (strstr(file_tags.buf, tmp) == NULL)
       match = false;
 
@@ -116,22 +116,22 @@ _handle_search_by_tag(const char *path, const char *str)
   if (match && verbosity <= log_normal)
     printf("%s\n", path);
 
-  data_clear(&file_tags);
-  data_clear(&search_tags);
+  list_clear(&file_tags);
+  list_clear(&search_tags);
 }
 
 int
 main(int argc, char **argv)
 {
   int ret = 0;
-  data_t files;
+  list_t files;
   struct stat st;
   char opt = 0;
   char *tags = NULL;
   char *item = NULL;
   void (*handler)(const char *, const char *) = NULL;
 
-  memset(&files, 0, sizeof(data_t));
+  memset(&files, 0, sizeof(list_t));
 
 #ifdef HAVE_GETTEXT
   setlocale (LC_ALL, "");
@@ -164,7 +164,7 @@ main(int argc, char **argv)
     {
       errno = 0;
       if (stat(argv[optind], &st) == 0)
-        data_item_add(&files, argv[optind], 0);
+        list_item_add(&files, argv[optind], 0);
       else
         printf(COMMON_ERR_FMTN, argv[optind], strerror(errno));
     }
@@ -173,10 +173,10 @@ main(int argc, char **argv)
     usage(EXIT_FAILURE);
 
   /* init */
-  while ((ret = data_items_walk(&files, &item)) > 0)
+  while ((ret = list_items_walk(&files, &item)) > 0)
     (flags & F_RECURSE) ? _ftw(item, tags, handler) : handler(item, tags);
 
-  data_clear(&files);
+  list_clear(&files);
 
   exit(EXIT_SUCCESS);
 }

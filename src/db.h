@@ -102,18 +102,18 @@ int db_file_add(const char *path, uuid_t *new_uuid);
 int db_file_update(const char *path, uuid_t *uuid);
 int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, char *path);
-int db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
+int db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                         int (*cb)(const char *, const uuid_t *));
-int db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
+int db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
                        int (*cb)(const char *, const char *));
 
-int db_tags_get(uuid_t *uuid, data_t *tags);
-int db_tags_set(const uuid_t *uuid, data_t *tags);
+int db_tags_get(uuid_t *uuid, list_t *tags);
+int db_tags_set(const uuid_t *uuid, list_t *tags);
 int db_tags_clr(const uuid_t *uuid);
-int db_tags_find(const char *str, query_limits_t *lim, data_t *results);
+int db_tags_find(const char *str, query_limits_t *lim, list_t *results);
 
 #ifdef UNIQ_TAGS_LIST
-int db_tag_add_uniq(data_t *tags);
+int db_tag_add_uniq(list_t *tags);
 #endif
 
 void db_commit(void);

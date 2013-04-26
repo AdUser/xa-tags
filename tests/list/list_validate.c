@@ -2,19 +2,19 @@
 
 int main()
 {
-  data_t *data = NULL;
-  data_t *errors = NULL;
+  list_t *data = NULL;
+  list_t *errors = NULL;
   int ret = 0;
   int i = 0;
   char *test = NULL;
 
   SIGCATCH_INIT
 
-  CALLOC(errors, 1, sizeof(data_t));
+  CALLOC(errors, 1, sizeof(list_t));
 
-  /* DATA_T_MSG */
-  CALLOC(data, 1, sizeof(data_t));
-  data->type = DATA_T_MSG;
+  /* LIST_T_MSG */
+  CALLOC(data, 1, sizeof(list_t));
+  data->type = LIST_T_MSG;
   test = "\
 THIS IS SAMPLE\n\
 TWO-LINE TEXT\n";
@@ -22,13 +22,13 @@ TWO-LINE TEXT\n";
   data->len = strlen(data->buf) + 1;
   data->items = 2;
 
-  ret = data_validate(data, errors, 0);
+  ret = list_validate(data, errors, 0);
   assert(ret == 0);
   FREE(data);
 
-  /* DATA_L_FILES */
-  CALLOC(data, 1, sizeof(data_t));
-  data->type = DATA_L_FILES;
+  /* LIST_L_FILES */
+  CALLOC(data, 1, sizeof(list_t));
+  data->type = LIST_L_FILES;
   test =
 #include "../samples/test_list_of_files.inc"
 
@@ -39,14 +39,14 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0', data->items++;
 
-  ret = data_validate(data, errors, 0);
+  ret = list_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 5);
   FREE(data);
 
-  /* DATA_L_UUIDS */
-  CALLOC(data, 1, sizeof(data_t));
-  data->type = DATA_L_UUIDS;
+  /* LIST_L_UUIDS */
+  CALLOC(data, 1, sizeof(list_t));
+  data->type = LIST_L_UUIDS;
   test =
 #include "../samples/test_list_of_uuids.inc"
 
@@ -57,14 +57,14 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0', data->items++;
 
-  ret = data_validate(data, errors, 0);
+  ret = list_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 4);
   FREE(data);
 
-  /* DATA_M_UUID_FILE */
-  CALLOC(data, 1, sizeof(data_t));
-  data->type = DATA_M_UUID_FILE;
+  /* LIST_M_UUID_FILE */
+  CALLOC(data, 1, sizeof(list_t));
+  data->type = LIST_M_UUID_FILE;
   test =
 #include "../samples/test_map_of_uuid_and_file.inc"
 
@@ -75,14 +75,14 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0', data->items++;
 
-  ret = data_validate(data, errors, 0);
+  ret = list_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);
 
-  /* DATA_M_UUID_TAGS */
-  CALLOC(data, 1, sizeof(data_t));
-  data->type = DATA_M_UUID_TAGS;
+  /* LIST_M_UUID_TAGS */
+  CALLOC(data, 1, sizeof(list_t));
+  data->type = LIST_M_UUID_TAGS;
   test =
 #include "../samples/test_map_of_uuid_and_tags.inc"
 
@@ -93,7 +93,7 @@ TWO-LINE TEXT\n";
     if (data->buf[i] == '\n')
       data->buf[i] = '\0', data->items++;
 
-  ret = data_validate(data, errors, 0);
+  ret = list_validate(data, errors, 0);
   assert(ret == 0);
   assert(data->items == 6);
   FREE(data);

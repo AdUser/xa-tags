@@ -3,20 +3,20 @@
 int main()
 {
   int ret = 0;
-  data_t terms;
+  list_t terms;
   search_t search;
 
   SIGCATCH_INIT
 
-  memset(&terms, 0x0, sizeof(data_t));
+  memset(&terms, 0x0, sizeof(list_t));
   memset(&search, 0x0, sizeof(search_t));
 
-  data_item_add(&terms, "alice", 0);
-  data_item_add(&terms, "mary", 0);
-  data_item_add(&terms, "-bob", 0);
+  list_item_add(&terms, "alice", 0);
+  list_item_add(&terms, "mary", 0);
+  list_item_add(&terms, "-bob", 0);
 #ifdef REGEX_SEARCH
-  data_item_add(&terms, "-/[ck]tulhu/", 0);
-  data_item_add(&terms, "/nyan_cat/i", 0);
+  list_item_add(&terms, "-/[ck]tulhu/", 0);
+  list_item_add(&terms, "/nyan_cat/i", 0);
 #endif
 
   ret = search_parse_terms(&search, &terms);
@@ -36,8 +36,8 @@ int main()
   assert(memcmp(&search.rxp_buf[1], &search.rxp_buf[2], sizeof(regex_t)) != 0);
 #endif
 
-  data_clear(&terms);
-  data_clear(&search.str_buf);
+  list_clear(&terms);
+  list_clear(&search.str_buf);
 #ifdef REGEX_SEARCH
   regfree(&search.rxp_buf[0]);
   regfree(&search.rxp_buf[1]);

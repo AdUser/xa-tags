@@ -2,18 +2,18 @@
 
 int main()
 {
-  data_t tags;
+  list_t tags;
   char buf[1024];
 
   SIGCATCH_INIT
 
   unlink(TEST_FILE);
   assert(creat(TEST_FILE, 0600) != -1);
-  memset(&tags, 0x0, sizeof(data_t));
+  memset(&tags, 0x0, sizeof(list_t));
 
-  data_item_add(&tags, "tag1", 0);
-  data_item_add(&tags, "tag2", 0);
-  data_item_add(&tags, "tag3", 0);
+  list_item_add(&tags, "tag1", 0);
+  list_item_add(&tags, "tag2", 0);
+  list_item_add(&tags, "tag3", 0);
 
   assert(file_tags_set(TEST_FILE, &tags) == 0);
   assert(getxattr(TEST_FILE, XATTR_TAGS, buf, 1024) > 0);

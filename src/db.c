@@ -266,7 +266,7 @@ db_file_get(const uuid_t *uuid, char *path)
  * NOTE: 'str' may contain '*' chars, if you want fuzzy search
  */
 int
-db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
+db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                     int (*cb)(const char *, const uuid_t *))
 {
   sqlite3_stmt *stmt = NULL;
@@ -286,7 +286,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
     }
 
   if (results != NULL)
-    data_clear(results);
+    list_clear(results);
 
   strncpy(buf, str, PATH_MAX + 1);
   len = strlen(buf);
@@ -308,7 +308,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
         {
           len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
                                      &uuid, (char *) sqlite3_column_text(stmt, 2));
-          data_item_add(results, buf, len);
+          list_item_add(results, buf, len);
         }
 
       if (cb != NULL)
@@ -320,7 +320,7 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       if (results != NULL)
-        data_clear(results);
+        list_clear(results);
       sqlite3_finalize(stmt);
 
       return 2;
@@ -329,8 +329,8 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
   if (results != NULL)
     {
       if (results->items > 1)
-        results->flags |= DATA_MULTI;
-      results->type = DATA_M_UUID_FILE;
+        results->flags |= LIST_MULTI;
+      results->type = LIST_M_UUID_FILE;
     }
 
   sqlite3_finalize(stmt);
@@ -344,19 +344,19 @@ db_file_search_path(const char *str, query_limits_t *lim, data_t *results,
  * 2 - error
  */
 int
-db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
+db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
                    int (*cb)(const char *, const char *))
 {
   sqlite3_stmt *stmt;
   size_t len = 0;
-  data_t terms;
+  list_t terms;
   int ret = 0;
   int rows = 0;
   char buf[PATH_MAX] = { 0 };
 
   ASSERT(tags != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
-  memset(&terms, 0x0, sizeof(data_t));
+  memset(&terms, 0x0, sizeof(list_t));
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -366,10 +366,10 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
     }
 
   if (results != NULL)
-    data_clear(results);
+    list_clear(results);
 
-  data_copy(&terms, tags);
-  data_items_merge(&terms, ' ');
+  list_copy(&terms, tags);
+  list_items_merge(&terms, ' ');
 
   do /* loop, until we get 'limit' items or lesser than 'limit' rows from query */
     {
@@ -384,7 +384,7 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
           if (results != NULL)
             {
               len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
-              data_item_add(results, buf, len);
+              list_item_add(results, buf, len);
             }
 
           if (cb != NULL)
@@ -406,7 +406,7 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       if (results != NULL)
-        data_clear(results);
+        list_clear(results);
       sqlite3_finalize(stmt);
       return 2;
     }
@@ -414,8 +414,8 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
   if (results != NULL)
     {
       if (results->items > 1)
-        results->flags |= DATA_MULTI;
-      results->type = DATA_L_FILES;
+        results->flags |= LIST_MULTI;
+      results->type = LIST_L_FILES;
     }
 
   sqlite3_finalize(stmt);
@@ -429,7 +429,7 @@ db_file_search_tag(const data_t *tags, query_limits_t *lim, data_t *results,
  * 2 - no such_uuid
  */
 int
-db_tags_get(uuid_t *uuid, data_t *tags)
+db_tags_get(uuid_t *uuid, list_t *tags)
 {
   sqlite3_stmt *stmt = NULL;
   int ret = 0;
@@ -437,7 +437,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   ASSERT(uuid != NULL && tags != NULL, MSG_M_NULLPTR);
 
   if (tags->items > 0)
-    data_clear(tags);
+    list_clear(tags);
 
   if (sqlite3_prepare_v2(db_conn, SQL_T_GET, strlen(SQL_T_GET), &stmt, NULL) != SQLITE_OK)
     {
@@ -450,7 +450,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
   switch (sqlite3_step(stmt))
     {
       case SQLITE_ROW :
-        data_parse_tags(tags, (char *) sqlite3_column_text(stmt, 1));
+        list_parse_tags(tags, (char *) sqlite3_column_text(stmt, 1));
         ret = 0;
         break;
       case SQLITE_DONE :
@@ -468,7 +468,7 @@ db_tags_get(uuid_t *uuid, data_t *tags)
 }
 
 int
-db_tags_set(const uuid_t *uuid, data_t *tags)
+db_tags_set(const uuid_t *uuid, list_t *tags)
 {
   sqlite3_stmt *stmt = NULL;
   size_t len = 0;
@@ -489,7 +489,7 @@ db_tags_set(const uuid_t *uuid, data_t *tags)
 #endif
 
   CALLOC(p, tags->len + 2, sizeof(char));
-  data_items_merge(tags, ' ');
+  list_items_merge(tags, ' ');
   memcpy(&p[1], tags->buf, tags->len);
   p[0] = ' ';
   p[tags->len] = ' ';
@@ -533,7 +533,7 @@ db_tags_clr(const uuid_t *uuid)
 }
 
 int
-db_tag_add_uniq(data_t *tags)
+db_tag_add_uniq(list_t *tags)
 {
   sqlite3_stmt *stmt = NULL;
   uint32_t hash = 0;
@@ -550,7 +550,7 @@ db_tag_add_uniq(data_t *tags)
       return 1;
     }
 
-  while (data_items_walk(tags, &p) > 0)
+  while (list_items_walk(tags, &p) > 0)
     {
       len = strlen(p);
       hash = jhash(p, len);
@@ -578,7 +578,7 @@ db_tag_add_uniq(data_t *tags)
  * 2 - error
  */
 int
-db_tags_find(const char *str, query_limits_t *lim, data_t *results)
+db_tags_find(const char *str, query_limits_t *lim, list_t *results)
 {
   sqlite3_stmt *stmt = NULL;
   char buf[PATH_MAX]; /* not exactly 'path', but size should be reasonable */
@@ -596,7 +596,7 @@ db_tags_find(const char *str, query_limits_t *lim, data_t *results)
     }
 
   if (results != NULL)
-    data_clear(results);
+    list_clear(results);
 
   strncpy(buf, str, PATH_MAX);
   for (p = buf; *p != '\0'; p++)
@@ -609,7 +609,7 @@ db_tags_find(const char *str, query_limits_t *lim, data_t *results)
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
       len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
-      data_item_add(results, buf, len);
+      list_item_add(results, buf, len);
       lim->offset++;
     }
 
@@ -617,7 +617,7 @@ db_tags_find(const char *str, query_limits_t *lim, data_t *results)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
       sqlite3_finalize(stmt);
-      data_clear(results);
+      list_clear(results);
       return 2;
     }
 

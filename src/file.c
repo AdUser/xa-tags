@@ -21,13 +21,13 @@
  * 1 - if attribute not found or empty
  */
 ssize_t
-file_tags_get(const char *path, data_t *tags)
+file_tags_get(const char *path, list_t *tags)
 {
   char *buf = 0;
   ssize_t size;
 
   errno = 0;
-  data_clear(tags);
+  list_clear(tags);
 
   /* determine needed buf size */
   size = 1 + getxattr(path, XATTR_TAGS, buf, 0);
@@ -54,7 +54,7 @@ file_tags_get(const char *path, data_t *tags)
 
   buf[size - 1] = '\0';
 
-  data_parse_tags(tags, buf);
+  list_parse_tags(tags, buf);
   FREE(buf);
 
   return 0;
@@ -65,7 +65,7 @@ file_tags_get(const char *path, data_t *tags)
  *  1 - if error occured
  */
 int
-file_tags_set(const char *path, data_t *tags)
+file_tags_set(const char *path, list_t *tags)
 {
   errno = 0;
 
@@ -75,7 +75,7 @@ file_tags_set(const char *path, data_t *tags)
       return 0;
     }
 
-  data_items_merge(tags, ' ');
+  list_items_merge(tags, ' ');
   setxattr(path, XATTR_TAGS, tags->buf, tags->len - 1, 0);
 
   if (errno != 0)

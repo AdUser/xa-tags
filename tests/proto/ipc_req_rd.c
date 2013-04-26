@@ -104,7 +104,7 @@ int main()
   assert(ret == 0);
   assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert((req->data.flags & DATA_MULTI) == 0);
+  assert((req->data.flags & LIST_MULTI) == 0);
   assert(req->data.len == strlen(PATH1) + 1);
   assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
@@ -118,7 +118,7 @@ int main()
   assert(ret == 0);
   assert(conn->rd.len == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert((req->data.flags & DATA_MULTI) == 0);
+  assert((req->data.flags & LIST_MULTI) == 0);
   assert(req->data.len == strlen(PATH1) + 1);
   assert(strcmp(req->data.buf, PATH1) == 0);
   FREE(req);
@@ -161,7 +161,7 @@ int main()
   ret = ipc_request_read(conn, req);
   assert(ret == 0);
   assert(req->type == REQ_FILE && req->op == OP_F_ADD);
-  assert((req->data.flags & DATA_MULTI) == 1);
+  assert((req->data.flags & LIST_MULTI) == 1);
   FREE(req);
 
   return 0;

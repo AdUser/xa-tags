@@ -2,7 +2,7 @@
 
 int main()
 {
-  data_t *data = NULL;
+  list_t *data = NULL;
   char *item1 = NULL;
   char *item2 = NULL;
   char *item3 = NULL;
@@ -10,27 +10,27 @@ int main()
 
   SIGCATCH_INIT
 
-  CALLOC(data, 1, sizeof(data_t));
+  CALLOC(data, 1, sizeof(list_t));
 
-  /** init data_t #1 */
-  data_item_add(data, "test",   0);
-  data_item_add(data, "string", 0);
-  data_item_add(data, "ring",   0);
+  /** init list_t #1 */
+  list_item_add(data, "test",   0);
+  list_item_add(data, "string", 0);
+  list_item_add(data, "ring",   0);
   assert(data->len == 17);
   assert(memcmp(data->buf, "test\0string\0ring\0", 17) == 0);
 
-  item1 = data_item_search(data, "test");
+  item1 = list_item_search(data, "test");
   assert(item1 != NULL);
   assert(data->buf == item1);
 
-  item2 = data_item_search(data, "string");
+  item2 = list_item_search(data, "string");
   assert(item2 != NULL);
 
-  item3 = data_item_search(data, "ring");
+  item3 = list_item_search(data, "ring");
   assert(item3 != NULL);
   assert(item3 != item2);
 
-  item4 = data_item_search(data, "no such item");
+  item4 = list_item_search(data, "no such item");
   assert(item4 == NULL);
 
   return 0;

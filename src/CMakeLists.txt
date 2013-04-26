@@ -2,7 +2,7 @@ SET(SRC_FILES_DAEMON
     "common.c"
     "proto.c"
     "log.c"
-    "data.c"
+    "list.c"
     "conn.c"
     "handlers.c"
     "buf.c"
@@ -14,7 +14,7 @@ SET(SRC_FILES_CLIENT
     "common.c"
     "log.c"
     "uuid.c"
-    "data.c"
+    "list.c"
     "file.c"
     "search.c"
     )

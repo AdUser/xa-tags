@@ -14,7 +14,7 @@ int main()
   /** simple responces */
   CALLOC(resp, 1, sizeof(ipc_resp_t));
   resp->status = STATUS_OK;
-  resp->data.type = DATA_EMPTY;
+  resp->data.type = LIST_EMPTY;
 
   ret = ipc_responce_write(conn, resp);
   assert(ret == 0);
@@ -22,7 +22,7 @@ int main()
   assert(memcmp(conn->wr.buf, "OK\n", 4) == 0);
 
   resp->status = STATUS_ERR;
-  resp->data.type = DATA_EMPTY;
+  resp->data.type = LIST_EMPTY;
 
   ret = ipc_responce_write(conn, resp);
   assert(ret == 0);
@@ -33,11 +33,11 @@ int main()
   conn->wr.len = 0;
 
   /** oneline responces */
-  memset(&resp->data, 0x0, sizeof(data_t));
+  memset(&resp->data, 0x0, sizeof(list_t));
 
-  data_item_add(&resp->data, "Error message", 0);
+  list_item_add(&resp->data, "Error message", 0);
   resp->status = STATUS_ERR;
-  resp->data.type = DATA_T_MSG;
+  resp->data.type = LIST_T_MSG;
 
   ret = ipc_responce_write(conn, resp);
   assert(ret == 0);
@@ -47,14 +47,14 @@ int main()
   FREE(conn->wr.buf);
   conn->wr.len = 0;
   FREE(resp->data.buf);
-  memset(&resp->data, 0x0, sizeof(data_t));
+  memset(&resp->data, 0x0, sizeof(list_t));
 
   /** multiline responces */
-  data_item_add(&resp->data, "Error 1", 0);
-  data_item_add(&resp->data, "Error 2", 0);
-  data_item_add(&resp->data, "Error 3", 0);
+  list_item_add(&resp->data, "Error 1", 0);
+  list_item_add(&resp->data, "Error 2", 0);
+  list_item_add(&resp->data, "Error 3", 0);
   resp->status = STATUS_ERR;
-  resp->data.type = DATA_T_MSG;
+  resp->data.type = LIST_T_MSG;
 
   test = \
   "ERR MSG >\n" \

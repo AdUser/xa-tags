@@ -14,7 +14,7 @@ typedef struct conn_t
 
     /* used only by server */
     uint16_t flags;
-    data_t errors;
+    list_t errors;
   } conn_t;
 
 /** API functions */

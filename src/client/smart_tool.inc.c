@@ -2,16 +2,16 @@ void
 _handle_tag_add(const char *path, const char *str)
 {
   uuid_t uuid = { 0, 0 };
-  data_t all_tags; /* resulting tags set */
-  data_t tmp_tags; /* temporary tags set */
+  list_t all_tags; /* resulting tags set */
+  list_t tmp_tags; /* temporary tags set */
 
   ASSERT(path != NULL && str != NULL, MSG_M_NULLPTR);
 
   if (strlen(str) == 0)
     return; /* nothing to do*/
 
-  memset(&all_tags, 0, sizeof(data_t));
-  memset(&tmp_tags, 0, sizeof(data_t));
+  memset(&all_tags, 0, sizeof(list_t));
+  memset(&tmp_tags, 0, sizeof(list_t));
 
   file_uuid_get(path, &uuid);
 
@@ -27,19 +27,19 @@ _handle_tag_add(const char *path, const char *str)
 
 #ifdef INLINE_TAGS
   file_tags_get(path, &tmp_tags);
-  data_merge(&all_tags, &tmp_tags);
+  list_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_parse_tags(&tmp_tags, str);
-  data_merge(&all_tags, &tmp_tags);
+  list_parse_tags(&tmp_tags, str);
+  list_merge(&all_tags, &tmp_tags);
 
   db_tags_set(&uuid, &all_tags);
 #ifdef INLINE_TAGS
   file_tags_set(path, &all_tags);
 #endif
 
-  data_clear(&all_tags);
-  data_clear(&tmp_tags);
+  list_clear(&all_tags);
+  list_clear(&tmp_tags);
 }
 
 void
@@ -48,16 +48,16 @@ _handle_tag_del(const char *path, const char *str)
   char *item = NULL;
   uuid_t uuid;
   bool save = false;
-  data_t all_tags; /* resulting tags set */
-  data_t tmp_tags; /* temporary tags set */
+  list_t all_tags; /* resulting tags set */
+  list_t tmp_tags; /* temporary tags set */
 
   ASSERT(path != NULL && str != NULL, MSG_M_NULLPTR);
 
   if (strlen(str) == 0)
     return; /* nothing to do*/
 
-  memset(&all_tags, 0, sizeof(data_t));
-  memset(&tmp_tags, 0, sizeof(data_t));
+  memset(&all_tags, 0, sizeof(list_t));
+  memset(&tmp_tags, 0, sizeof(list_t));
 
   if (file_uuid_get(path, &uuid) > 0)
     return;
@@ -69,13 +69,13 @@ _handle_tag_del(const char *path, const char *str)
 
 #ifdef INLINE_TAGS
   file_tags_get(path, &tmp_tags);
-  data_merge(&all_tags, &tmp_tags);
+  list_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_parse_tags(&tmp_tags, str);
+  list_parse_tags(&tmp_tags, str);
 
-  while(data_items_walk(&tmp_tags, &item) > 0)
-    if (data_item_del(&all_tags, item) == 1)
+  while(list_items_walk(&tmp_tags, &item) > 0)
+    if (list_item_del(&all_tags, item) == 1)
       save = true;
 
   if (save == true)
@@ -85,8 +85,8 @@ _handle_tag_del(const char *path, const char *str)
   file_tags_set(path, &all_tags);
 #endif
 
-  data_clear(&all_tags);
-  data_clear(&tmp_tags);
+  list_clear(&all_tags);
+  list_clear(&tmp_tags);
 }
 
 int
@@ -118,11 +118,11 @@ _handle_tag_clr(const char *path, const char *tags)
 void
 _handle_tag_set(const char *path, const char *str)
 {
-  data_t tags;
+  list_t tags;
   uuid_t uuid = { 0, 0 };
   int ret = 0;
 
-  memset(&tags, 0, sizeof(data_t));
+  memset(&tags, 0, sizeof(list_t));
 
   if (strlen(str) == 0)
     {
@@ -130,7 +130,7 @@ _handle_tag_set(const char *path, const char *str)
       return;
     }
 
-  data_parse_tags(&tags, str);
+  list_parse_tags(&tags, str);
   if ((ret = file_uuid_get(path, &uuid)) == 2)
     return;
 
@@ -151,11 +151,11 @@ void
 _handle_tag_lst(const char *path, const char *unused)
 {
   uuid_t uuid = { 0, 0 };
-  data_t all_tags; /* resulting tags set */
-  data_t tmp_tags; /* temporary tags set */
+  list_t all_tags; /* resulting tags set */
+  list_t tmp_tags; /* temporary tags set */
 
-  memset(&all_tags, 0x0, sizeof(data_t));
-  memset(&tmp_tags, 0x0, sizeof(data_t));
+  memset(&all_tags, 0x0, sizeof(list_t));
+  memset(&tmp_tags, 0x0, sizeof(list_t));
 
   if (file_uuid_get(path, &uuid) != 0)
     return;
@@ -163,37 +163,37 @@ _handle_tag_lst(const char *path, const char *unused)
   db_tags_get(&uuid, &all_tags);
 #ifdef INLINE_TAGS
   file_tags_get(path, &tmp_tags);
-  data_merge(&all_tags, &tmp_tags);
+  list_merge(&all_tags, &tmp_tags);
 #endif
 
-  data_items_merge(&all_tags, ' ');
+  list_items_merge(&all_tags, ' ');
 
   if (all_tags.items > 0 || verbosity > log_normal)
     printf(COMMON_MSG_FMTN, path, (all_tags.items > 0) ? all_tags.buf : "");
 
-  data_clear(&all_tags);
-  data_clear(&tmp_tags);
+  list_clear(&all_tags);
+  list_clear(&tmp_tags);
 }
 
 void
 _handle_tag_search(const char *unused, const char *tag)
 {
   char *p = NULL;
-  data_t results;
+  list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
-  memset(&results, 0x0, sizeof(data_t));
+  memset(&results, 0x0, sizeof(list_t));
 
   while (db_tags_find(tag, &lim, &results) < 2)
     {
       if (results.items == 0)
         break;
 
-      while(data_items_walk(&results, &p) > 0)
+      while(list_items_walk(&results, &p) > 0)
         printf("%s\n", p);
     }
 
-  data_clear(&results);
+  list_clear(&results);
 }
 
 /* extended operations */
@@ -201,14 +201,14 @@ void
 _handle_file_search_tag(const char *unused, const char *str)
 {
   int ret = 0;
-  data_t tags;
-  data_t results;
+  list_t tags;
+  list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
-  memset(&tags,    0, sizeof(data_t));
-  memset(&results, 0, sizeof(data_t));
+  memset(&tags,    0, sizeof(list_t));
+  memset(&results, 0, sizeof(list_t));
 
-  data_parse_tags(&tags, str);
+  list_parse_tags(&tags, str);
 
   if (tags.items == 0)
     return;
@@ -218,26 +218,26 @@ _handle_file_search_tag(const char *unused, const char *str)
       if (results.items == 0)
         break;
 
-      data_items_merge(&results, '\n');
+      list_items_merge(&results, '\n');
       printf("%s\n", results.buf);
 
       if (ret == 0)
         break;
     }
 
-  data_clear(&results);
-  data_clear(&tags);
+  list_clear(&results);
+  list_clear(&tags);
 }
 
 void
 _handle_file_search_path(const char *unused, const char *substr)
 {
-  data_t results;
+  list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
   char *buf;
   size_t len = strlen(substr);
 
-  memset(&results, 0, sizeof(data_t));
+  memset(&results, 0, sizeof(list_t));
   CALLOC(buf, len + 4, sizeof(char));
 
   snprintf(buf, len + 3, "%c%s%c", '*', substr, '*');
@@ -250,11 +250,11 @@ _handle_file_search_path(const char *unused, const char *substr)
       if (results.items == 0)
         break;
 
-      data_items_merge(&results, '\n');
+      list_items_merge(&results, '\n');
       printf("%s\n", results.buf);
     }
 
-  data_clear(&results);
+  list_clear(&results);
   FREE(buf);
 }
 
@@ -328,10 +328,10 @@ void
 _handle_file_migrate_to_db(const char *path, const char *unused)
 {
   uuid_t uuid = { 0, 0 };
-  data_t tags;
+  list_t tags;
   int ret = 0;
 
-  memset(&tags, 0x0, sizeof(data_t));
+  memset(&tags, 0x0, sizeof(list_t));
 
   if (file_tags_get(path, &tags) > 0)
     return;
@@ -341,7 +341,7 @@ _handle_file_migrate_to_db(const char *path, const char *unused)
 
   ret = db_tags_set(&uuid, &tags);
 
-  data_clear(&tags);
+  list_clear(&tags);
 
   if (ret == 0 && !(flags & F_KEEPCONV))
     file_tags_clr(path);
@@ -351,10 +351,10 @@ void
 _handle_file_migrate_from_db(const char *path, const char *unused)
 {
   uuid_t uuid = { 0, 0 };
-  data_t tags;
+  list_t tags;
   int ret = 0;
 
-  memset(&tags, 0x0, sizeof(data_t));
+  memset(&tags, 0x0, sizeof(list_t));
 
   if (file_uuid_get(path, &uuid) > 0)
     return;
@@ -364,7 +364,7 @@ _handle_file_migrate_from_db(const char *path, const char *unused)
 
   ret = file_tags_set(path, &tags);
 
-  data_clear(&tags);
+  list_clear(&tags);
 
   if (ret == 0 && !(flags & F_KEEPCONV))
     db_file_del(&uuid);
@@ -375,7 +375,7 @@ int
 main(int argc, char **argv)
 {
   int ret = 0;
-  data_t files;
+  list_t files;
   struct stat st;
   char opt = 0;
   char op = '\0';
@@ -385,7 +385,7 @@ main(int argc, char **argv)
   void (*handler)(const char *, const char *) = NULL;
 
   memset(&opts, 0x0, sizeof(opts));
-  memset(&files, 0, sizeof(data_t));
+  memset(&files, 0, sizeof(list_t));
 
 #ifdef HAVE_GETTEXT
   setlocale (LC_ALL, "");
@@ -444,12 +444,12 @@ main(int argc, char **argv)
           else
             snprintf(buf, PATH_MAX, "%s", item);
 
-          data_item_add(&files, buf, 0);
+          list_item_add(&files, buf, 0);
           FREE(item);
         }
       else if (op == 'c')
         {
-          data_item_add(&files, argv[optind], 0);
+          list_item_add(&files, argv[optind], 0);
         }
       else
         printf(COMMON_ERR_FMTN, argv[optind], strerror(errno));
@@ -481,20 +481,20 @@ main(int argc, char **argv)
 #endif
         if (files.items < 1)
           exit(EXIT_FAILURE);
-        while ((ret = data_items_walk(&files, &item)) > 0)
+        while ((ret = list_items_walk(&files, &item)) > 0)
           (flags & F_RECURSE) ? _ftw(item, str, handler) : handler(item, str);
         break;
       case 'R' :
         if (files.items < 1)
           exit(EXIT_FAILURE);
-        while ((ret = data_items_walk(&files, &item)) > 0)
+        while ((ret = list_items_walk(&files, &item)) > 0)
           handler(item, NULL); /* without recursion */
         break;
       default :
         usage(EXIT_FAILURE);
     }
 
-  data_clear(&files);
+  list_clear(&files);
 
   db_close();
 

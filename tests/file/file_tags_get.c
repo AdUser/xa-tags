@@ -2,7 +2,7 @@
 
 int main()
 {
-  data_t tags;
+  list_t tags;
   char *test = "tag1 tag2 tag3";
 
   SIGCATCH_INIT
@@ -10,7 +10,7 @@ int main()
   /* init */
   unlink(TEST_FILE);
   assert(creat(TEST_FILE, 0600) != -1);
-  memset(&tags, 0x0, sizeof(data_t));
+  memset(&tags, 0x0, sizeof(list_t));
 
   /* test lowercase id */
   setxattr(TEST_FILE, XATTR_TAGS, test, strlen(test), 0);
