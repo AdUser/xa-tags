@@ -37,3 +37,6 @@ void list_clear(list_t *list);
 void list_copy(list_t *to, const list_t *from);
 int list_parse_tags(list_t *list, const char *str);
 void list_merge(list_t *to, list_t *from);
+
+/* items index manipulation */
+void list_idx_drop(list_t *list);

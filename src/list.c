@@ -446,3 +446,10 @@ list_merge(list_t *to, list_t *from)
     if ((p = list_item_search(to, item)) == NULL)
       list_item_add(to, item, 0);
 }
+
+/* delete items index and free memory */
+void list_idx_drop(list_t *list)
+{
+  FREE(list->idx_items);
+  FREE(list->idx_items_len);
+}
