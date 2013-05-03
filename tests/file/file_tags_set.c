@@ -2,6 +2,7 @@
 
 int main()
 {
+  int ret = 0;
   list_t tags;
   char buf[1024];
 
@@ -16,8 +17,9 @@ int main()
   list_item_add(&tags, "tag3", 0);
 
   assert(file_tags_set(TEST_FILE, &tags) == 0);
-  assert(getxattr(TEST_FILE, XATTR_TAGS, buf, 1024) > 0);
-  assert(memcmp(buf, "tag1 tag2 tag3\0", 15) == 0);
+  ret = getxattr(TEST_FILE, XATTR_TAGS, buf, 1024);
+  assert(ret == 14);
+  assert(memcmp(buf, "tag1 tag2 tag3\0", 14) == 0);
 
   unlink(TEST_FILE);
 
