@@ -453,3 +453,30 @@ void list_idx_drop(list_t *list)
   FREE(list->idx_items);
   FREE(list->idx_items_len);
 }
+
+/** create static index of items for fast access and compare */
+/** return values:
+ * 0 - all ok
+ * 1 - error
+ */
+int list_idx_create(list_t *list)
+{
+  char *item = NULL;
+  int i = 0;
+
+  ASSERT(list != NULL, MSG_M_NULLPTR);
+
+  if (list->items == 0)
+    return 0;
+
+  CALLOC(list->idx_items, list->items + 1, sizeof(char *));
+  CALLOC(list->idx_items_len, list->items + 1, sizeof(size_t));
+
+  for (i = 0; list_items_walk(list, &item) > 0; i++)
+  {
+    list->idx_items[i]     = item;
+    list->idx_items_len[i] = strlen(item);
+  }
+
+  return 0;
+}

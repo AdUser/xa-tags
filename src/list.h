@@ -40,3 +40,4 @@ void list_merge(list_t *to, list_t *from);
 
 /* items index manipulation */
 void list_idx_drop(list_t *list);
+int list_idx_create(list_t *list);
