@@ -18,6 +18,8 @@ typedef struct list_t
       LIST_M_UUID_TAGS,
       LIST_M_UUID_FILE
     } type;
+  char  **idx_items;     /* read as: index of items */
+  size_t *idx_items_len; /* array of lenght of items */
   size_t len;  /* assumes '(item + \0) * items */
   size_t size; /* available size in buffer (bytes) */
   char *buf; /* [item 1\0item2\0] or NULL */
