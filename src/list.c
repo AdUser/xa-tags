@@ -224,6 +224,9 @@ list_item_add(list_t *list, char *item, size_t item_len)
   if (item_len <= 0)
     item_len = strlen(item);
 
+  if (list->idx_items)
+    list_idx_drop(list);
+
   item_len += 1; /* trailing '\0' */
 
   list->items += 1;
@@ -267,6 +270,9 @@ list_item_del(list_t *list, char *item)
   if ((p = list_item_search(list, item)) == NULL)
     return 0; /* nothing to do */
 
+  if (list->idx_items)
+    list_idx_drop(list);
+
   item_len = strlen(item) + 1;
 
   move_size  = list->len;
@@ -286,6 +292,9 @@ list_items_split(list_t *list, char delim)
 {
   size_t i = 0;
 
+  if (list->idx_items)
+    list_idx_drop(list);
+
   for (i = 0; i < list->len; i++)
     if (list->buf[i] == delim)
       {
@@ -302,6 +311,9 @@ list_items_merge(list_t *list, char glue)
 
   if (list->items < 2)
     return;
+
+  if (list->idx_items)
+    list_idx_drop(list);
 
   if (list->len > 0)
     len = list->len - 1;
@@ -389,6 +401,7 @@ list_clear(list_t *list)
 {
   ASSERT(list != NULL, MSG_M_NULLPTR);
   FREE(list->buf);
+  list_idx_drop(list);
   memset(list, 0x0, sizeof(list_t));
 }
 
@@ -397,6 +410,8 @@ list_copy(list_t *to, const list_t *from)
 {
   memcpy(to, from, sizeof(list_t));
   to->buf = NULL;
+  to->idx_items = NULL;
+  to->idx_items_len = NULL;
   CALLOC(to->buf, from->size, sizeof(char));
   memcpy(to->buf, from->buf, from->len);
 }
@@ -439,6 +454,9 @@ list_merge(list_t *to, list_t *from)
 {
   char *p = NULL;
   char *item = NULL;
+
+  if (to->idx_items)
+    list_idx_drop(to);
 
   ASSERT(to != NULL && from != NULL, MSG_M_NULLPTR);
 
