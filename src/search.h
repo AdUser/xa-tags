@@ -2,18 +2,14 @@
 
 #define MAX_SEARCH_COND 32
 
-#define SEARCH_NONE   0 << 0
-#define SEARCH_NEG    1 << 0
-#define SEARCH_EXACT  1 << 1
-
 typedef struct search_t
 {
-  uint8_t   str_flags[MAX_SEARCH_COND];
-  list_t    str_buf;
+  list_t    substr;
+  list_t    exact;
 #ifdef REGEX_SEARCH
-  uint8_t   rxp_cnt;
-  uint8_t   rxp_flags[MAX_SEARCH_COND];
-  regex_t   rxp_buf[MAX_SEARCH_COND];
+  uint8_t   regex_cnt;
+  bool      regex_neg[MAX_SEARCH_COND];
+  regex_t   regexps[MAX_SEARCH_COND];
 #endif
 } search_t;
 

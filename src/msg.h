@@ -65,14 +65,14 @@
   gettext("Maximum search conditions reached, ignoring")
 #define MSG_S_UNKNTYPE \
   gettext("Undefined type for the search term")
+#define MSG_S_SHORTTERM \
+  gettext("Search term too short, ignored")
 #define MSG_S_UNKNRXFLAG \
   gettext("Unknown flag in this regex")
 #define MSG_S_RXCOMPFAIL \
   gettext("Regex compilation error")
 #define MSG_S_RXDISABLED \
-  gettext("Well, i know what are you want, but regexp was not enabled during build")
-#define MSG_S_RXIGNORE \
-  gettext("Ignoring regex in search")
+  gettext("Regex support disabled, ignoring")
 
 /** connection errors */
 #define MSG_I_TIMEOUT    \

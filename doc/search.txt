@@ -8,17 +8,25 @@ I should fix that. And even more, i want to search tags with regexp's.
 In version 0.4 i'll plan to realize this query language:
 
   * "tag" -- ordinary string, must be assigned to file ('dog' may match 'lazy_dog')
-  * "=tag" -- ordinary string, must be assigned to file ('dog' must exact match 'dog')
+  * "+tag" -- ordinary string, must be assigned to file ('dog' must exact match 'dog')
   * "-tag" -- ordinary string, must NOT be assigned to file
   * "/t[ae]g/" -- regex string, posix-compatible
   * "-/t[ae]g/i" -- regex string, case insensitive, tags that matches must NOT be assigned to file
 
 Complex example:
-  "cat -/\(dog|bird\)/" -- find files with tag 'cat' but neither 'dog' not 'bird'
+  "cat -/\(dog|bird\)/" -- find files with tag 'cat' but neither 'dog' nor 'bird'
   "/cat/i" -- find files with tag 'cat' in all registers
+
+.--------.---------.---------.
+|        | include | exclude |
+:--------+---------+---------:
+| substr |   ' '   |   '~'   |
+:--------+---------+---------:
+| exact  |   '+'   |   '-'   |
+'--------'---------'---------'
 
 Note, that regex terms will apply after quering database, so it may be slow.
 
- slow            fast
-  <<< =====|==== >>>
- regex           string
+ slow           fast
+  <<< ====|==== >>>
+ regex          string
