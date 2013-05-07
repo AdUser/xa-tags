@@ -131,3 +131,48 @@ search_free(search_t * const search)
 
   memset(search, 0x0, sizeof(search_t));
 }
+
+/** Return values:
+ * -1 - error
+ *  0 - not match
+ *  1 - match
+ */
+int
+_match_against_list(list_t * const terms, const char *tags)
+{
+  int i = 0;
+  char *p = NULL;
+  bool found = false;
+  bool expect = false;
+
+  if (terms->idx_items == NULL)
+    if (list_idx_create(terms) != 0)
+      return -1;
+
+  for (i = 0; i < terms->items; i++)
+    {
+      p = terms->idx_items[i];
+      expect = (*p == '+') ? true : false;
+      found =  (strstr(tags, (p + 1)) != NULL) ? true : false;
+      if (!found && expect)
+        return 0;
+      if (found && !expect)
+        return 0;
+    }
+
+  return 1;
+}
+
+int
+search_match_substr(search_t * const search, const char *tags)
+{
+  if (search->substr.items > 0)
+    if (_match_against_list(&search->substr, tags) < 1)
+      return 0;
+
+  if (search->exact.items > 0)
+    if (_match_against_list(&search->exact, tags) < 1)
+      return 0;
+
+  return 1;
+}

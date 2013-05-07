@@ -27,3 +27,11 @@ search_parse_terms(search_t * const search, const list_t *terms);
  */
 void
 search_free(search_t * const search);
+
+/** return value:
+ * -1 - error
+ *  0 - not match
+ *  1 - match
+ */
+int
+search_match_substr(search_t * const search, const char *tags);
