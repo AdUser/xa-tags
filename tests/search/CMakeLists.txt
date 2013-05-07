@@ -9,6 +9,8 @@ SET(SRC_FILES
 
 ADD_EXECUTABLE("search_parse_terms"  ${SRC_FILES} "search_parse_terms.c")
 ADD_EXECUTABLE("search_free"         ${SRC_FILES} "search_free.c")
+ADD_EXECUTABLE("search_match_substr" ${SRC_FILES} "search_match_substr.c")
 
 ADD_TEST("search/parse_terms"       "search_parse_terms")
 ADD_TEST("search/free"              "search_free")
+ADD_TEST("search/match_substr"      "search_match_substr")
