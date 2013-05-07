@@ -107,6 +107,12 @@ search_parse_terms(search_t * const search, const list_t *terms)
 
     }
 
+  if (search->substr.items > 0)
+    list_idx_create(&search->substr);
+
+  if (search->exact.items > 0)
+    list_idx_create(&search->exact);
+
   return 0;
 }
 
