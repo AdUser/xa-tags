@@ -176,3 +176,45 @@ search_match_substr(search_t * const search, const char *tags)
 
   return 1;
 }
+
+int
+search_match_regex(search_t * const search, const char *tags_str)
+{
+  int i = 0;
+  int j = 0;
+  list_t tags;
+  bool match;
+  bool expected;
+
+  memset(&tags, 0x0, sizeof(list_t));
+
+  if (list_parse_tags(&tags, tags_str) < 1)
+    {
+      msg(msg_warn, COMMON_MSG_FMTN, MSG_D_BADINPUT, tags_str);
+      list_clear(&tags);
+      return 0;
+    }
+
+  assert(list_idx_create(&tags) == 0);
+
+  for (i = 0; i < search->regex_cnt; i++)
+    {
+      match = false;
+      expected = !search->regex_neg[i];
+
+      for (j = 0; j < tags.items; j++)
+        if (regexec(&search->regexps[i], tags.idx_items[i], 0, NULL, 0) == 0)
+          { match = true; break; }
+
+      if ((match && !expected) ||
+          (!match && expected))
+        {
+          list_clear(&tags);
+          return 0;
+        }
+    }
+
+  list_clear(&tags);
+
+  return 1;
+}
