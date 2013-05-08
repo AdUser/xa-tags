@@ -65,8 +65,8 @@ int main()
   /* motto: nobody loves bob */
   list_item_add(&terms, "-bob", 0);
   assert(search_parse_terms(&search, &terms) == 0);
-  list_idx_drop(&search->substr);
-  list_idx_drop(&search->exact);
+  list_idx_drop(&search.substr);
+  list_idx_drop(&search.exact);
   assert(search_match_substr(&search, " alice mary rose bob ") == 0);
   assert(search_match_substr(&search, " alice mary rose bob") == 1);
   assert(search_match_substr(&search, " rose mary bob alice ") == 0);
