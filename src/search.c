@@ -76,7 +76,7 @@ search_parse_terms(search_t * const search, const list_t *terms)
               }
             CALLOC(buf, item_len + 10, sizeof(char));
             search->regex_neg[search->regex_cnt] = (filter == '-') ? true : false;
-            strncpy(buf, item + 1, item_len - ((icase == true) ? 2 : 1));
+            strncpy(buf, item + 1, item_len - ((icase == true) ? 3 : 2));
             if (icase == true)
               ret = regcomp(&search->regexps[search->regex_cnt], buf,
                             REG_EXTENDED | REG_NOSUB | REG_ICASE);
