@@ -24,35 +24,9 @@ int
 file_tags_get(const char *path, list_t *tags)
 {
   char *buf = NULL;
-  ssize_t size;
 
-  errno = 0;
-  list_clear(tags);
-
-  /* determine needed buf size */
-  size = 1 + getxattr(path, XATTR_TAGS, buf, 0);
-  if (errno != 0)
-    {
-      if (errno != ENOATTR)
-        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
-      return 1;
-    }
-
-  if (size <= 1)
+  if (file_tags_get_bulk(path, &buf) <= 0)
     return 1;
-
-  CALLOC(buf, size, sizeof(char));
-
-  getxattr(path, XATTR_TAGS, buf, size);
-  if (errno != 0)
-    {
-      if (errno != ENOATTR)
-        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
-      FREE(buf);
-      return 1;
-    }
-
-  buf[size - 1] = '\0';
 
   list_parse_tags(tags, buf);
   FREE(buf);
