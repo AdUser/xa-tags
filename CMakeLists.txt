@@ -26,7 +26,7 @@ OPTION(OPT_DAEMON "Use daemon for serving the database" OFF)
 OPTION(OPT_INLINE_TAGS "Save copy of tags directly in xattr" OFF)
 OPTION(OPT_I18N   "Build without localization support" ON)
 OPTION(OPT_ASYNC_DB "Allow collection and batch execution of write requests" ON)
-OPTION(OPT_DB_AUTOCREATE "Create and initialize database automatically if missing" OFF)
+OPTION(OPT_DB_AUTOCREATE "Create and initialize database automatically if missing" ON)
 OPTION(OPT_UNIQ_TAGS_LIST "Create and maintain list of used tags" ON)
 OPTION(OPT_REGEX_SEARCH "Regex search support" ON)
 # also, this variables may be usefull:
