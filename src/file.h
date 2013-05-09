@@ -1,4 +1,5 @@
 int file_tags_get(const char *path, list_t *tags);
+int file_tags_get_bulk(const char *path, char **tags);
 int file_tags_set(const char *path, list_t *tags);
 int file_tags_clr(const char *path);
 

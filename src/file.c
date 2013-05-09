@@ -61,6 +61,48 @@ file_tags_get(const char *path, list_t *tags)
 }
 
 /** return values:
+ * <0 - error
+ *  0 - attribute not found or empty
+ * >0 - length of allocated buffer
+ */
+ssize_t
+file_tags_get_bulk(const char *path, char **tags)
+{
+  char *buf = NULL;
+  ssize_t size;
+
+  errno = 0;
+
+  /* determine needed buf size */
+  size = 1 + 2 + getxattr(path, XATTR_TAGS, buf, 0); /* '\0' + 2 x ' ' */
+  if (errno != 0)
+    {
+      if (errno != ENOATTR)
+        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
+      return -1;
+    }
+
+  if (size <= 3)
+    return 0;
+
+  CALLOC(buf, size, sizeof(char));
+
+  getxattr(path, XATTR_TAGS, buf + 1, size - 1);
+  if (errno != 0)
+    {
+      if (errno != ENOATTR)
+        msg(msg_warn, COMMON_ERR_FMTN, path, strerror(errno));
+      FREE(buf);
+      return -1;
+    }
+
+  buf[0] = ' ', buf[size] = ' ', buf[size + 1] = '\0';
+  *tags = buf;
+
+  return size;
+}
+
+/** return values:
  *  0 - on success
  *  1 - if error occured
  */
