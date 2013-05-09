@@ -17,6 +17,7 @@ int main()
   assert(memcmp(tags, " tag1 tag2 tag3 ", 14) == 0);
 
   /* cleanup */
+  FREE(tags);
   unlink(TEST_FILE);
 
   return 0;
