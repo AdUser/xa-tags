@@ -2,6 +2,7 @@
 
 int main()
 {
+#ifdef REGEX_SEARCH
   int ret = 0;
   list_t terms;
   search_t search;
@@ -31,4 +32,7 @@ int main()
   search_free(&search);
 
   return 0;
+#else
+  return 0;
+#endif
 }
