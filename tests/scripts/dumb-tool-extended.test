@@ -42,7 +42,7 @@ touch test2/test2.bin
 >>>=0
 
 # 10. fuzzy search
-../../src/xa-tags -f 'ag' . | sort
+../../src/xa-tags -f 'tag' . | sort
 >>>
 ./test1.bin
 ./test3.bin
