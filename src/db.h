@@ -56,13 +56,13 @@
   ");"
 
 #define SQL_DB_CREATE_2 \
-  "DROP TABLE IF EXISTS " FILES_TABLE ";" \
-  "CREATE TABLE " FILES_TABLE " (" \
+  "DROP TABLE IF EXISTS " FILE_TABLE ";" \
+  "CREATE TABLE " FILE_TABLE " (" \
   "  file_id      INTEGER PRIMARY KEY AUTOINCREMENT," \
   "  dirname_hash INTEGER NOT NULL DEFAULT 0," \
   "  filename     TEXT    NOT NULL DEFAULT ''" \
   ");" \
-  "CREATE INDEX IF NOT EXISTS i_dirname_hash ON " FILES_TABLE " (dirname_hash);"
+  "CREATE INDEX IF NOT EXISTS i_dirname_hash ON " FILE_TABLE " (dirname_hash);"
 
 #define SQL_DB_CREATE_3 \
   "DROP TABLE IF EXISTS " TAGS_TABLE ";" \
