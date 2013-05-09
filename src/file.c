@@ -20,10 +20,10 @@
  * 0 - all ok
  * 1 - if attribute not found or empty
  */
-ssize_t
+int
 file_tags_get(const char *path, list_t *tags)
 {
-  char *buf = 0;
+  char *buf = NULL;
   ssize_t size;
 
   errno = 0;
