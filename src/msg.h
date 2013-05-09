@@ -73,6 +73,10 @@
   gettext("Regex compilation error")
 #define MSG_S_RXDISABLED \
   gettext("Regex support disabled, ignoring")
+#define MSG_S_RXONLY \
+  gettext("Search only with regexps may be extremely slow!")
+#define MSG_S_EMPTY \
+  gettext("Empty search leads to empty result")
 
 /** connection errors */
 #define MSG_I_TIMEOUT    \

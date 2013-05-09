@@ -1,3 +1,7 @@
+/* global variables  */
+search_t *search = NULL;
+
+/* handlers */
 void
 _handle_tag_add(const char *path, const char *str)
 {
@@ -90,34 +94,54 @@ _handle_tag_lst(const char *path, const char *unused)
 }
 
 void
+_search_init(const char *str)
+{
+  list_t terms;
+
+  memset(&terms, 0x0, sizeof(list_t));
+
+  list_parse_tags(&terms, str);
+  CALLOC(search, 1, sizeof(search_t));
+  search_parse_terms(search, &terms);
+  list_clear(&terms);
+
+  if (search->substr.items == 0 && search->exact.items == 0)
+    {
+#ifdef REGEX_SEARCH
+      if (search->regex_cnt > 0)
+        msg(msg_warn, "%s\n", MSG_S_RXONLY);
+      else
+        msg(msg_error, "%s\n", MSG_S_EMPTY);
+#else
+      msg(msg_error, "%s\n", MSG_S_EMPTY);
+#endif
+    }
+}
+
+void
 _handle_search_by_tag(const char *path, const char *str)
 {
-  list_t file_tags;
-  list_t search_tags;
-  char *tmp = NULL;
-  bool match = true;
+  char *file_tags = NULL;
 
-  memset(&file_tags, 0, sizeof(list_t));
-
-  if (file_tags_get(path, &file_tags) > 0)
+  if (file_tags_get_bulk(path, &file_tags) <= 0)
     return;
 
-  list_items_merge(&file_tags, ' ');
-  memset(&search_tags, 0, sizeof(list_t));
-  list_parse_tags(&search_tags, str);
+  if (search == NULL)
+    _search_init(str);
 
-  for (tmp = NULL; list_items_walk(&search_tags, &tmp) > 0; )
-    if (strstr(file_tags.buf, tmp) == NULL)
-      match = false;
+  if (search_match_substr(search, file_tags) <= 0)
+    return;
 
-  if (match && verbosity > log_normal)
+  if (search_match_regex(search, file_tags) <= 0)
+    return;
+
+  if (verbosity > log_normal)
     _handle_tag_lst(path, NULL);
 
-  if (match && verbosity <= log_normal)
+  if (verbosity <= log_normal)
     printf("%s\n", path);
 
-  list_clear(&file_tags);
-  list_clear(&search_tags);
+  FREE(file_tags);
 }
 
 int
@@ -177,6 +201,7 @@ main(int argc, char **argv)
     (flags & F_RECURSE) ? _ftw(item, tags, handler) : handler(item, tags);
 
   list_clear(&files);
+  FREE(search);
 
   exit(EXIT_SUCCESS);
 }
