@@ -96,6 +96,7 @@ db_open(void)
       FREE(err);
       sqlite3_close(db_conn);
       errno = 0;
+      msg(msg_warn, COMMON_MSG_FMTN, MSG_D_DBCREATED, opts.db.path);
 #else
       err = strerror(errno);
       msg(msg_error, COMMON_ERR_FMTN, err, opts.db.path);
