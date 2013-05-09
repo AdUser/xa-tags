@@ -177,6 +177,7 @@ search_match_substr(search_t * const search, const char *tags)
   return 1;
 }
 
+#ifdef REGEX_SEARCH
 int
 search_match_regex(search_t * const search, const char *tags_str)
 {
@@ -218,3 +219,4 @@ search_match_regex(search_t * const search, const char *tags_str)
 
   return 1;
 }
+#endif
