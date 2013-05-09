@@ -187,6 +187,9 @@ search_match_regex(search_t * const search, const char *tags_str)
   bool match;
   bool expected;
 
+  if (search->regex_cnt == 0)
+    return 1;
+
   memset(&tags, 0x0, sizeof(list_t));
 
   if (list_parse_tags(&tags, tags_str) < 1)
