@@ -70,7 +70,9 @@ file_tags_get_bulk(const char *path, char **tags)
       return -1;
     }
 
-  buf[0] = ' ', buf[size] = ' ', buf[size + 1] = '\0';
+  buf[0] = ' ';
+  buf[size - 2] = ' ';
+  buf[size - 1] = '\0';
   *tags = buf;
 
   return size;
