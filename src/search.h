@@ -36,6 +36,14 @@ search_free(search_t * const search);
 int
 search_match_substr(search_t * const search, const char *tags);
 
+/** return value:
+ * -1 - error
+ *  0 - not match
+ *  1 - match
+ */
+int
+search_match_exact(search_t * const search, const char *tags);
+
 #ifdef REGEX_SEARCH
 /** return value:
  * -1 - error

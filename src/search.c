@@ -170,6 +170,12 @@ search_match_substr(search_t * const search, const char *tags)
     if (_match_against_list(&search->substr, tags) < 1)
       return 0;
 
+  return 1;
+}
+
+int
+search_match_exact(search_t * const search, const char *tags)
+{
   if (search->exact.items > 0)
     if (_match_against_list(&search->exact, tags) < 1)
       return 0;
