@@ -1,3 +1,7 @@
+/* global variables */
+search_t *search = NULL;
+
+/* handlers */
 void
 _handle_tag_add(const char *path, const char *str)
 {
@@ -197,6 +201,31 @@ _handle_tag_search(const char *unused, const char *tag)
 }
 
 /* extended operations */
+void
+_search_init(const char *str)
+{
+  list_t terms;
+
+  memset(&terms, 0x0, sizeof(list_t));
+
+  list_parse_tags(&terms, str);
+  CALLOC(search, 1, sizeof(search_t));
+  search_parse_terms(search, &terms);
+  list_clear(&terms);
+
+  if (search->substr.items == 0 && search->exact.items == 0)
+    {
+#ifdef REGEX_SEARCH
+      if (search->regex_cnt > 0)
+        msg(msg_warn, "%s\n", MSG_S_RXONLY);
+      else
+        msg(msg_error, "%s\n", MSG_S_EMPTY);
+#else
+      msg(msg_error, "%s\n", MSG_S_EMPTY);
+#endif
+    }
+}
+
 void
 _handle_file_search_tag(const char *unused, const char *str)
 {
@@ -495,6 +524,7 @@ main(int argc, char **argv)
     }
 
   list_clear(&files);
+  FREE(search);
 
   db_close();
 
