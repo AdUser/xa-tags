@@ -38,12 +38,12 @@
 
 #include "list.h"
 #include "uuid.h"
+#include "search.h"
 #include "db.h"
 #include "file.h"
 #include "buf.h"
 #include "conn.h"
 #include "proto.h"
-#include "search.h"
 #include "log.h"
 #include "msg.h"
 #include "options.h"
