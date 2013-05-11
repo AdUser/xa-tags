@@ -74,7 +74,8 @@ _db_get_fts_query(const search_t *search)
 
   if (search->substr.items != 0)
     {
-      STRNDUP(query, search->substr.buf, search->substr.len);
+      CALLOC(query, search->substr.len, sizeof(char));
+      memcpy(query, search->substr.buf, search->substr.len);
       for (i = 0; i < search->substr.len - 1; i++)
         if (query[i] == '\0')
           query[i] = ' ';
