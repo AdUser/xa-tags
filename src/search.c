@@ -229,3 +229,20 @@ search_match_regex(search_t * const search, const char *tags_str)
   return 1;
 }
 #endif
+
+int
+search_match(search_t * search, const char *tags)
+{
+  if (search_match_substr(search, tags) < 1)
+    return 0;
+
+  if (search_match_exact(search, tags) < 1)
+    return 0;
+
+#ifdef REGEX_SEARCH
+  if (search_match_regex(search, tags) < 1)
+    return 0;
+#endif
+
+  return 1;
+}

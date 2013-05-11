@@ -53,3 +53,11 @@ search_match_exact(search_t * const search, const char *tags);
 int
 search_match_regex(search_t * const search, const char *tags);
 #endif
+
+/* top level function, combines substring, exact and regex match */
+/** return value:
+ *  0 - not match
+ *  1 - match
+ */
+int
+search_match(search_t * search, const char *tags);
