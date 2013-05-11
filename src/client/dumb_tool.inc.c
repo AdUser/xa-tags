@@ -129,10 +129,7 @@ _handle_search_by_tag(const char *path, const char *str)
   if (search == NULL)
     _search_init(str);
 
-  if (search_match_substr(search, file_tags) <= 0)
-    return;
-
-  if (search_match_regex(search, file_tags) <= 0)
+  if (search_match(search, file_tags) <= 0)
     return;
 
   if (verbosity > log_normal)
