@@ -230,19 +230,15 @@ void
 _handle_file_search_tag(const char *unused, const char *str)
 {
   int ret = 0;
-  list_t tags;
   list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
 
-  memset(&tags,    0, sizeof(list_t));
   memset(&results, 0, sizeof(list_t));
 
-  list_parse_tags(&tags, str);
+  if (search == NULL)
+    _search_init(str);
 
-  if (tags.items == 0)
-    return;
-
-  while ((ret = db_file_search_tag(&tags, &lim, &results, NULL)) < 2)
+  while ((ret = db_file_search_tag(search, &lim, &results, NULL)) < 2)
     {
       if (results.items == 0)
         break;
@@ -255,7 +251,6 @@ _handle_file_search_tag(const char *unused, const char *str)
     }
 
   list_clear(&results);
-  list_clear(&tags);
 }
 
 void

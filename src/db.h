@@ -104,7 +104,7 @@ int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, char *path);
 int db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                         int (*cb)(const char *, const uuid_t *));
-int db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
+int db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
                        int (*cb)(const char *, const char *));
 
 int db_tags_get(uuid_t *uuid, list_t *tags);

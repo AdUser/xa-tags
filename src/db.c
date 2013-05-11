@@ -366,20 +366,18 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
  * 2 - error
  */
 int
-db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
+db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
                    int (*cb)(const char *, const char *))
 {
   sqlite3_stmt *stmt;
   size_t len = 0;
-  list_t terms;
   int ret = 0;
   int rows = 0;
   int matches = 0;
   char buf[PATH_MAX] = { 0 };
+  char *fts_query = NULL;
 
-  ASSERT(tags != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
-
-  memset(&terms, 0x0, sizeof(list_t));
+  ASSERT(search != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
   len = strlen(SQL_T_SEARCH);
   if (sqlite3_prepare_v2(db_conn, SQL_T_SEARCH, len, &stmt, NULL) != SQLITE_OK)
@@ -391,18 +389,27 @@ db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
   if (results != NULL)
     list_clear(results);
 
-  list_copy(&terms, tags);
-  list_items_merge(&terms, ' ');
+  fts_query = _db_get_fts_query(search);
 
   do /* loop, until we get 'limit' items or lesser than 'limit' rows from query */
     {
-      sqlite3_bind_text(stmt, 1, terms.buf, -1, SQLITE_TRANSIENT);
+      sqlite3_bind_text(stmt, 1, fts_query, -1, SQLITE_TRANSIENT);
       sqlite3_bind_int(stmt,  2, lim->limit);
       sqlite3_bind_int(stmt,  3, lim->offset);
 
       for (rows = 0, matches = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
           rows++;
+          /* NOTE: we already filter this by FTS query
+          if (search_match_substr(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+            continue;
+          */
+          if (search_match_exact(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+            continue;
+#ifdef REGEX_SEARCH
+          if (search_match_regex(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+            continue;
+#endif
           matches++;
 
           if (results != NULL)
@@ -425,6 +432,7 @@ db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
       sqlite3_clear_bindings(stmt);
     }
   while (matches < lim->limit && rows == lim->limit);
+  FREE(fts_query);
 
   if (ret != SQLITE_DONE && ret != SQLITE_ROW)
     {
