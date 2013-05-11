@@ -374,6 +374,7 @@ db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
   list_t terms;
   int ret = 0;
   int rows = 0;
+  int matches = 0;
   char buf[PATH_MAX] = { 0 };
 
   ASSERT(tags != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
@@ -399,9 +400,10 @@ db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
       sqlite3_bind_int(stmt,  2, lim->limit);
       sqlite3_bind_int(stmt,  3, lim->offset);
 
-      for (rows = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
+      for (rows = 0, matches = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
           rows++;
+          matches++;
 
           if (results != NULL)
             {
@@ -415,14 +417,14 @@ db_file_search_tag(const list_t *tags, query_limits_t *lim, list_t *results,
 
             /* NOTE: if we simple wait until 'for' loop ends,     *
              * number of items in result will float around limit. */
-          if (results->items == lim->limit)
+          if (matches == lim->limit)
             break;
         }
       lim->offset += rows;
       sqlite3_reset(stmt);
       sqlite3_clear_bindings(stmt);
     }
-  while (results->items < lim->limit && rows == lim->limit);
+  while (matches < lim->limit && rows == lim->limit);
 
   if (ret != SQLITE_DONE && ret != SQLITE_ROW)
     {
