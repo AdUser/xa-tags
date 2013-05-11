@@ -66,6 +66,27 @@ _db_check_version(void *unused, int columns, char **col_values, char **col_names
   return 0;
 }
 
+char *
+_db_get_fts_query(const search_t *search)
+{
+  char *query = NULL;
+  size_t i = 0;
+
+  if (search->substr.items != 0)
+    {
+      STRNDUP(query, search->substr.buf, search->substr.len);
+      for (i = 0; i < search->substr.len - 1; i++)
+        if (query[i] == '\0')
+          query[i] = ' ';
+    }
+  else
+    {
+      STRNDUP(query, "*", 2);
+    }
+
+  return query;
+}
+
 void
 db_open(void)
 {
