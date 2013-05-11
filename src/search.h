@@ -34,7 +34,7 @@ search_free(search_t * const search);
  *  1 - match
  */
 int
-search_match_substr(search_t * const search, const char *tags);
+search_match_substr(const search_t *search, const char *tags);
 
 /** return value:
  * -1 - error
@@ -42,7 +42,7 @@ search_match_substr(search_t * const search, const char *tags);
  *  1 - match
  */
 int
-search_match_exact(search_t * const search, const char *tags);
+search_match_exact(const search_t *search, const char *tags);
 
 #ifdef REGEX_SEARCH
 /** return value:
@@ -51,7 +51,7 @@ search_match_exact(search_t * const search, const char *tags);
  *  1 - match
  */
 int
-search_match_regex(search_t * const search, const char *tags);
+search_match_regex(const search_t *search, const char *tags);
 #endif
 
 /* top level function, combines substring, exact and regex match */
@@ -60,4 +60,4 @@ search_match_regex(search_t * const search, const char *tags);
  *  1 - match
  */
 int
-search_match(search_t * search, const char *tags);
+search_match(const search_t * search, const char *tags);

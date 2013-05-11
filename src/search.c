@@ -138,7 +138,7 @@ search_free(search_t * const search)
  *  1 - match
  */
 int
-_match_against_list(list_t * const terms, const char *tags)
+_match_against_list(const list_t *terms, const char *tags)
 {
   int i = 0;
   char *p = NULL;
@@ -146,8 +146,7 @@ _match_against_list(list_t * const terms, const char *tags)
   bool expect = false;
 
   if (terms->idx_items == NULL)
-    if (list_idx_create(terms) != 0)
-      return -1;
+    return -1;
 
   for (i = 0; i < terms->items; i++)
     {
@@ -164,7 +163,7 @@ _match_against_list(list_t * const terms, const char *tags)
 }
 
 int
-search_match_substr(search_t * const search, const char *tags)
+search_match_substr(const search_t *search, const char *tags)
 {
   if (search->substr.items > 0)
     if (_match_against_list(&search->substr, tags) < 1)
@@ -174,7 +173,7 @@ search_match_substr(search_t * const search, const char *tags)
 }
 
 int
-search_match_exact(search_t * const search, const char *tags)
+search_match_exact(const search_t *search, const char *tags)
 {
   if (search->exact.items > 0)
     if (_match_against_list(&search->exact, tags) < 1)
@@ -185,7 +184,7 @@ search_match_exact(search_t * const search, const char *tags)
 
 #ifdef REGEX_SEARCH
 int
-search_match_regex(search_t * const search, const char *tags_str)
+search_match_regex(const search_t *search, const char *tags_str)
 {
   int i = 0;
   int j = 0;
@@ -231,7 +230,7 @@ search_match_regex(search_t * const search, const char *tags_str)
 #endif
 
 int
-search_match(search_t * search, const char *tags)
+search_match(const search_t *search, const char *tags)
 {
   if (search_match_substr(search, tags) < 1)
     return 0;
