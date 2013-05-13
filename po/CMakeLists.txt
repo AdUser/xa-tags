@@ -1,5 +1,5 @@
 SET (POTFILE "${CNAME}.pot")
-SET (SRC_FILES "../src/msg.h")
+SET (SRC_FILES "${CMAKE_SOURCE_DIR}/src/msg.h")
 SET (LANGUAGES)
 SET (XGETTEXT_OPTS
      "--package-name=${CMAKE_PROJECT_NAME}"
