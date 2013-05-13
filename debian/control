@@ -2,7 +2,7 @@ Source: xa-tags
 Section: utils
 Priority: extra
 Maintainer: Alex 'AdUser' Z <ad_user@lavabit.com>
-Build-Depends: debhelper (>= 8.0.0), cmake, attr-dev, libsqlite3-dev
+Build-Depends: debhelper (>= 9.0.0), cmake, attr-dev, libsqlite3-dev, dpkg-dev (>= 1.16.1~)
 Standards-Version: 3.9.3
 Homepage: https://github.com/AdUser/xa-tags
 Vcs-Git: git://github.com/AdUser/xa-tags.git
@@ -17,17 +17,17 @@ Description: util, allows you to store and manage sets of tags associated with f
  Designed and written with eye on high portability, small resource consumption
  and minimum dependencies.
  .
- Embedded version of xa-tags. It's don't use any database and stores tags directly
- inside file inodes.
+ Embedded version of xa-tags. It's don't use any database and stores tags
+ directly inside file inodes.
 
 Package: xa-tags
-Architecture: all
+Architecture: any
 Conflicts: xa-tags-embedded
-Depends: libsqlite3
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsqlite3
 Recommends: attr, sqlite3
 Description: util, allows you to store and manage sets of tags associated with file.
  Designed and written with eye on high portability, small resource consumption
  and minimum dependencies.
  .
- Enhanced version of xa-tags. Uses sqlite for storing tags, have extended search
- abilities and small search time.
+ Enhanced version of xa-tags. Uses sqlite for storing tags, have extended
+ search capabilities and small search time.
