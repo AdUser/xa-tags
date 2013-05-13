@@ -72,6 +72,7 @@ void *memmem(const void *haystack, size_t haystacklen,
 #endif
 
 void mkdir_r(const char *path, mode_t mode);
+void _ftw(const char *path, const char *str, void (*handler)(const char *, const char *));
 
 /** custom printf's */
 size_t snprintf_m_uuid_file(char *buf, size_t buf_len, const uuid_t *uuid, const char *path);
