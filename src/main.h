@@ -16,50 +16,8 @@
 
 #include "common.h"
 
-#define  DUMB_TOOL   1
-#define SMART_TOOL   2
-#define  DUMB_CLIENT 3
-#define SMART_CLIENT 4
-
 #define F_RECURSE    1 << 0
 #define F_KEEPCONV   1 << 1
 
 uint8_t flags = 0;
 enum loglevel verbosity = log_normal;
-
-void
-usage(int exitcode)
-{
-  fprintf(stdout,
-  "%s  version %u.%u\n",
-  PROGNAME, VERSION_MAJOR, VERSION_MINOR);
-
-  fprintf(stdout,
-  "Usage: %s [options] <file> [<file>]\n"
-  "\n", PROGNAME);
-
-  #include "client/usage_common.inc.c"
-  #include "client/usage_basic.inc.c"
-#if MODE >= SMART_TOOL
-  #include "client/usage_search.inc.c"
-  #include "client/usage_update.inc.c"
-  fprintf(stdout, "\n");
-
-#ifndef INLINE_TAGS
-  #include "client/usage_convert_storage.inc.c"
-#endif
-#endif
-  fprintf(stdout, "\n");
-
-  exit(exitcode);
-}
-
-#if   MODE ==  DUMB_TOOL
-  #include "client/dumb_tool.inc.c"
-#elif MODE == SMART_TOOL
-  #include "client/smart_tool.inc.c"
-#elif MODE ==  DUMB_CLIENT
-#elif MODE == SMART_CLIENT
-#else
-  /* do nothing */
-#endif
