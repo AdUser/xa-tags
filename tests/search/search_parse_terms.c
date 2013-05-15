@@ -24,7 +24,7 @@ int main()
   assert(ret == 0);
   assert(search.substr.items == 3);
   assert(search.exact.items  == 2);
-  assert(memcmp(search.substr.buf, "+fred\0-velma\0+dafna\0", 6 + 7 + 9) == 0);
+  assert(memcmp(search.substr.buf, "+fred\0-velma\0+dafna\0", 6 + 7 + 7) == 0);
   assert(memcmp(search.exact.buf,  "+ dafna \0- shaggy \0", 9 + 10) == 0);
 #ifdef REGEX_SEARCH
   assert(search.regex_cnt == 2);
