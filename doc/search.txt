@@ -1,21 +1,18 @@
-Currently, we have some limitations in our search engine:
-  * only '*' as wildcard works
-  * wildcard works only for the first tag
-  * only substring search for second and more tags
+SEARCH
+======
 
-I should fix that. And even more, i want to search tags with regexp's.
+The following search language available:
 
-In version 0.4 i'll plan to realize this query language:
+  * "tag"  -- ordinary string, must be assigned to file (may match 'lazy_dog')
+  * "~tag" -- ordinary string, must NOT be assigned to file.
+              (excludes ANY file with this or similar tag, 'tagged' for example)
+  * "+tag" -- ordinary string, must be assigned to file (must exact match 'dog')
+  * "-tag" -- ordinary string, must NOT be assigned to file (exact match)
+  * "/t[ae]g/"   -- regex string.
+  * "-/t[ae]g/i" -- regex string, case insensitive, tags that matches must NOT
+    be assigned to file
 
-  * "tag" -- ordinary string, must be assigned to file ('dog' may match 'lazy_dog')
-  * "+tag" -- ordinary string, must be assigned to file ('dog' must exact match 'dog')
-  * "-tag" -- ordinary string, must NOT be assigned to file
-  * "/t[ae]g/" -- regex string, posix-compatible
-  * "-/t[ae]g/i" -- regex string, case insensitive, tags that matches must NOT be assigned to file
-
-Complex example:
-  "cat -/\(dog|bird\)/" -- find files with tag 'cat' but neither 'dog' nor 'bird'
-  "/cat/i" -- find files with tag 'cat' in all registers
+See the following table for clear understanding:
 
 .--------.---------.---------.
 |        | include | exclude |
@@ -25,8 +22,38 @@ Complex example:
 | exact  |   '+'   |   '-'   |
 '--------'---------'---------'
 
+Terms are AND'ed together and matched against file's set of tags. Note, that
+there is not explicit support for OR operator. Embedded version threats "OR"
+as ordinary word. Other versions, depends on used database engine MAY recognize
+it. Therefore, search results may differs from expected. Avoid using it for now.
+
+Regex strings use extended posix syntax. Only 'i' flag recognized, others
+considered useless. See `man 7 regex` for syntax details.
+
 Note, that regex terms will apply after quering database, so it may be slow.
+
+Search speed in general:
 
  slow           fast
   <<< ====|==== >>>
  regex          string
+
+Examples:
+  "cat"                  -- wide search. finds 'cat', 'category', 'cathode',
+                            'education', 'notification' and so on.
+  "+cat"                 -- find all files with exact tag 'cat' in tags.
+  "cat maru youtube"     -- find videos from youtube with Maru.
+                            (of course if you properly tagged it)
+  "+cat ~girl"           -- find files with cats as animal.
+  "+cat -/(dog|bird)/"   -- find files with tag 'cat' but without 'dog'/'bird'.
+  "/cat/i"               -- find files with exact tag 'cat' in all registers.
+
+TESTS
+-----
+
+Search engine tested on database about 150Mb in size. It contains approximately
+420,000 files and growing.
+
+Ordinary search query takes about 0.1s to process (0.15 - including output).
+If you use only regexps in search, it may be much slower, up to 15 seconds,
+because we can't reduce number of matched results on database level.

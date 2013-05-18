@@ -1,12 +1,22 @@
-xa-tags is the util, allows you to store and manage sets of custom tags associated with file.
+OVERVIEW
+========
 
-Designed and written with eye on high portability, small resource consumption and minimum dependencies. In fact, this software can even run on your router.
+xa-tags is the util, allows you to store and manage sets of custom tags
+associated with file.
 
-Four operational modes planned: two as standalone tool and two as client-server.
+Designed and written with eye on high portability, small resource consumption
+and minimum dependencies. In fact, this software can even run on your router.
+
+MODES
+=====
+
+Two operational modes planned: standalone tool and client-server.
 
 Standalone modes:
-  * DUMB_TOOL     - requires only xattr support on your fs, stores all data inside inodes.
-  * SMART_TOOL    - requires sqlite also. Stores tags in database and files' id in inodes.
-                    Not suffer from inode size limitation.
+  * TOOL - embedded version requires only xattr support on your fs, stores
+           all data inside inodes.
+         - full version requires sqlite3 also (for now). Stores tags in database
+           and files' id in inodes. Not suffer from inode size limitation.
+           Allow you search against full list of uniq tags, used in database.
 
 See 'INSTALL' file and 'doc/' directory for more details.

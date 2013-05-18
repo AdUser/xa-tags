@@ -6,11 +6,11 @@ cd <root of source tree>
 cmake <options> .
 make
 make test    # optional
-make install # optional, not works yet
+make install # optional
 
 You may change cmake options either by specifying it manually as cmake args, or by ccmake, ncurses util, usially shipped with cmake. A few axamples:
 
-  cmake -DOPT_WITHOUT_GETTEXT=ON -D MODE=SMART_TOOL .
+  cmake -DOPT_WITHOUT_GETTEXT=ON -D MODE=TOOL .
 
   ccmake .
   <change anything>
@@ -43,5 +43,5 @@ Basically, to get everything works, make sure in following:
 
 ===== Identifier generation rules =====
 
-UUID of each file is a some random number (as base) + sequental counter. It is used in any mode other than "dumb_tool". Values of identifier is between 1 and 2^64. By printable form, identifier should be hex-encoded and padded to 16 chars.
+UUID of each file is a some random number (as base) + sequental counter. It is used in any mode other than embedded version of tool. Values of identifier is between 1 and 2^64. By printable form, identifier should be hex-encoded and padded to 16 chars.
 
