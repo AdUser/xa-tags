@@ -1,5 +1,20 @@
-2013-??-?? v0.4:
+2013-??-?? v0.5:
+  Release goal: i18n support and bugfixes
+
+2013-05-18 v0.4:
   Release goal: unleash our search capabilities!
+  Main changes and added features:
+    + detect database version and ask for upgrade if needed
+    * database schema change
+    * stucture rename: data_t -> list_t
+    + index support for list_t
+    + new search language (see 'doc/search.txt')
+    * build system review:
+      + added support for passing extrnal compiling flags
+      = general speedup on test's building
+      + tool now builds in two versions: embedded and full
+      * minor changes
+    + added debian packaging scripts
 
 2013-04-20 v0.3:
   Release goal: make it usable!
