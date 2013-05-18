@@ -1,0 +1,55 @@
+SUPPORT OF XATTRS
+=================
+
+When you already have a lot of tagged files, you may want to move this files,
+transfer them to another computers or archive.
+This document describes possible pitfails and may help you avoid pain of loosing
+your data and time.
+
+The problem
+-----------
+
+----------.----------------------.----------------------.---------.
+  attr    |         move         |         copy         | archive |
+preserved | inside fs | cross fs | inside fs | cross fs |         |
+----------+-----------+----------+-----------+----------+---------:
+expected  |    yes    |   yes    |    no*    |    no*   |   yes   |
+got       |    yes    |   no**   |    no     |    no    |  maybe  |
+----------'-----------'----------'-----------'----------'---------'
+
+*  -- i assume you going to modify file, more or less.
+** -- this is root of all evil, most of unix tools, even with gnu extensions
+      know nothing about extended attrs or requires special actions for support.
+      See list of tools below.
+
+Support in filesystems
+----------------------
+
+Generally, you may use any filesystem supporting 'user_xattr' mount option.
+For example:
+
+  * ext* family
+  * btrfs
+  * xfs
+  * reiserfs
+  * cifs
+
+Support in other tools
+----------------------
+
+  * rsync -- with option '-X' (not enabled by default)
+  * bsdtar -- with '-p' option
+  * cp -- with '-p' option
+  * dar -- xattr support enabled by default. See (Extended Attributes) section
+    of manpage
+  * xfsdump -- XFS-specific tool.
+  * mc -- not supported yet, see 'http://www.midnight-commander.org/ticket/2468'
+
+Archiving
+---------
+
+General archive formats (such as zip, 7z or rar) don't support xattrs as well.
+You need either backup your tags in plaintext file, or use tar.
+
+After restoring, you may need update paths in database.
+To do this - use '-u' option, maybe with '-r' for recursive update.
