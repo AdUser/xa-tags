@@ -1,6 +1,6 @@
 SET (POTFILE "${CNAME}.pot")
 SET (SRC_FILES "${CMAKE_SOURCE_DIR}/src/msg.h")
-SET (LANGUAGES)
+SET (LANGUAGES "ru")
 SET (XGETTEXT_OPTS
      "--package-name=${CMAKE_PROJECT_NAME}"
      "--package-version=${VERSION}"
@@ -15,13 +15,13 @@ ADD_CUSTOM_TARGET(${POTFILE} ALL
 
 FOREACH    (LANG ${LANGUAGES})
   ADD_CUSTOM_TARGET("${LANG}.po" ALL
-                     COMMAND "msgfmt" "${LANG}.po"
+                     COMMAND "msgfmt" "${LANG}.po" "-o" "${LANG}.mo"
                      SOURCES ${SRC_FILES})
 ENDFOREACH (LANG)
 
 
 FOREACH    (LANG ${LANGUAGES})
   INSTALL(FILES "${LANG}.mo"
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/${LOCALEDIR}/${LANG}
+          DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES
           RENAME "${CNAME}.mo")
 ENDFOREACH (LANG)

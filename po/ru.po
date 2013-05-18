@@ -1,0 +1,204 @@
+# SOME DESCRIPTIVE TITLE.
+# This file is put in the public domain.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xa-tags 0.4\n"
+"Report-Msgid-Bugs-To: ad_user@lavabit.com\n"
+"POT-Creation-Date: 2013-05-19 03:19+1100\n"
+"PO-Revision-Date: 2013-05-19 03:45+1000\n"
+"Last-Translator: Alex 'AdUser' Z <ad_user@lavabit.com>\n"
+"Language-Team:  <ad_user@lavabit.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: /home/alex/devel/xa-tags/src/msg.h:13
+msgid "Can't allocate memory."
+msgstr "Не удалось выделить память."
+
+#: /home/alex/devel/xa-tags/src/msg.h:14
+msgid "Unexpected NULL pointer."
+msgstr "Разыменование нулевого указателя."
+
+#: /home/alex/devel/xa-tags/src/msg.h:15
+msgid "realloc() failed."
+msgstr "не удалось перераспределить память."
+
+#: /home/alex/devel/xa-tags/src/msg.h:20
+msgid "glad to meet you."
+msgstr "приветствую"
+
+#: /home/alex/devel/xa-tags/src/msg.h:22
+msgid "Sya!"
+msgstr "До встречи!"
+
+#: /home/alex/devel/xa-tags/src/msg.h:27
+msgid "Parsing failed, unknown request type."
+msgstr "Неизвестный тип запроса."
+
+#: /home/alex/devel/xa-tags/src/msg.h:29
+msgid "Parsing failed, unknown operation for this type."
+msgstr "Неизвестная операция для этого типа запроса."
+
+#: /home/alex/devel/xa-tags/src/msg.h:31
+msgid "Parsing failed, request expected."
+msgstr "Ожидался запрос."
+
+#: /home/alex/devel/xa-tags/src/msg.h:33
+msgid "Parsing failed, operation expected."
+msgstr "Ожидалась операция для запроса."
+
+#: /home/alex/devel/xa-tags/src/msg.h:35
+msgid "Parsing failed, expected ':', '>' char."
+msgstr "Ожидался символ ':' или '>'."
+
+#: /home/alex/devel/xa-tags/src/msg.h:37
+msgid "Parsing failed, data expected."
+msgstr "Ожидались данные."
+
+#: /home/alex/devel/xa-tags/src/msg.h:42
+msgid "Malformed path"
+msgstr "Неверный путь"
+
+#: /home/alex/devel/xa-tags/src/msg.h:44
+msgid "Malformed UUID"
+msgstr "Неверный UUID"
+
+#: /home/alex/devel/xa-tags/src/msg.h:46
+msgid "Unallowed chars"
+msgstr "Недопустимые символы"
+
+#: /home/alex/devel/xa-tags/src/msg.h:48
+msgid "Empty data, expected path"
+msgstr "Ожидался путь."
+
+#: /home/alex/devel/xa-tags/src/msg.h:50
+msgid "Empty data, expected one or more tags"
+msgstr "Ожидался один или несколько тегов."
+
+#: /home/alex/devel/xa-tags/src/msg.h:54
+msgid "No batch reqests allowed."
+msgstr "Пакетные запросы не разрешены."
+
+#: /home/alex/devel/xa-tags/src/msg.h:56
+msgid "Request processed partly."
+msgstr "Запрос обработан частично."
+
+#: /home/alex/devel/xa-tags/src/msg.h:58
+msgid "Request discarded."
+msgstr "Запрос отклонён."
+
+#: /home/alex/devel/xa-tags/src/msg.h:61
+msgid "Database opened readonly. Request aborted."
+msgstr "База открыта только для чтения. Запрос отменён."
+
+#: /home/alex/devel/xa-tags/src/msg.h:65
+msgid "Maximum search conditions reached, ignoring"
+msgstr "Достигнут максимум ключевых слов для поиска, пропущено"
+
+#: /home/alex/devel/xa-tags/src/msg.h:67
+msgid "Undefined type for the search term"
+msgstr "Неизвестный тип ключевого слова в поиске"
+
+#: /home/alex/devel/xa-tags/src/msg.h:69
+msgid "Search term too short, ignored"
+msgstr "Слишком короткое ключевое слово, пропущено"
+
+#: /home/alex/devel/xa-tags/src/msg.h:71
+msgid "Unknown flag in this regex"
+msgstr "Неизвестный модификатор регулярного выражения"
+
+#: /home/alex/devel/xa-tags/src/msg.h:73
+msgid "Regex compilation error"
+msgstr "Ошибка компиляции регулярного выражения"
+
+#: /home/alex/devel/xa-tags/src/msg.h:75
+msgid "Regex support disabled, ignoring"
+msgstr "Поддержка регулярных выражений отключена, пропущено"
+
+#: /home/alex/devel/xa-tags/src/msg.h:77
+msgid "Search only with regexps may be extremely slow!"
+msgstr "Поиск только регэкспами может быть очень медленным!"
+
+#: /home/alex/devel/xa-tags/src/msg.h:79
+msgid "Empty search leads to empty result"
+msgstr "Нет запроса - нет ответа"
+
+#: /home/alex/devel/xa-tags/src/msg.h:83
+msgid "Connection timeout."
+msgstr "Превышено время соединения."
+
+#: /home/alex/devel/xa-tags/src/msg.h:87
+msgid "Internal error occured"
+msgstr "Произошла внутренняя ошибка."
+
+#: /home/alex/devel/xa-tags/src/msg.h:90
+msgid "$HOME variable unset, don't know where to look for database."
+msgstr "Переменная $HOME не определена, не знаю где искать базу."
+
+#: /home/alex/devel/xa-tags/src/msg.h:95
+msgid "File updated"
+msgstr "Файл обновлён."
+
+#: /home/alex/devel/xa-tags/src/msg.h:97
+msgid "Hardlinked file, ignored"
+msgstr "Файл с жёсткими ссылками, пропущено"
+
+#: /home/alex/devel/xa-tags/src/msg.h:99
+msgid "Can't open"
+msgstr "Не удалось открыть"
+
+#: /home/alex/devel/xa-tags/src/msg.h:101
+msgid "xattrs disabled or not supported"
+msgstr "расширенные аттрибуты отключены или не поддерживаются"
+
+#: /home/alex/devel/xa-tags/src/msg.h:106
+msgid "Created new database"
+msgstr "Создана новая база."
+
+#: /home/alex/devel/xa-tags/src/msg.h:108
+msgid "Failed to open database"
+msgstr "Не удалось открыть базу"
+
+#: /home/alex/devel/xa-tags/src/msg.h:110
+msgid "Failed to close database"
+msgstr "Не удалось закрыть базу"
+
+#: /home/alex/devel/xa-tags/src/msg.h:112
+msgid "Failed to init database"
+msgstr "Не удалось создать базу"
+
+#: /home/alex/devel/xa-tags/src/msg.h:114
+msgid "Failed to prepare statement"
+msgstr "Не удалось подготовить запрос"
+
+#: /home/alex/devel/xa-tags/src/msg.h:116
+msgid "Failed to exec statement"
+msgstr "Не удалось выполнить запрос"
+
+#: /home/alex/devel/xa-tags/src/msg.h:118
+msgid "Malformed or incorrect data on input"
+msgstr "Повреждённые или неверные данные на входе"
+
+#: /home/alex/devel/xa-tags/src/msg.h:120
+msgid "Successfull insert, but zero uuid returned"
+msgstr "Успешное добавление в базу, но возвращён нулевой идентификатор."
+
+#: /home/alex/devel/xa-tags/src/msg.h:122
+msgid "No such uuid"
+msgstr "Не найден запрошенный UUID"
+
+#: /home/alex/devel/xa-tags/src/msg.h:124
+msgid "failed to determine db version"
+msgstr "не удалось определить версию базы"
+
+#: /home/alex/devel/xa-tags/src/msg.h:126
+msgid "Database version mismatch. Expected version"
+msgstr "Несовпадение версии базы. Ожидаемая версия"
+
