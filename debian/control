@@ -12,7 +12,7 @@ Package: xa-tags-embedded
 Architecture: any
 Conflicts: xa-tags
 Recommends: attr
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, xa-tags-common
 Description: util, allows you to store and manage sets of tags associated with file.
  Designed and written with eye on high portability, small resource consumption
  and minimum dependencies.
@@ -23,7 +23,7 @@ Description: util, allows you to store and manage sets of tags associated with f
 Package: xa-tags
 Architecture: any
 Conflicts: xa-tags-embedded
-Depends: ${shlibs:Depends}, ${misc:Depends}, libsqlite3
+Depends: ${shlibs:Depends}, ${misc:Depends}, xa-tags-common
 Recommends: attr, sqlite3
 Description: util, allows you to store and manage sets of tags associated with file.
  Designed and written with eye on high portability, small resource consumption
@@ -31,3 +31,12 @@ Description: util, allows you to store and manage sets of tags associated with f
  .
  Enhanced version of xa-tags. Uses sqlite for storing tags, have extended
  search capabilities and small search time.
+
+Package: xa-tags-common
+Architecture: all
+Depends: ${misc:Depends}
+Description: util, allows you to store and manage sets of tags associated with file.
+ Designed and written with eye on high portability, small resource consumption
+ and minimum dependencies.
+ .
+ Common files for all packages.

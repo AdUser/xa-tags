@@ -11,6 +11,7 @@ rm -f ./tests/scripts/*.test.out
 rm -f debian/*.log
 rm -f debian/*.substvars
 rm -f debian/xa-tags-embedded/ -r
+rm -f debian/xa-tags-common/ -r
 rm -f debian/xa-tags/ -r
 rm -f debian/files
 rm -f debian/tmp/ -r

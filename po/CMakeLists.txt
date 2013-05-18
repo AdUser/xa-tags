@@ -15,13 +15,13 @@ ADD_CUSTOM_TARGET(${POTFILE} ALL
 
 FOREACH    (LANG ${LANGUAGES})
   ADD_CUSTOM_TARGET("${LANG}.po" ALL
-                     COMMAND "msgfmt" "${LANG}.po" "-o" "${LANG}.mo"
+                     COMMAND "msgfmt" "${CMAKE_SOURCE_DIR}/po/${LANG}.po" "-o" "${LANG}.mo"
                      SOURCES ${SRC_FILES})
 ENDFOREACH (LANG)
 
 
 FOREACH    (LANG ${LANGUAGES})
-  INSTALL(FILES "${LANG}.mo"
+  INSTALL(FILES "${CMAKE_BINARY_DIR}/po/${LANG}.mo"
           DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES
           RENAME "${CNAME}.mo")
 ENDFOREACH (LANG)
