@@ -51,7 +51,7 @@
 
 /** request processing errors */
 #define MSG_I_NOBATCH    \
-  gettext("No batch reqests allowed.")
+  gettext("No batch requests allowed.")
 #define MSG_I_PARTREQ    \
   gettext("Request processed partly.")
 #define MSG_I_ABORTREQ   \
