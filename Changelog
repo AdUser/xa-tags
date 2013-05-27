@@ -1,5 +1,9 @@
 2013-??-?? v0.5:
-  Release goal: i18n support and bugfixes
+  Release goal: i18n, documentation and bugfixes
+  Main changes and added features:
+    * i18n now works
+    * added doxygen-ready comments to list_t and uuid_t related functions
+    * minor bugfixes
 
 2013-05-18 v0.4:
   Release goal: unleash our search capabilities!
