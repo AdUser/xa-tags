@@ -31,8 +31,8 @@ usage(int exitcode)
   "Usage: %s [options] <file> [<file>]\n"
   "\n", PROGNAME);
 
-#include "usage/common.inc.c"
-#include "usage/basic.inc.c"
+#include "usage/common.c.inc"
+#include "usage/basic.c.inc"
   fprintf(stdout, "\n");
 
   exit(exitcode);

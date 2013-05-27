@@ -30,14 +30,14 @@ usage(int exitcode)
   "Usage: %s [options] <file> [<file>]\n"
   "\n", PROGNAME);
 
-#include "usage/common.inc.c"
-#include "usage/basic.inc.c"
-#include "usage/search.inc.c"
-#include "usage/update.inc.c"
+#include "usage/common.c.inc"
+#include "usage/basic.c.inc"
+#include "usage/search.c.inc"
+#include "usage/update.c.inc"
   fprintf(stdout, "\n");
 
 #ifndef INLINE_TAGS
-#include "usage/convert_storage.inc.c"
+#include "usage/convert_storage.c.inc"
   fprintf(stdout, "\n");
 #endif
 
