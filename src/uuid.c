@@ -16,9 +16,11 @@
 
 #include "common.h"
 
-/** return values:
- * 0 - all ok
- * 1 - error
+/**
+ @brief  Calculates directory hash for given 'path'
+ @param  uuid  uuid_t to store hash
+ @param  path  path of file or directory with leading '/'
+ @return  0 - all ok, 1 - error
  */
 int
 uuid_generate(uuid_t *uuid, const char *path)
@@ -33,9 +35,10 @@ uuid_generate(uuid_t *uuid, const char *path)
   return 0;
 }
 
-/** return values:
- * 0 - all ok
- * 1 - error
+/**
+ @brief  Checks format of given UUID string.
+ @param  uuid  UUID to be checked
+ @return  0 - all ok, 1 - error
  */
 int
 uuid_id_validate(char *uuid)
@@ -56,9 +59,11 @@ uuid_id_validate(char *uuid)
   return 0;
 }
 
-/** return values:
- * 0 - all ok
- * 1 - error
+/**
+ @brief  Parses uuid from string
+ @param  uuid  uuid_t to store parsed result.
+ @param  str   Source string.
+ @return  0 - all ok, 1 - error
  */
 inline int
 uuid_id_parse(uuid_t *uuid, char *str)
@@ -79,6 +84,16 @@ uuid_id_parse(uuid_t *uuid, char *str)
   return 0;
 }
 
+/**
+ @brief  Formats given uuid and stores into buffer.
+
+ @detail  This function exists only for compatibility reasons, to avoid
+          warnings about missing 'll' type in printf
+ @warning Result of this function MUST NOT be freed, it uses it's own
+          internal buffer
+ @param   uuid  UUID to be printed.
+ @return  Returns pointer to internal buffer.
+ */
 char *
 uuid_id_printf(const uuid_t *uuid)
 {

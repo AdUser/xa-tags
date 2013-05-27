@@ -16,9 +16,14 @@
 
 #include "common.h"
 
-/** return values:
-  * must always return 1
-  */
+/**
+ @brief helper  to handle validation error
+ @param errors   bufffer for validation arrors
+ @param error    error text
+ @param buf      token, produced the error
+ @param buf_len  length of the token
+ @return always return 1
+ */
 int
 _add_val_error(list_t *errors, char *error, char *buf, size_t buf_len)
 {
@@ -50,10 +55,12 @@ _add_val_error(list_t *errors, char *error, char *buf, size_t buf_len)
   return 1;
 }
 
-/** return values:
-  * 0 - ok
-  * 1 - error
-  */
+/**
+ @brief   checks the uuid
+ @param   uuid    checked uuid
+ @param   errors  error messages buffer
+ @return  0 - ok, 1 - malformed uuid or error
+ */
 int
 _validate_uuid(char *uuid, list_t *errors)
 {
@@ -66,10 +73,12 @@ _validate_uuid(char *uuid, list_t *errors)
   return 0;
 }
 
-/** return values:
-  * 0 - ok
-  * 1 - error
-  */
+/**
+ @brief   checks the path
+ @param   path    checked path
+ @param   errors  error messages buffer
+ @return  0 - ok, 1 - malformed path or error
+ */
 int
 _validate_path(char *path, list_t *errors)
 {
@@ -96,11 +105,12 @@ _validate_path(char *path, list_t *errors)
   return 0;
 }
 
-/** return values:
-  * 0 - all clear
-  * 1 - general error
-  * 2 - unallowed symbol in tags
-  */
+/**
+ @brief   checks the tags
+ @param   tags    checked tags
+ @param   errors  error messages buffer
+ @return  0 - ok, 1 - error, 2 - unallowed symbol in tags
+ */
 int
 _validate_tags(char *tags, list_t *errors)
 {
@@ -127,14 +137,18 @@ _validate_tags(char *tags, list_t *errors)
   return 0;
 }
 
-/** return values:
-  * 0 - all clear
-  * 1 - empty list
-  * 2 - error
-  */
+/**
+ @brief   validate provided list_t
+ @detail  list->type must be set, otherwise this function frees all resources
+          and threats list as empty
+ @param  list    checked list
+ @param  errors  error messages buffer
+ @param  strict
+ @return 0 - all ok, 1 - empty list, 2 - error
+ */
 int
 list_validate(list_t *list, list_t *errors, int strict)
- {
+{
   char *item = NULL;
   int skip_item = 0;
 
@@ -207,12 +221,15 @@ list_validate(list_t *list, list_t *errors, int strict)
   return 0;
 }
 
-/** return values:
-  * 0 - all ok
-  * 1 - error occured
-  *
-  * item_len - optional, if <= 0 - use strlen(item)
-  */
+/**
+ @brief   Adds item to list.
+ @detail  Item_len are optional parameter.
+          If set to zero - uses strlen() of item
+ @param  list      append item to this list
+ @param  item      item to be appended
+ @param  item_len  optional length of provided item
+ @return 0 - all ok, 1 - error
+ */
 int
 list_item_add(list_t *list, char *item, size_t item_len)
 {
@@ -250,10 +267,11 @@ list_item_add(list_t *list, char *item, size_t item_len)
   return 0;
 }
 
-/** return values:
- * 0 - nothing to do
- * 1 - deleted
- * 2 - error
+/**
+ @brief  Deletes item from list
+ @param  list  delete item from this list
+ @param  item  item to be deleted
+ @return  0 - item not found, 1 - successfull deletion, 2 - error
  */
 int
 list_item_del(list_t *list, char *item)
@@ -287,6 +305,15 @@ list_item_del(list_t *list, char *item)
   return 1;
 }
 
+/**
+ @brief   Splits list item(s) to lesser size items.
+ @detail  For example, list 'test' with single item "asd asd dsa",
+          may be splitted to three items: "asd", "asd" and "dsa"
+          by the following function call: list_items_split(test, ' ')
+ @param  list   list to be processed
+ @param  delim  use this char for items delimiter
+ @return returns nothing
+ */
 void
 list_items_split(list_t *list, char delim)
 {
@@ -300,9 +327,15 @@ list_items_split(list_t *list, char delim)
       {
         list->buf[i] = '\0';
         list->items += 1;
-       }
+      }
 }
 
+/**
+ @brief  Merges all list items to single, using char as glue
+ @param  list   list to be processed
+ @param  glue   use this char for glue
+ @return returns nothing
+ */
 void
 list_items_merge(list_t *list, char glue)
 {
@@ -327,11 +360,14 @@ list_items_merge(list_t *list, char glue)
        }
 }
 
-/** return values:
-  * -1 - error occured
-  *  0 - no more items
-  *  1 - next item processed
-  */
+/**
+ @brief   Sequentally processes list items
+ @detail  If *item is NULL or not points to any member of this list
+          this function set it to first point fo list.
+ @param  list  list to be processed
+ @param  item  pointer to next processed item
+ @return -1 - error, 0 - no more items left, 1 - next item processed
+ */
 int
 list_items_walk(const list_t *list, char **item)
 {
@@ -364,7 +400,12 @@ list_items_walk(const list_t *list, char **item)
   return 1;
 }
 
-/** returns pointer to found item or NULL */
+/**
+ @brief  Searches for item in list
+ @param  list  Haystack.
+ @param  item  Needle.
+ @return  Return pointer to found item or NULL otherwise.
+ */
 char *
 list_item_search(list_t *list, const char *item)
 {
@@ -396,6 +437,10 @@ list_item_search(list_t *list, const char *item)
   return NULL;
 }
 
+/**
+ @brief  Clear list and free all it's resources.
+ @param  list  List to be cleared.
+ */
 void
 list_clear(list_t *list)
 {
@@ -405,6 +450,12 @@ list_clear(list_t *list)
   memset(list, 0x0, sizeof(list_t));
 }
 
+/**
+ @brief  Makes copy of the list.
+ @detail You must allocate 'to' list first!
+ @param  to    New list.
+ @param  from  List to be copyied.
+ */
 void
 list_copy(list_t *to, const list_t *from)
 {
@@ -416,6 +467,13 @@ list_copy(list_t *to, const list_t *from)
   memcpy(to->buf, from->buf, from->len);
 }
 
+/**
+ @brief   Makes list_t from concatenated string of tags.
+ @detail  Any existing data will be cleared from 'list'!
+ @param  list  Where to store found tags.
+ @param  tags  Source string of tags delimited by space.
+ @return 0 - no tags found, 1 - all ok
+ */
 int
 list_parse_tags(list_t *list, const char *tags)
 {
@@ -449,6 +507,11 @@ list_parse_tags(list_t *list, const char *tags)
   return (list->items > 0) ? 1 : 0;
 }
 
+/**
+ @brief   Adds missing items from one list to another.
+ @param  to    Target list.
+ @param  from  Source list.
+ */
 void
 list_merge(list_t *to, list_t *from)
 {
@@ -465,14 +528,20 @@ list_merge(list_t *to, list_t *from)
       list_item_add(to, item, 0);
 }
 
-/* delete items index and free memory */
+/**
+ @brief  Deletes items index and free memory
+ @param  list  List to be processed
+ */
 void list_idx_drop(list_t *list)
 {
   FREE(list->idx_items);
   FREE(list->idx_items_len);
 }
 
-/** create static index of items for fast access and compare */
+/**
+ @brief  Creates static index of items for fast access and compare.
+ @param  list  List to be processed
+ */
 /** return values:
  * 0 - all ok
  * 1 - error

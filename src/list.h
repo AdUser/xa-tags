@@ -1,28 +1,40 @@
 /** list */
 #define LIST_MAX_ITEMS 255
 
-/* list flags */
-#define LIST_MULTI          1 <<  0
+/** list flags */
+#define LIST_MULTI          1 <<  0  /**< @deprecated  Use list->items instead */
 
+/**
+ @struct list_t list.h
+ @brief  General-purpose list implementation.
+
+   Optimized for work with fixed-lenght strings and
+ their fast split/join/item search.
+   Memory are allocated by 512b blocks, that avoids realloc()
+ on each add/del operation.
+   List optionally may be speed up with index, which will
+ be automatically dropped on first list change.
+ */
 typedef struct list_t
 {
-  uint8_t flags;
-  uint8_t items;
+  uint8_t flags;  /**< list flags */
+  uint8_t items;  /**< number of items in list  */
   enum
     {
-      LIST_EMPTY = 0,
-      LIST_T_MSG,
-      LIST_L_FILES,
-      LIST_L_UUIDS,
-      LIST_L_TAGS,
-      LIST_M_UUID_TAGS,
-      LIST_M_UUID_FILE
-    } type;
-  char  **idx_items;     /* read as: index of items */
-  size_t *idx_items_len; /* array of lenght of items */
-  size_t len;  /* assumes '(item + \0) * items */
-  size_t size; /* available size in buffer (bytes) */
-  char *buf; /* [item 1\0item2\0] or NULL */
+      LIST_EMPTY = 0,    /**< list is empty or not properly set  */
+      LIST_T_MSG,        /**< arbitrary string(s) */
+      LIST_L_FILES,      /**< string(s), contains at least one symbol '/' */
+      LIST_L_UUIDS,      /**< fixed-lenght string(s), hex-encoded */
+      LIST_L_TAGS,       /**< string(s), with one or more token(s),
+                              delimited by space */
+      LIST_M_UUID_TAGS,  /**< string(s) with UUID and TAGS pair */
+      LIST_M_UUID_FILE   /**< string(s) with UUID and FILE pair */
+    } type;              /**< type of data in list  */
+  char  **idx_items;     /**< index of items */
+  size_t *idx_items_len; /**< array of lenght of items */
+  size_t len;            /**< used size of buffer (assumes '(item + \0) * items) */
+  size_t size;           /**< available size in buffer (bytes) */
+  char *buf;             /**< contains string in "item 1\0item2\0" format or NULL */
 } list_t;
 
 /** API functions */
