@@ -1,5 +1,11 @@
 #include "common.h"
 
+/**
+ @brief  Parses string with search terms and fills search_t struct.
+ @param  search  Struct to be filled.
+ @param  terms  String with search terms.
+ @returns  0 - all ok, 1 - error
+ */
 int
 search_parse_terms(search_t * const search, const list_t *terms)
 {
@@ -57,8 +63,8 @@ search_parse_terms(search_t * const search, const list_t *terms)
                 len = snprintf(buf, item_len + 10, "%c %s ", filter, item);
                 list_item_add(&search->exact, buf, len);
               }
-            /* NOTE: we also mix 'exact' string into substrings.    *
-             * it helps to narrow number of results, but not for   *
+            /** @note: we also mix 'exact' string into substrings.  *
+             * it helps to narrow number of results, but not for    *
              * *exclude* case, because it exclude more than needed. */
             if (match == substr || filter == '+')
               {
@@ -104,7 +110,6 @@ search_parse_terms(search_t * const search, const list_t *terms)
             msg(msg_error, COMMON_MSG_FMTN, MSG_S_UNKNTYPE, item);
             break;
         }
-
     }
 
   if (search->substr.items > 0)
@@ -116,6 +121,10 @@ search_parse_terms(search_t * const search, const list_t *terms)
   return 0;
 }
 
+/**
+ @brief  Gracefully frees all allocated resources
+ @param  search  Struct to be cleared.
+ */
 void
 search_free(search_t * const search)
 {
@@ -132,10 +141,17 @@ search_free(search_t * const search)
   memset(search, 0x0, sizeof(search_t));
 }
 
-/** Return values:
- * -1 - error
- *  0 - not match
- *  1 - match
+/**
+ @internal
+ @callergraph
+ @brief  Matches terms against set of tags.
+ @detail  If string @c tags contains all substrings from terms,
+          and not contains any of substrings marked with 'negate' flag,
+          the match considered successfull.
+          This function for internal use only.
+ @param  terms  List of terms.
+ @param  tags   Tags string.
+ @returns  -1 - error, 0 - not match, 1 - match
  */
 int
 _match_against_list(const list_t *terms, const char *tags)
@@ -156,12 +172,18 @@ _match_against_list(const list_t *terms, const char *tags)
       if (!found && expect)
         return 0;
       if (found && !expect)
-        return 0;
+         return 0;
     }
 
   return 1;
 }
 
+/**
+ @brief  Matches string @c tags against substrings in search_t
+ @param  search  Search terms.
+ @param  tags    Tags string.
+ @returns  -1 - error, 0 - not match, 1 - match
+ */
 int
 search_match_substr(const search_t *search, const char *tags)
 {
@@ -172,6 +194,12 @@ search_match_substr(const search_t *search, const char *tags)
   return 1;
 }
 
+/**
+ @brief  Matches string @c tags against exact strings in search_t
+ @param  search  Search terms.
+ @param  tags    Tags string.
+ @returns  -1 - error, 0 - not match, 1 - match
+ */
 int
 search_match_exact(const search_t *search, const char *tags)
 {
@@ -182,6 +210,12 @@ search_match_exact(const search_t *search, const char *tags)
   return 1;
 }
 
+/**
+ @brief  Matches string @c tags against regexps in search_t
+ @param  search  Search terms.
+ @param  tags    Tags string.
+ @returns  -1 - error, 0 - not match, 1 - match
+ */
 #ifdef REGEX_SEARCH
 int
 search_match_regex(const search_t *search, const char *tags_str)
@@ -229,6 +263,12 @@ search_match_regex(const search_t *search, const char *tags_str)
 }
 #endif
 
+/**
+ @brief  Top level function, combines substring, exact and regex match
+ @param  search  Search terms.
+ @param  tags    Tags string.
+ @returns  0 - not match, 1 - match
+ */
 int
 search_match(const search_t *search, const char *tags)
 {
