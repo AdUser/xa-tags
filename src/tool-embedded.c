@@ -227,7 +227,7 @@ main(int argc, char **argv)
 
   /* init */
   while ((ret = list_items_walk(&files, &item)) > 0)
-    (flags & F_RECURSE) ? _ftw(item, tags, handler) : handler(item, tags);
+    (flags & F_RECURSE) ? ftw_cb(item, tags, handler) : handler(item, tags);
 
   list_clear(&files);
   FREE(search);

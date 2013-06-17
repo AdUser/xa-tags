@@ -187,8 +187,15 @@ mkdir_r(const char *path, mode_t mode)
   FREE(tmp);
 }
 
+/**
+ @brief  custom ftw() with callback
+ @param  path  top-level directory to start tree walk
+ @param  str  arbitrary string
+ @param  handler  user function to call on every found file/directory
+                  path of file and 'str' will be passed to it as arguments.
+ */
 void
-_ftw(const char *path, const char *str, void (*handler)(const char *, const char *))
+ftw_cb(const char *path, const char *str, void (*handler)(const char *, const char *))
 {
   struct stat st;
   /* fts-related variables */

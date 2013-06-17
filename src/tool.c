@@ -551,7 +551,7 @@ main(int argc, char **argv)
         if (files.items < 1)
           exit(EXIT_FAILURE);
         while ((ret = list_items_walk(&files, &item)) > 0)
-          (flags & F_RECURSE) ? _ftw(item, str, handler) : handler(item, str);
+          (flags & F_RECURSE) ? ftw_cb(item, str, handler) : handler(item, str);
         break;
       case 'R' :
         if (files.items < 1)
