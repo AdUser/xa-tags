@@ -54,7 +54,7 @@ db_find_path_system(void)
   return p;
 }
 
-int
+static int
 _db_check_version(void *unused, int columns, char **col_values, char **col_names)
 {
   if (columns < 1)
@@ -66,7 +66,7 @@ _db_check_version(void *unused, int columns, char **col_values, char **col_names
   return 0;
 }
 
-char *
+static char *
 _db_get_fts_query(const search_t *search)
 {
   char *query = NULL;

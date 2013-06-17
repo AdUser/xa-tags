@@ -24,7 +24,7 @@
  @param buf_len  length of the token
  @return always return 1
  */
-int
+static int
 _add_val_error(list_t *errors, char *error, char *buf, size_t buf_len)
 {
   char *t1 = NULL;
@@ -61,7 +61,7 @@ _add_val_error(list_t *errors, char *error, char *buf, size_t buf_len)
  @param   errors  error messages buffer
  @return  0 - ok, 1 - malformed uuid or error
  */
-int
+static int
 _validate_uuid(char *uuid, list_t *errors)
 {
   if (uuid_id_validate(uuid) > 0)
@@ -79,7 +79,7 @@ _validate_uuid(char *uuid, list_t *errors)
  @param   errors  error messages buffer
  @return  0 - ok, 1 - malformed path or error
  */
-int
+static int
 _validate_path(char *path, list_t *errors)
 {
   char *p = NULL;
@@ -111,7 +111,7 @@ _validate_path(char *path, list_t *errors)
  @param   errors  error messages buffer
  @return  0 - ok, 1 - error, 2 - unallowed symbol in tags
  */
-int
+static int
 _validate_tags(char *tags, list_t *errors)
 {
   char  *p = NULL;
@@ -532,7 +532,8 @@ list_merge(list_t *to, list_t *from)
  @brief  Deletes items index and free memory
  @param  list  List to be processed
  */
-void list_idx_drop(list_t *list)
+void
+list_idx_drop(list_t *list)
 {
   FREE(list->idx_items);
   FREE(list->idx_items_len);
