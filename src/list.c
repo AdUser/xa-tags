@@ -17,7 +17,7 @@
 #include "common.h"
 
 /**
- @brief helper  to handle validation error
+ @brief  helper to handle validation error
  @param errors   bufffer for validation arrors
  @param error    error text
  @param buf      token, produced the error

@@ -87,6 +87,11 @@
 
 #define MAX_QUERY_LIMIT 250
 
+/**
+ @struct query_limits_t db.h
+ @brief  Stores the maximum number of items returned by query
+         and offset of data in query.
+ */
 typedef struct query_limits_t
 {
   uint64_t offset;
