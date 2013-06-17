@@ -104,6 +104,8 @@
 /* no trailing dot also, please */
 #define MSG_D_DBCREATED \
   gettext("Created new database")
+#define MSG_D_LOADED \
+  gettext("Loaded database")
 #define MSG_D_FAILOPEN \
   gettext("Failed to open database")
 #define MSG_D_FAILCLOSE \

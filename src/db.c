@@ -131,6 +131,8 @@ db_open(void)
   if (opts.db.readonly == true)
     flags = SQLITE_OPEN_READONLY;
 
+  msg(msg_debug, "%s v%s: %s\n", MSG_D_LOADED, DB_VERSION, opts.db.path);
+
   if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
     msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
 
