@@ -116,18 +116,13 @@ _handle_tag_set(const char *path, const char *str)
 void
 _handle_tag_lst(const char *path, const char *unused)
 {
-  list_t tags;
+  char *tags;
 
-  memset(&tags, 0, sizeof(list_t));
-
-  if (file_tags_get(path, &tags) > 0)
+  if (file_tags_get_bulk(path, &tags) <= 0)
     return;
 
-  list_items_merge(&tags, ' ');
-
-  printf(COMMON_MSG_FMTN, path, (tags.len > 0) ? tags.buf : "");
-
-  list_clear(&tags);
+  printf(COMMON_MSG_FMTN, path, tags);
+  FREE(tags);
 }
 
 void
