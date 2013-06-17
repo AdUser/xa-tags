@@ -25,7 +25,8 @@
 #define CHECK_REQ(buf,token,req_type,ret) \
   else if (strncmp((buf), (token), strlen(token)) == 0) \
     { req->type = (req_type); return (ret); }
-int
+
+static int
 _check_type(ipc_req_t *req, char *buf, size_t buf_len)
 {
 
@@ -56,7 +57,7 @@ _check_type(ipc_req_t *req, char *buf, size_t buf_len)
   else if (strncmp((buf), (token), strlen(token)) == 0) \
     { req->op = (operation); req->data.type = data_type; return (ret); }
 
-int
+static int
 _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
 {
   if (buf_len == 0)
@@ -100,7 +101,7 @@ _check_operation(ipc_req_t *req, char *buf, size_t buf_len)
   *  1 - valid, parameters until "\n"
   *  2 - valid, parameters until "\n\n"
   */
-int
+static int
 _check_delimiter(ipc_req_t *req, char c)
 {
   switch (c)

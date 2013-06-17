@@ -153,7 +153,7 @@ search_free(search_t * const search)
  @param  tags   Tags string.
  @returns  -1 - error, 0 - not match, 1 - match
  */
-int
+static int
 _match_against_list(const list_t *terms, const char *tags)
 {
   int i = 0;
