@@ -5,13 +5,22 @@
   #define ASSERT(x, y) (x)
 #endif
 
+/**
+ @brief  safely frees allocated string
+ */
 #define FREE(ptr) \
   if (ptr != NULL) free((ptr)); \
   (ptr) = NULL
 
+/**
+ @brief  safely allocates a lot of memory
+ */
 #define CALLOC(ptr, nmemb, size) \
   ASSERT((ptr) = calloc((nmemb), (size)), MSG_M_OOM)
 
+/**
+ @brief  safely changes size of allocated memory
+ */
 #define REALLOC(new_ptr, old_ptr, new_size) \
   ASSERT((new_ptr) = realloc((old_ptr), (new_size)), MSG_M_REALLOC)
 

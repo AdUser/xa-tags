@@ -20,7 +20,8 @@
  @brief  get tags from file attribute and store them in list_t
  @param  path  path of file to handle
  @param  tags  struct to store retrieved tags
- @returns 0 on success and 1 if attribute not found or empty
+ @returns @b 0 on success,
+          @b 1 if attribute not found or empty
  */
 int
 file_tags_get(const char *path, list_t *tags)
@@ -38,11 +39,13 @@ file_tags_get(const char *path, list_t *tags)
 
 /**
  @brief  get tags from file attribute as single string
- @detail  this function allocates a lot of memory. Don't forget to free() them.
+
+ @warning This function allocates a lot of memory. Don't forget to free() them.
  @param  path  path of file to handle
  @param  tags  store allocated string with tags to this pointer
- @returns  <0 on error, 0 if attribute not found or empty,
-           >0 - lenght of allocated string
+ @returns  @b <0 on error,
+           @b  0 if attribute not found or empty,
+           @b >0 - length of allocated string
  */
 ssize_t
 file_tags_get_bulk(const char *path, char **tags)
@@ -87,7 +90,8 @@ file_tags_get_bulk(const char *path, char **tags)
  @brief  store set of tags into extended file attribute
  @param  path  path of file to handle
  @param  tags  list_t struct with tags to store in file's attribute
- @returns  0 on success, 1 on error
+ @returns  @b 0 on success,
+           @b 1 on error
  */
 int
 file_tags_set(const char *path, list_t *tags)
@@ -115,7 +119,8 @@ file_tags_set(const char *path, list_t *tags)
 /**
  @brief  clears and removes extended attribute with tags from file
  @param  path  path of file to handle
- @returns  0 on success or 1 on error
+ @returns  @b 0 on success,
+           @b 1 on error
  */
 int
 file_tags_clr(const char *path)
@@ -134,7 +139,9 @@ file_tags_clr(const char *path)
 /**
  @brief  get file's uuid from extended attribute
  @param  path  path of file to handle
- @returns  0 on success, 1 if uuid not found, 2 if error occured
+ @returns  @b 0 on success,
+           @b 1 if uuid not found,
+           @b 2 if error occured
  */
 int
 file_uuid_get(const char *path, uuid_t *uuid)
@@ -171,7 +178,8 @@ file_uuid_get(const char *path, uuid_t *uuid)
 /**
  @brief  store file's uuid to extended attribute
  @param  path  path of file to handle
- @returns  0 on success or 1 on error
+ @returns  @b 0 on success,
+           @b 1 on error
  */
 int
 file_uuid_set(const char *path, const uuid_t *uuid)
@@ -191,7 +199,8 @@ file_uuid_set(const char *path, const uuid_t *uuid)
 /**
  @brief  clears and removes extended attribute with uuid from file
  @param  path  path of file to handle
- @returns  0 on success or 1 on error
+ @returns  @b 0 on success,
+           @b 1 on error
  */
 int
 file_uuid_clr(const char *path)
@@ -210,7 +219,8 @@ file_uuid_clr(const char *path)
 /**
  @brief  Is specified file supports work with extended attributes?
  @param  path  path of file to test
- @returns  0 if not supported and 1 otherwise
+ @returns  @b 0 if not supported,
+           @b 1 if supported
  */
 int
 file_xattr_supported(const char *path)
