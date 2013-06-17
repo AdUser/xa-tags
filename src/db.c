@@ -607,6 +607,7 @@ db_tag_add_uniq(list_t *tags)
   return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
+#ifdef UNIQ_TAGS_LIST
 /** return values:
  * 0 - all ok
  * 1 - more data expected
@@ -660,6 +661,7 @@ db_tags_find(const char *str, query_limits_t *lim, list_t *results)
 
   return (results->items == MAX_QUERY_LIMIT) ? 1 : 0;
 }
+#endif
 
 void
 db_commit(void)

@@ -110,9 +110,9 @@ int db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *resu
 int db_tags_get(uuid_t *uuid, list_t *tags);
 int db_tags_set(const uuid_t *uuid, list_t *tags);
 int db_tags_clr(const uuid_t *uuid);
-int db_tags_find(const char *str, query_limits_t *lim, list_t *results);
 
 #ifdef UNIQ_TAGS_LIST
+int db_tags_find(const char *str, query_limits_t *lim, list_t *results);
 int db_tag_add_uniq(list_t *tags);
 #endif
 

@@ -222,6 +222,7 @@ _handle_tag_lst(const char *path, const char *unused)
   list_clear(&tmp_tags);
 }
 
+#ifdef UNIQ_TAGS_LIST
 void
 _handle_tag_search(const char *unused, const char *tag)
 {
@@ -242,6 +243,7 @@ _handle_tag_search(const char *unused, const char *tag)
 
   list_clear(&results);
 }
+#endif
 
 /* extended operations */
 void
