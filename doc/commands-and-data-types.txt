@@ -3,6 +3,7 @@
 ^ FILE  ^ GET    | L_UUID         | L_FILE        |
 ^ FILE  ^ DEL    | L_UUID         | -             |
 ^ FILE  ^ UPDATE | M_UUID_FILE    | -             |
+^ FILE  ^ LIST   | L_FILE         | M_UUID_FILE   |
 ^                                              ||||
 ^ TAG   ^ ADD    | M_UUID_TAGS    | M_UUID_TAGS*  |
 ^ TAG   ^ DEL    | M_UUID_TAGS    | M_UUID_TAGS*  |

@@ -21,6 +21,10 @@
   "SELECT " UUID_COL ", filename FROM " FILE_TABLE " WHERE filename LIKE ? LIMIT ? OFFSET ?"
 #define SQL_F_UPDATE \
   "UPDATE " FILE_TABLE " SET dirname_hash = ?, filename = ? WHERE file_id = ?"
+#define SQL_F_DIRLIST \
+  "SELECT file_id, filename, tags FROM " FILE_TABLE " JOIN " TAGS_TABLE \
+  " ON " FILE_TABLE ".file_id = " TAGS_TABLE ".rowid" \
+  " WHERE dirname_hash = ? AND filename LIKE ? LIMIT ? OFFSET ?"
 
 /* TAG request type */
 #define SQL_T_GET \
@@ -112,6 +116,8 @@ int db_file_add(const char *path, uuid_t *new_uuid);
 int db_file_update(const char *path, uuid_t *uuid);
 int db_file_del(const uuid_t *uuid);
 int db_file_get(const uuid_t *uuid, char *path);
+int db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
+                    int (*cb)(uuid_t, const char *, const char *));
 int db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                         int (*cb)(const char *, const uuid_t *));
 int db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,

@@ -284,6 +284,88 @@ db_file_get(const uuid_t *uuid, char *path)
   return (ret == SQLITE_DONE) ? 0 : 1;
 }
 
+/**
+ @brief  List tagged files in specified directory
+ @param  path     should contain directory name without trailing '/'
+ @param  lim      limits of query
+ @param  results  list_t to store results (optional)
+ @param  cb       function to call on each found file (optional)
+ @returns @c 0 if all data processed, @c 1 if more data expected and @c 2 on error
+ */
+int
+db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
+                int (*cb)(uuid_t, const char *, const char *))
+{
+  sqlite3_stmt *stmt = NULL;
+  char buf[PATH_MAX] = { '\0' };
+  uint64_t dirhash = 0;
+  size_t len = 0;
+  int ret = 0;
+  int rows = 0;
+  uuid_t uuid = 0;
+  char *filename = NULL;
+  char *tags = NULL;
+
+  ASSERT(path != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
+
+  len = strlen(SQL_F_SEARCH);
+  if (sqlite3_prepare_v2(db_conn, SQL_F_DIRLIST, len, &stmt, NULL) != SQLITE_OK)
+    {
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+      return 2;
+    }
+
+  if (results != NULL)
+    list_clear(results);
+
+  dirhash = crc16(path, strlen(path));
+
+  sqlite3_bind_int(stmt, 1, dirhash);
+  sqlite3_bind_text(stmt, 2, buf, -1, SQLITE_TRANSIENT);
+  sqlite3_bind_int(stmt, 3, lim->limit);
+  sqlite3_bind_int64(stmt, 4, lim->offset);
+
+  while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
+    {
+      rows++;
+
+      uuid     = (uuid_t) sqlite3_column_int64(stmt, 0);
+      filename = (char *) sqlite3_column_text(stmt, 1);
+      tags     = (char *) sqlite3_column_text(stmt, 2);
+
+      if (results != NULL)
+        {
+          len = snprintf_m_uuid_file(buf, PATH_MAX + UUID_CHAR_LEN + 3,
+                                     &uuid, filename);
+          list_item_add(results, buf, len);
+        }
+
+      if (cb != NULL)
+        cb(uuid, filename, tags);
+    }
+
+  if (ret != SQLITE_DONE)
+    {
+      msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+      if (results != NULL)
+        list_clear(results);
+      sqlite3_finalize(stmt);
+
+      return 2;
+    }
+
+  if (results != NULL)
+    {
+      if (results->items > 1)
+        results->flags |= LIST_MULTI;
+      results->type = LIST_M_UUID_FILE;
+    }
+
+  sqlite3_finalize(stmt);
+
+  return (rows == lim->limit) ? 1 : 0;
+}
+
 /** return values:
  * 0 - all ok
  * 1 - more data expected

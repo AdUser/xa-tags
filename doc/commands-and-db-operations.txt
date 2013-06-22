@@ -4,6 +4,7 @@
 ^ FILE  ^ GET    |   ?  | db_file_get()
 ^ FILE  ^ DEL    |   +  | db_file_del()
 ^ FILE  ^ UPDATE |   +  | db_file_update()
+^ FILE  ^ LIST   |   -  | db_file_dirlist()
 ^ TAG   ^ ADD    |  -/+ | -> TAG GET, TAG SET
 ^ TAG   ^ DEL    |  -/+ | -> TAG GET, TAG SET
 ^ TAG   ^ SET    |   +  | db_tag_set()
