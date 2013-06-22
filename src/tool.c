@@ -34,6 +34,7 @@ usage(int exitcode)
 #include "usage/basic.c.inc"
 #include "usage/search.c.inc"
 #include "usage/update.c.inc"
+#include "usage/db_misc.c.inc"
   fprintf(stdout, "\n");
 
 #ifndef INLINE_TAGS
@@ -392,6 +393,16 @@ _handle_file_update(const char *path, const char *str)
     }
 }
 
+void
+_handle_db_misc(const char *unused, const char *operation)
+{
+  if (operation == NULL)
+    return;
+
+  if (strcmp(operation, "rehash") == 0)
+    db_rehash();
+}
+
 /* #ifndef INLINE_TAGS */
 void
 _handle_file_migrate_to_db(const char *path, const char *unused)
@@ -465,7 +476,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "Ru" "mMk")) != -1)
+  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "RuQ:" "mMk")) != -1)
     switch (opt)
       {
         /* operations */
@@ -481,6 +492,7 @@ main(int argc, char **argv)
         case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
         case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
         case 'R' : op = opt; str = optarg; handler = &_handle_labels_restore; break;
+        case 'Q' : op = opt; str = optarg; handler = &_handle_db_misc; break;
 #ifndef INLINE_TAGS
         case 'm' : op = opt; str = NULL;   handler = &_handle_file_migrate_to_db; break;
         case 'M' : op = opt; str = NULL;   handler = &_handle_file_migrate_from_db; break;
@@ -536,6 +548,7 @@ main(int argc, char **argv)
 #ifdef UNIQ_TAGS_LIST
       case 'T' :
 #endif
+      case 'Q' :
         handler(NULL, str);
         break;
       case 'a' :

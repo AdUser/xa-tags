@@ -13,6 +13,7 @@
 | m      |       | Move embedded tags to database.
 | M      |       | Move tags from database to separate xattr.
 | q      |       | Be less verbose.
+| Q      | <str> | Misc operations on datasbase.
 | r      |       | Handle files recursive.
 | R      |       | Restore labels on selected files or dir.
 | s      | <str> | Set for file this set of tags.
