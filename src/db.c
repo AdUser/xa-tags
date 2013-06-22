@@ -462,6 +462,9 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
   int matches = 0;
   char buf[PATH_MAX] = { 0 };
   char *fts_query = NULL;
+  uuid_t uuid = 0;
+  char *filename = NULL;
+  char *tags = NULL;
 
   ASSERT(search != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
@@ -486,27 +489,28 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
       for (rows = 0, matches = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
           rows++;
+          filename = (char *) sqlite3_column_text(stmt, 0);
+          tags     = (char *) sqlite3_column_text(stmt, 1);
           /* NOTE: we already filter this by FTS query
-          if (search_match_substr(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+          if (search_match_substr(search, tags) < 1)
             continue;
           */
-          if (search_match_exact(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+          if (search_match_exact(search, tags) < 1)
             continue;
 #ifdef REGEX_SEARCH
-          if (search_match_regex(search, (char *) sqlite3_column_text(stmt, 1)) < 1)
+          if (search_match_regex(search, tags) < 1)
             continue;
 #endif
           matches++;
 
           if (results != NULL)
             {
-              len = snprintf(buf, PATH_MAX, "%s", (char *) sqlite3_column_text(stmt, 0));
+              len = snprintf(buf, PATH_MAX, "%s", filename);
               list_item_add(results, buf, len);
             }
 
           if (cb != NULL)
-            cb((char *) sqlite3_column_text(stmt, 0),
-               (char *) sqlite3_column_text(stmt, 1));
+            cb(filename, tags);
 
             /* NOTE: if we simple wait until 'for' loop ends,     *
              * number of items in result will float around limit. */
