@@ -323,7 +323,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
 
   sqlite3_bind_text(stmt, 1, buf, -1, SQLITE_TRANSIENT);
   sqlite3_bind_int(stmt, 2, lim->limit);
-  sqlite3_bind_int(stmt, 3, lim->offset);
+  sqlite3_bind_int64(stmt, 3, lim->offset);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
@@ -398,8 +398,8 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
   do /* loop, until we get 'limit' items or lesser than 'limit' rows from query */
     {
       sqlite3_bind_text(stmt, 1, fts_query, -1, SQLITE_TRANSIENT);
-      sqlite3_bind_int(stmt,  2, lim->limit);
-      sqlite3_bind_int(stmt,  3, lim->offset);
+      sqlite3_bind_int(stmt,   2, lim->limit);
+      sqlite3_bind_int64(stmt, 3, lim->offset);
 
       for (rows = 0, matches = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
@@ -641,7 +641,7 @@ db_tags_find(const char *str, query_limits_t *lim, list_t *results)
 
   sqlite3_bind_text(stmt, 1, buf, len, SQLITE_TRANSIENT);
   sqlite3_bind_int(stmt, 2, lim->limit);
-  sqlite3_bind_int(stmt, 3, lim->offset);
+  sqlite3_bind_int64(stmt, 3, lim->offset);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
