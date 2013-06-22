@@ -1,12 +1,7 @@
 #define UUID_CHAR_LEN 16 /* sizeof(uint64_t) * 2 */
 #define UUID_FORMAT "%08X%08X" /* base, counter */
 
-typedef struct uuid_t
-  {
-    uint64_t id;
-    /* auxillary fields */
-    uint16_t dirname_hash;
-  } uuid_t;
+typedef uint64_t uuid_t;
 
 /** API functions */
 /** common functions */

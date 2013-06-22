@@ -162,6 +162,7 @@ int
 db_file_add(const char *path, uuid_t *new_uuid)
 {
   sqlite3_stmt *stmt = NULL;
+  uint16_t dirhash = 0;
   int ret = 0;
 
   if (sqlite3_prepare_v2(db_conn, SQL_F_ADD, strlen(SQL_F_ADD), &stmt, NULL) != SQLITE_OK)
@@ -170,17 +171,19 @@ db_file_add(const char *path, uuid_t *new_uuid)
       return 1;
     }
 
+  dirhash = get_dirhash(path);
+
   /* this is safe, because sqlite interprets unbound values as NULL */
-  if (new_uuid->id != 0)
-    sqlite3_bind_int64(stmt, 1, new_uuid->id);
-  sqlite3_bind_int(stmt, 2, new_uuid->dirname_hash);
+  if (*new_uuid != 0)
+    sqlite3_bind_int64(stmt, 1, *new_uuid);
+  sqlite3_bind_int(stmt, 2, dirhash);
   sqlite3_bind_text(stmt, 3, path, -1, SQLITE_STATIC);
 
   switch (sqlite3_step(stmt))
     {
       case SQLITE_DONE :
-        new_uuid->id = (uint64_t) sqlite3_last_insert_rowid(db_conn);
-        ASSERT(new_uuid->id != 0, MSG_D_ZEROUUID);
+        *new_uuid = (uint64_t) sqlite3_last_insert_rowid(db_conn);
+        ASSERT(*new_uuid != 0, MSG_D_ZEROUUID);
         break;
       default :
         msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
@@ -211,7 +214,7 @@ db_file_update(const char *path, uuid_t *uuid)
 
   sqlite3_bind_int(stmt, 1, dirhash);
   sqlite3_bind_text(stmt, 2, path, -1, SQLITE_STATIC);
-  sqlite3_bind_int64(stmt, 3, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 3, (sqlite3_int64) *uuid);
 
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -239,7 +242,7 @@ db_file_del(const uuid_t *uuid)
       return 1;
     }
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) *uuid);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
     msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
@@ -268,7 +271,7 @@ db_file_get(const uuid_t *uuid, char *path)
       return 1;
     }
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) *uuid);
 
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     snprintf(path, PATH_MAX, "%s", sqlite3_column_text(stmt, 0));
@@ -294,7 +297,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                     int (*cb)(const char *, const uuid_t *))
 {
   sqlite3_stmt *stmt = NULL;
-  uuid_t uuid = { 0, 0 };
+  uuid_t uuid = 0;
   size_t len = 0;
   int ret = 0;
   int rows = 0;
@@ -325,8 +328,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
       rows++;
-      uuid.id    = (uint64_t) sqlite3_column_int64(stmt, 0);
-      uuid.dirname_hash = (uint16_t) sqlite3_column_int(stmt, 1);
+      uuid = (uuid_t) sqlite3_column_int64(stmt, 0);
 
       if (results != NULL)
         {
@@ -479,7 +481,7 @@ db_tags_get(uuid_t *uuid, list_t *tags)
       return 1;
     }
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) *uuid);
 
   switch (sqlite3_step(stmt))
     {
@@ -528,7 +530,7 @@ db_tags_set(const uuid_t *uuid, list_t *tags)
   p[0] = ' ';
   p[tags->len] = ' ';
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) *uuid);
   sqlite3_bind_text(stmt,  2, p, tags->len + 2, SQLITE_STATIC);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
@@ -556,7 +558,7 @@ db_tags_clr(const uuid_t *uuid)
       return 1;
     }
 
-  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) uuid->id);
+  sqlite3_bind_int64(stmt, 1, (sqlite3_int64) *uuid);
 
   if ((ret = sqlite3_step(stmt)) != SQLITE_DONE)
     msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));

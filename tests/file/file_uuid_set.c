@@ -2,8 +2,8 @@
 
 int main()
 {
-  uuid_t uuid_set = { 0, 0 };
-  uuid_t uuid_get = { 0, 0 };
+  uuid_t uuid_set = 0;
+  uuid_t uuid_get = 0;
 
   SIGCATCH_INIT
 
@@ -12,14 +12,14 @@ int main()
 
   srand(time(NULL));
 
-  uuid_set.id  = rand() & 0xFFFFFFFF;
-  uuid_set.id <<= 32;
-  uuid_set.id += rand() & 0xFFFFFFFF;
+  uuid_set  = rand() & 0xFFFFFFFF;
+  uuid_set <<= 32;
+  uuid_set += rand() & 0xFFFFFFFF;
 
   assert(file_uuid_set(TEST_FILE, &uuid_set) == 0);
   assert(file_uuid_get(TEST_FILE, &uuid_get) == 0);
 
-  assert(uuid_set.id == uuid_get.id);
+  assert(uuid_set == uuid_get);
 
   unlink(TEST_FILE);
 

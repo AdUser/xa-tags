@@ -55,11 +55,11 @@ uuid_id_parse(uuid_t *uuid, char *str)
   if (uuid_id_validate(str))
     return 1;
 
-  uuid->id = 0;
+  *uuid = 0;
   for (i = 0; i < UUID_CHAR_LEN; i++)
     {
-      uuid->id <<= 4;
-      uuid->id +=  (isdigit(str[i])) ? str[i] - '0' : toupper(str[i]) - 'A' + 0xA;
+      *uuid <<= 4;
+      *uuid +=  (isdigit(str[i])) ? str[i] - '0' : toupper(str[i]) - 'A' + 0xA;
     }
 
   return 0;
@@ -83,8 +83,8 @@ uuid_id_printf(const uuid_t *uuid)
   ASSERT(uuid != NULL, MSG_M_NULLPTR);
 
   snprintf(buf, UUID_CHAR_LEN + 1, UUID_FORMAT,
-              (uint32_t) (uuid->id >> 32),
-              (uint32_t) (uuid->id & 0xFFFFFFFF));
+              (uint32_t) (*uuid >> 32),
+              (uint32_t) (*uuid & 0xFFFFFFFF));
 
   return buf;
 }
