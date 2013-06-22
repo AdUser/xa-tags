@@ -453,7 +453,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
  */
 int
 db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
-                   int (*cb)(const char *, const char *))
+                   int (*cb)(uuid_t, const char *, const char *))
 {
   sqlite3_stmt *stmt;
   size_t len = 0;
@@ -489,8 +489,9 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
       for (rows = 0, matches = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW;)
         {
           rows++;
-          filename = (char *) sqlite3_column_text(stmt, 0);
-          tags     = (char *) sqlite3_column_text(stmt, 1);
+          uuid     = (uuid_t) sqlite3_column_int64(stmt, 0);
+          filename = (char *) sqlite3_column_text(stmt, 1);
+          tags     = (char *) sqlite3_column_text(stmt, 2);
           /* NOTE: we already filter this by FTS query
           if (search_match_substr(search, tags) < 1)
             continue;
@@ -510,7 +511,7 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
             }
 
           if (cb != NULL)
-            cb(filename, tags);
+            cb(uuid, filename, tags);
 
             /* NOTE: if we simple wait until 'for' loop ends,     *
              * number of items in result will float around limit. */

@@ -34,7 +34,7 @@
 #define SQL_T_CLR \
   "DELETE FROM " TAGS_TABLE " WHERE rowid = ?"
 #define SQL_T_SEARCH \
-  "SELECT filename, tags FROM " FILE_TABLE " JOIN " TAGS_TABLE \
+  "SELECT file_id, filename, tags FROM " FILE_TABLE " JOIN " TAGS_TABLE \
   " ON " FILE_TABLE ".file_id = " TAGS_TABLE ".rowid" \
   " WHERE tags MATCH ? LIMIT ? OFFSET ?"
 #ifdef UNIQ_TAGS_LIST
@@ -121,7 +121,7 @@ int db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
 int db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
                         int (*cb)(const char *, const uuid_t *));
 int db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
-                       int (*cb)(const char *, const char *));
+                       int (*cb)(uuid_t, const char *, const char *));
 
 int db_tags_get(uuid_t *uuid, list_t *tags);
 int db_tags_set(const uuid_t *uuid, list_t *tags);
