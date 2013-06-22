@@ -17,25 +17,6 @@
 #include "common.h"
 
 /**
- @brief  Calculates directory hash for given 'path'
- @param  uuid  uuid_t to store hash
- @param  path  path of file or directory with leading '/'
- @return  0 - all ok, 1 - error
- */
-int
-uuid_generate(uuid_t *uuid, const char *path)
-{
-  ASSERT(uuid != NULL && path != NULL, MSG_M_NULLPTR);
-
-  if (strrchr(path, '/') == NULL)
-    return 1; /* path MUST contain at least one slash */
-
-  get_path_checksums(uuid, path);
-
-  return 0;
-}
-
-/**
  @brief  Checks format of given UUID string.
  @param  uuid  UUID to be checked
  @return  0 - all ok, 1 - error

@@ -62,7 +62,7 @@
 
 uint16_t crc16(const char *str, size_t len);
 uint32_t jhash(char *str, size_t len);
-void get_path_checksums(uuid_t * const uuid, const char *path);
+uint16_t get_dirhash(const char *path);
 
 /** string functions */
 char *normalize_path(const char *path);

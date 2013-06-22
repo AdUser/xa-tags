@@ -170,8 +170,6 @@ db_file_add(const char *path, uuid_t *new_uuid)
       return 1;
     }
 
-  uuid_generate(new_uuid, path);
-
   /* this is safe, because sqlite interprets unbound values as NULL */
   if (new_uuid->id != 0)
     sqlite3_bind_int64(stmt, 1, new_uuid->id);
@@ -199,6 +197,7 @@ int
 db_file_update(const char *path, uuid_t *uuid)
 {
   sqlite3_stmt *stmt = NULL;
+  uint16_t dirhash = 0;
   size_t len = 0;
 
   len = strlen(SQL_F_UPDATE);
@@ -208,9 +207,9 @@ db_file_update(const char *path, uuid_t *uuid)
       return 1;
     }
 
-  get_path_checksums(uuid, path);
+  dirhash = get_dirhash(path);
 
-  sqlite3_bind_int(stmt, 1, uuid->dirname_hash);
+  sqlite3_bind_int(stmt, 1, dirhash);
   sqlite3_bind_text(stmt, 2, path, -1, SQLITE_STATIC);
   sqlite3_bind_int64(stmt, 3, (sqlite3_int64) uuid->id);
 

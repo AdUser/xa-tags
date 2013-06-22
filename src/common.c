@@ -71,19 +71,24 @@ jhash(char *key, size_t len)
 }
 /* -----------------8<------------------------ */
 
-void
-get_path_checksums(uuid_t * const uuid, const char *path)
+/**
+ @brief  calculates crc16 checksum for dirname() part of the provided path
+ @param  path  path string to be processed
+ @returns  checksum as 16bit unsigned integer
+ */
+uint16_t
+get_dirhash(const char *path)
 {
   const char *p = NULL;
 
-  ASSERT(path != NULL && uuid != NULL, MSG_M_NULLPTR);
+  ASSERT(path != NULL, MSG_M_NULLPTR);
 
   if ((p = strrchr(path, '/')) == NULL)
-    return;
+    msg(msg_error, COMMON_ERR_FMTN, MSG_I_BADPATH, path);
 
   /* "/path/to/some/file" */
   /*  ^-- crc16 --^       */
-  uuid->dirname_hash = crc16(path, p - path);
+  return crc16(path, p - path);
 }
 
 /** string functions */
