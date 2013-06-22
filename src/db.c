@@ -672,3 +672,56 @@ db_commit(void)
   sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
 #endif
 }
+
+/**
+ @brief  updates directory hashes in whole database
+ */
+void
+db_rehash(void)
+{
+  sqlite3_stmt *stmt_select = NULL;
+  sqlite3_stmt *stmt_update = NULL;
+  query_limits_t lim = { 0, 512 };
+  uuid_t uuid = 0;
+  uint16_t dirhash = 0;
+  int ret = 0;
+  size_t len = 0;
+
+  len = strlen(SQL_D_REHASH_SELECT);
+  if (sqlite3_prepare_v2(db_conn, SQL_D_REHASH_SELECT, len, &stmt_select, NULL) != SQLITE_OK)
+    msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+
+  len = strlen(SQL_D_REHASH_UPDATE);
+  if (sqlite3_prepare_v2(db_conn, SQL_D_REHASH_UPDATE, len, &stmt_update, NULL) != SQLITE_OK)
+    msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+
+  do {
+    sqlite3_bind_int(stmt_select,   1, lim.limit);
+    sqlite3_bind_int64(stmt_select, 2, lim.offset);
+
+    while ((ret = sqlite3_step(stmt_select)) == SQLITE_ROW)
+      {
+        uuid = sqlite3_column_int64(stmt_select, 0);
+        dirhash = get_dirhash((char *) sqlite3_column_text(stmt_select, 1));
+
+        sqlite3_bind_int(stmt_update,   1, dirhash);
+        sqlite3_bind_int64(stmt_update, 2, uuid);
+
+        if (sqlite3_step(stmt_update) != SQLITE_DONE)
+          msg(msg_error, COMMON_MSG_FMTN, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+
+        sqlite3_clear_bindings(stmt_update);
+        sqlite3_reset(stmt_update);
+        lim.offset++;
+      }
+
+    sqlite3_clear_bindings(stmt_select);
+    sqlite3_reset(stmt_select);
+#ifdef ASYNC_DB_WRITE
+    db_commit();
+#endif
+  } while (lim.offset > 0 && (lim.offset % lim.limit) == 0);
+
+  sqlite3_finalize(stmt_select);
+  sqlite3_finalize(stmt_update);
+}

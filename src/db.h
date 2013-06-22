@@ -46,6 +46,11 @@
   "SELECT " \
     "(SELECT COUNT(*) FROM " UNIQ_TAGS_TABLE ") as 'uniq_tags', " \
     "(SELECT COUNT(*) FROM " FILE_TABLE ") as 'file_records'"
+#define SQL_D_REHASH_SELECT \
+  "SELECT file_id, filename FROM " FILE_TABLE \
+    " WHERE file_id > (SELECT uuid_min FROM " INFO_TABLE ") LIMIT ? OFFSET ?"
+#define SQL_D_REHASH_UPDATE \
+  "UPDATE " FILE_TABLE " SET dirname_hash = ? WHERE file_id = ?"
 
 /* DB create statements */
 #define SQL_DB_CREATE_1 \
@@ -122,6 +127,7 @@ int db_tag_add_uniq(list_t *tags);
 #endif
 
 void db_commit(void);
+void db_rehash(void);
 
 void db_open(void);
 void db_close(void);
