@@ -9,7 +9,8 @@
 | F      | <str> | Search for file(s) with given substring in path.
 | h      |       | This help.
 | k      |       | Don't delete converted tags from old place.
-| l      |       | List tags.
+| l      |       | List tags for given file.
+| L      |       | List files with tags in this directory.
 | m      |       | Move embedded tags to database.
 | M      |       | Move tags from database to separate xattr.
 | q      |       | Be less verbose.
