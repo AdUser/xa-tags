@@ -308,7 +308,7 @@ db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
 
   ASSERT(path != NULL && lim != NULL && (results != NULL || cb != NULL), MSG_M_NULLPTR);
 
-  len = strlen(SQL_F_SEARCH);
+  len = strlen(SQL_F_DIRLIST);
   if (sqlite3_prepare_v2(db_conn, SQL_F_DIRLIST, len, &stmt, NULL) != SQLITE_OK)
     {
       msg(msg_warn, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
@@ -319,6 +319,7 @@ db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
     list_clear(results);
 
   dirhash = crc16(path, strlen(path));
+  snprintf(buf, PATH_MAX, "%s%%", path);
 
   sqlite3_bind_int(stmt, 1, dirhash);
   sqlite3_bind_text(stmt, 2, buf, -1, SQLITE_TRANSIENT);

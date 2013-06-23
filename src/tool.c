@@ -393,6 +393,36 @@ _handle_file_update(const char *path, const char *str)
     }
 }
 
+/* dirlist */
+int
+_dirlist_cb(uuid_t uuid, const char *path, const char *tags)
+{
+  if (verbosity >= log_extra)
+    printf("%s: %s\n", path, tags);
+  else
+    puts(path);
+
+  return 0;
+}
+
+void
+_handle_file_dirlist(const char *path, const char *str)
+{
+  char *buf = NULL;
+  query_limits_t lim = { 0, 512 };
+  size_t len = 0;
+
+  len = strlen(path);
+
+  if (path[len] == '/')
+    len--;
+
+  CALLOC(buf, len + 1, sizeof(char));
+  snprintf(buf, len, "%s", path);
+  while (db_file_dirlist(buf, &lim, NULL, &_dirlist_cb) == 1);
+  FREE(buf);
+}
+
 void
 _handle_db_misc(const char *unused, const char *operation)
 {
@@ -476,7 +506,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "RuQ:" "mMk")) != -1)
+  while ((opt = getopt(argc, argv, "rvhqb:" "cl" "a:d:s:" "f:F:" "T:" "RuLQ:" "mMk")) != -1)
     switch (opt)
       {
         /* operations */
@@ -491,6 +521,7 @@ main(int argc, char **argv)
         case 'f' : op = opt; str = optarg; handler = &_handle_file_search_tag;  break;
         case 'F' : op = opt; str = optarg; handler = &_handle_file_search_path; break;
         case 'u' : op = opt; str = optarg; handler = &_handle_file_update; break;
+        case 'L' : op = opt; str = optarg; handler = &_handle_file_dirlist; break;
         case 'R' : op = opt; str = optarg; handler = &_handle_labels_restore; break;
         case 'Q' : op = opt; str = optarg; handler = &_handle_db_misc; break;
 #ifndef INLINE_TAGS
@@ -528,7 +559,7 @@ main(int argc, char **argv)
           list_item_add(&files, buf, 0);
           FREE(item);
         }
-      else if (op == 'c')
+      else if (op == 'c' || op == 'L')
         {
           list_item_add(&files, argv[optind], 0);
         }
@@ -557,6 +588,7 @@ main(int argc, char **argv)
       case 'c' :
       case 'l' :
       case 'u' :
+      case 'L' :
 #ifndef INLINE_TAGS
       case 'm' :
       case 'M' :
