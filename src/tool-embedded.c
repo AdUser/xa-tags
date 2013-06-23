@@ -173,6 +173,49 @@ _handle_search_by_tag(const char *path, const char *str)
   FREE(file_tags);
 }
 
+void
+_handle_file_dirlist(const char *path, const char *str)
+{
+  DIR *dirp = NULL;
+  struct dirent *dirent = NULL;
+  char *tags = NULL;
+  size_t len = 0;
+
+  errno = 0;
+  if ((dirp = opendir(path)) == NULL)
+    {
+      if (errno == ENOTDIR)
+        msg(msg_warn, COMMON_MSG_FMTN, MSG_F_NOTDIR, path);
+      else
+        msg(msg_warn, COMMON_ERR_FMTN, MSG_F_FAILOPEN, path);
+      return;
+    }
+
+  errno = 0;
+  if (chdir(path) < 0)
+    {
+      msg(msg_warn, COMMON_MSG_FMTN, strerror(errno), path);
+      return;
+    }
+
+  while ((dirent = readdir(dirp)) != NULL)
+    {
+      errno = 0;
+      if (strcmp(dirent->d_name, "..") == 0)
+        continue;
+      if (file_tags_get_bulk(dirent->d_name, &tags) > 0)
+        {
+          if (verbosity >= log_extra)
+            printf(COMMON_MSG_FMTN, dirent->d_name, &tags[1]);
+          else
+            puts(dirent->d_name);
+        }
+      FREE(tags);
+    }
+
+  closedir(dirp);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -195,7 +238,7 @@ main(int argc, char **argv)
   if (argc < 2)
     usage(EXIT_FAILURE);
 
-  while ((opt = getopt(argc, argv, "rvqh" "cl" "a:d:s:" "f:")) != -1)
+  while ((opt = getopt(argc, argv, "rvqh" "clL" "a:d:s:" "f:")) != -1)
     switch (opt)
       {
         /* operations */
@@ -204,6 +247,7 @@ main(int argc, char **argv)
         case 's' : handler = &_handle_tag_set; tags = optarg; break;
         case 'c' : handler = &_handle_tag_clr; break;
         case 'l' : handler = &_handle_tag_lst; break;
+        case 'L' : handler = &_handle_file_dirlist; break;
         case 'f' : handler = &_handle_search_by_tag; tags = optarg; flags |= F_RECURSE; break;
         /* options */
         case 'v' : verbosity = log_extra; break;

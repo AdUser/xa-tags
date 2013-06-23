@@ -99,6 +99,8 @@
   gettext("Can't open")
 #define MSG_F_NOTSUPP    \
   gettext("xattrs disabled or not supported")
+#define MSG_F_NOTDIR     \
+  gettext("Not a directory")
 
 /** database errors */
 /* no trailing dot also, please */
