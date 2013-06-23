@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <fts.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <errno.h>
 #include <signal.h>
 #include <libgen.h>
