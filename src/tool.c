@@ -395,12 +395,12 @@ _handle_file_update(const char *path, const char *str)
 
 /* dirlist */
 int
-_dirlist_cb(uuid_t uuid, const char *path, const char *tags)
+_dirlist_cb(uuid_t uuid, const char *filename, const char *tags)
 {
   if (verbosity >= log_extra)
-    printf("%s: %s\n", path, tags);
+    printf("%s:%s\n", filename, tags);
   else
-    puts(path);
+    puts(filename);
 
   return 0;
 }
@@ -588,7 +588,6 @@ main(int argc, char **argv)
       case 'c' :
       case 'l' :
       case 'u' :
-      case 'L' :
 #ifndef INLINE_TAGS
       case 'm' :
       case 'M' :
@@ -603,6 +602,9 @@ main(int argc, char **argv)
           exit(EXIT_FAILURE);
         while ((ret = list_items_walk(&files, &item)) > 0)
           handler(item, NULL); /* without recursion */
+        break;
+      case 'L' : /* no recursion and handle only first param */
+        handler(files.buf, NULL);
         break;
       default :
         usage(EXIT_FAILURE);

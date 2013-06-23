@@ -289,7 +289,11 @@ db_file_get(const uuid_t *uuid, char *path)
  @param  path     should contain directory name without trailing '/'
  @param  lim      limits of query
  @param  results  list_t to store results (optional)
+                  Will be filled with "UUID <> /full/path/to/filename" pairs
  @param  cb       function to call on each found file (optional)
+                  Will be called with uuid, filename and tags.
+                  I'll assume you know parent dir in place of calling function,
+                  so you can reconstruct full paths.
  @returns @c 0 if all data processed, @c 1 if more data expected and @c 2 on error
  */
 int
@@ -326,6 +330,7 @@ db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
   sqlite3_bind_int(stmt, 3, lim->limit);
   sqlite3_bind_int64(stmt, 4, lim->offset);
 
+  len = strlen(path);
   while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
     {
       rows++;
@@ -342,7 +347,7 @@ db_file_dirlist(const char *path, query_limits_t *lim, list_t *results,
         }
 
       if (cb != NULL)
-        cb(uuid, filename, tags);
+        cb(uuid, &filename[len + 1], tags);
     }
 
   if (ret != SQLITE_DONE)

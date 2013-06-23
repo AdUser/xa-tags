@@ -179,7 +179,6 @@ _handle_file_dirlist(const char *path, const char *str)
   DIR *dirp = NULL;
   struct dirent *dirent = NULL;
   char *tags = NULL;
-  size_t len = 0;
 
   errno = 0;
   if ((dirp = opendir(path)) == NULL)
@@ -206,7 +205,7 @@ _handle_file_dirlist(const char *path, const char *str)
       if (file_tags_get_bulk(dirent->d_name, &tags) > 0)
         {
           if (verbosity >= log_extra)
-            printf(COMMON_MSG_FMTN, dirent->d_name, &tags[1]);
+            printf("%s:%s\n", dirent->d_name, tags);
           else
             puts(dirent->d_name);
         }
