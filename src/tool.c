@@ -506,7 +506,6 @@ main(int argc, char **argv)
   char op = '\0';
   char *str  = NULL;
   char *item = NULL;
-  char buf[PATH_MAX];
   void (*handler)(const char *, const char *) = NULL;
 
   memset(&opts, 0x0, sizeof(opts));
@@ -566,12 +565,10 @@ main(int argc, char **argv)
 
           if (ret > 0) ret--;
 
-          if (S_ISDIR(st.st_mode))
-            snprintf(buf, PATH_MAX, "%s%c", item, (item[ret] != '/') ? '/' : '\0');
-          else
-            snprintf(buf, PATH_MAX, "%s", item);
+          if (S_ISDIR(st.st_mode) && item[ret] == '/')
+            item[ret] = '\0', ret--;
 
-          list_item_add(&files, buf, 0);
+          list_item_add(&files, item, ret);
           FREE(item);
         }
       else if (op == 'c' || op == 'L')
