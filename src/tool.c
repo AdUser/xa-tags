@@ -408,19 +408,9 @@ _dirlist_cb(uuid_t uuid, const char *filename, const char *tags)
 void
 _handle_file_dirlist(const char *path, const char *str)
 {
-  char *buf = NULL;
   query_limits_t lim = { 0, 512 };
-  size_t len = 0;
 
-  len = strlen(path);
-
-  if (path[len] == '/')
-    len--;
-
-  CALLOC(buf, len + 1, sizeof(char));
-  snprintf(buf, len, "%s", path);
-  while (db_file_dirlist(buf, &lim, NULL, &_dirlist_cb) == 1);
-  FREE(buf);
+  while (db_file_dirlist(path, &lim, NULL, &_dirlist_cb) == 1);
 }
 
 void
@@ -562,8 +552,6 @@ main(int argc, char **argv)
         {
           item = realpath(argv[optind], NULL);
           ret = strlen(item);
-
-          if (ret > 0) ret--;
 
           if (S_ISDIR(st.st_mode) && item[ret] == '/')
             item[ret] = '\0', ret--;
