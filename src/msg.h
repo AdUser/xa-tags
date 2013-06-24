@@ -128,3 +128,8 @@
   gettext("failed to determine db version")
 #define MSG_D_VERMISMATCH \
   gettext("Database version mismatch. Expected version")
+/* database stats */
+#define MSG_DS_UNIQTAGS \
+  gettext("uniq tags")
+#define MSG_DS_KNOWNFILES \
+  gettext("known files")

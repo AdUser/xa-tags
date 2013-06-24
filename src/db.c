@@ -818,3 +818,37 @@ db_rehash(void)
   sqlite3_finalize(stmt_select);
   sqlite3_finalize(stmt_update);
 }
+
+/**
+ @brief  gives some stats about database
+ */
+void
+db_stats(list_t * const stats)
+{
+  sqlite3_stmt *stmt = NULL;
+  char *buf = NULL;
+  int i = 0;
+  size_t len = 0;
+
+  ASSERT(stats != NULL, MSG_M_NULLPTR);
+
+  CALLOC(buf, PATH_MAX, sizeof(char));
+
+  len = strlen(SQL_D_STAT);
+  if (sqlite3_prepare_v2(db_conn, SQL_D_STAT, len, &stmt, NULL) != SQLITE_OK)
+    msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILPREPARE, sqlite3_errmsg(db_conn));
+
+  if (sqlite3_step(stmt) != SQLITE_ROW)
+    msg(msg_warn, MSG_D_FAILEXEC, sqlite3_errmsg(db_conn));
+
+  i = sqlite3_column_int(stmt, 0);
+  len = snprintf(buf, PATH_MAX, STAT_MSG_FMT, i, MSG_DS_UNIQTAGS);
+  list_item_add(stats, buf, len);
+
+  i = sqlite3_column_int(stmt, 1);
+  len = snprintf(buf, PATH_MAX, STAT_MSG_FMT, i, MSG_DS_KNOWNFILES);
+  list_item_add(stats, buf, len);
+
+  FREE(buf);
+  sqlite3_finalize(stmt);
+}

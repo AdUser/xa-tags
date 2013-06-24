@@ -45,11 +45,15 @@
 #define SQL_T_UNIQ_ADD \
   "INSERT OR IGNORE INTO " UNIQ_TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
 
-/* DB request type */
+/** DB request type */
+/* DB STAT */
+#define STAT_MSG_FMT "% 10d : %s"
 #define SQL_D_STAT \
   "SELECT " \
     "(SELECT COUNT(*) FROM " UNIQ_TAGS_TABLE ") as 'uniq_tags', " \
-    "(SELECT COUNT(*) FROM " FILE_TABLE ") as 'file_records'"
+    "(SELECT COUNT(*) FROM " FILE_TABLE      ") as 'file_records'"
+
+/* DB REHASH */
 #define SQL_D_REHASH_SELECT \
   "SELECT file_id, filename FROM " FILE_TABLE \
     " WHERE file_id > (SELECT uuid_min FROM " INFO_TABLE ") LIMIT ? OFFSET ?"
@@ -134,6 +138,7 @@ int db_tag_add_uniq(list_t *tags);
 
 void db_commit(void);
 void db_rehash(void);
+void db_stats(list_t * const stats);
 
 void db_open(void);
 void db_close(void);
