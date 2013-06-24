@@ -386,6 +386,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
 {
   sqlite3_stmt *stmt = NULL;
   uuid_t uuid = 0;
+  char *path = NULL;
   size_t len = 0;
   int ret = 0;
   int rows = 0;
@@ -417,6 +418,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
     {
       rows++;
       uuid = (uuid_t) sqlite3_column_int64(stmt, 0);
+      path = (char *) sqlite3_column_text(stmt, 2);
 
       if (results != NULL)
         {
@@ -426,7 +428,7 @@ db_file_search_path(const char *str, query_limits_t *lim, list_t *results,
         }
 
       if (cb != NULL)
-        cb((const char *) sqlite3_column_text(stmt, 3), &uuid);
+        cb(path, &uuid);
     }
   lim->offset += rows;
 
