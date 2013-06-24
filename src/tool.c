@@ -426,11 +426,26 @@ _handle_file_dirlist(const char *path, const char *str)
 void
 _handle_db_misc(const char *unused, const char *operation)
 {
+  list_t *stats;
+
   if (operation == NULL)
     return;
 
   if (strcmp(operation, "rehash") == 0)
-    db_rehash();
+    {
+      db_rehash();
+      return;
+    }
+
+  if (strcmp(operation, "stats") == 0)
+    {
+      CALLOC(stats, 1, sizeof(list_t));
+      db_stats(stats);
+      list_items_merge(stats, '\n');
+      puts(stats->buf);
+      list_clear(stats);
+      FREE(stats);
+    }
 }
 
 /* #ifndef INLINE_TAGS */
