@@ -551,7 +551,7 @@ db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *results,
 
   sqlite3_finalize(stmt);
 
-  return (results->items == lim->limit) ? 1 : 0;
+  return (matches == lim->limit) ? 1 : 0;
 }
 
 /** return values:
