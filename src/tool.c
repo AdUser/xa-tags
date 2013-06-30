@@ -45,6 +45,18 @@ usage(int exitcode)
   exit(exitcode);
 }
 
+/* callbacks */
+int
+_cb_file_tag_pair(uuid_t unused, const char *filename, const char *tags)
+{
+  if (verbosity >= log_extra)
+    printf("%s:%s\n", filename, tags);
+  else
+    puts(filename);
+
+  return 0;
+}
+
 /* handlers */
 void
 _handle_tag_add(const char *path, const char *str)
@@ -394,23 +406,12 @@ _handle_file_update(const char *path, const char *str)
 }
 
 /* dirlist */
-int
-_dirlist_cb(uuid_t uuid, const char *filename, const char *tags)
-{
-  if (verbosity >= log_extra)
-    printf("%s:%s\n", filename, tags);
-  else
-    puts(filename);
-
-  return 0;
-}
-
 void
 _handle_file_dirlist(const char *path, const char *str)
 {
   query_limits_t lim = { 0, 512 };
 
-  while (db_file_dirlist(path, &lim, NULL, &_dirlist_cb) == 1);
+  while (db_file_dirlist(path, &lim, NULL, &_cb_file_tag_pair) == 1);
 }
 
 void
