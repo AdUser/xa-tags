@@ -287,28 +287,12 @@ _search_init(const char *str)
 void
 _handle_file_search_tag(const char *unused, const char *str)
 {
-  int ret = 0;
-  list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
-
-  memset(&results, 0, sizeof(list_t));
 
   if (search == NULL)
     _search_init(str);
 
-  while ((ret = db_file_search_tag(search, &lim, &results, NULL)) < 2)
-    {
-      if (results.items == 0)
-        break;
-
-      list_items_merge(&results, '\n');
-      printf("%s\n", results.buf);
-
-      if (ret == 0)
-        break;
-    }
-
-  list_clear(&results);
+  while (db_file_search_tag(search, &lim, NULL, &_cb_file_tag_pair) == 1);
 }
 
 void
