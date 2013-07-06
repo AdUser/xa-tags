@@ -624,9 +624,8 @@ db_tags_set(const uuid_t *uuid, list_t *tags)
       return 1;
     }
 
-#ifdef UNIQ_TAGS_LIST
-  db_tag_add_uniq(tags);
-#endif
+  if (opts.db.uniq_tags == true)
+    db_tag_add_uniq(tags);
 
   CALLOC(p, tags->len + 2, sizeof(char));
   list_items_merge(tags, ' ');
@@ -675,6 +674,7 @@ db_tags_clr(const uuid_t *uuid)
 int
 db_tag_add_uniq(list_t *tags)
 {
+#ifdef UNIQ_TAGS_LIST
   sqlite3_stmt *stmt = NULL;
   uint32_t hash = 0;
   size_t len = 0;
@@ -710,9 +710,11 @@ db_tag_add_uniq(list_t *tags)
   sqlite3_finalize(stmt);
 
   return (ret == SQLITE_DONE) ? 0 : 1;
+#else
+  return 0;
+#endif
 }
 
-#ifdef UNIQ_TAGS_LIST
 /** return values:
  * 0 - all ok
  * 1 - more data expected
@@ -721,6 +723,7 @@ db_tag_add_uniq(list_t *tags)
 int
 db_tags_find(const char *str, query_limits_t *lim, list_t *results)
 {
+#ifdef UNIQ_TAGS_LIST
   sqlite3_stmt *stmt = NULL;
   char buf[PATH_MAX]; /* not exactly 'path', but size should be reasonable */
   char *p = NULL;
@@ -765,8 +768,10 @@ db_tags_find(const char *str, query_limits_t *lim, list_t *results)
   sqlite3_finalize(stmt);
 
   return (results->items == MAX_QUERY_LIMIT) ? 1 : 0;
-}
+#else
+  return 0;
 #endif
+}
 
 void
 db_commit(void)

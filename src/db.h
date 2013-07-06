@@ -37,10 +37,8 @@
   "SELECT file_id, filename, tags FROM " FILE_TABLE " JOIN " TAGS_TABLE \
   " ON " FILE_TABLE ".file_id = " TAGS_TABLE ".rowid" \
   " WHERE tags MATCH ? LIMIT ? OFFSET ?"
-#ifdef UNIQ_TAGS_LIST
 #define SQL_T_FIND \
   "SELECT tag FROM " UNIQ_TAGS_TABLE " WHERE tag LIKE ? LIMIT ? OFFSET ?"
-#endif
 /* service operations */
 #define SQL_T_UNIQ_ADD \
   "INSERT OR IGNORE INTO " UNIQ_TAGS_TABLE " (tag_id, tag) VALUES (?, ?)"
@@ -134,11 +132,9 @@ int db_file_search_tag(const search_t *search, query_limits_t *lim, list_t *resu
 int db_tags_get(uuid_t *uuid, list_t *tags);
 int db_tags_set(const uuid_t *uuid, list_t *tags);
 int db_tags_clr(const uuid_t *uuid);
-
-#ifdef UNIQ_TAGS_LIST
 int db_tags_find(const char *str, query_limits_t *lim, list_t *results);
+
 int db_tag_add_uniq(list_t *tags);
-#endif
 
 void db_commit(void);
 void db_rehash(void);

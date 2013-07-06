@@ -235,10 +235,10 @@ _handle_tag_lst(const char *path, const char *unused)
   list_clear(&tmp_tags);
 }
 
-#ifdef UNIQ_TAGS_LIST
 void
 _handle_tag_search(const char *unused, const char *tag)
 {
+#ifdef UNIQ_TAGS_LIST
   char *p = NULL;
   list_t results;
   query_limits_t lim = { 0, MAX_QUERY_LIMIT };
@@ -255,8 +255,10 @@ _handle_tag_search(const char *unused, const char *tag)
     }
 
   list_clear(&results);
-}
+#else
+  return;
 #endif
+}
 
 /* extended operations */
 void
@@ -561,9 +563,7 @@ main(int argc, char **argv)
     {
       case 'f' :
       case 'F' :
-#ifdef UNIQ_TAGS_LIST
       case 'T' :
-#endif
       case 'Q' :
         handler(NULL, str);
         break;
