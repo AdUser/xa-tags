@@ -48,10 +48,17 @@
 /** DB request type */
 /* DB STAT */
 #define STAT_MSG_FMT "% 10d : %s"
+
+#ifdef UNIQ_TAGS_LIST
 #define SQL_D_STAT \
   "SELECT " \
     "(SELECT COUNT(*) FROM " UNIQ_TAGS_TABLE ") as 'uniq_tags', " \
     "(SELECT COUNT(*) FROM " FILE_TABLE      ") as 'file_records'"
+#else
+#define SQL_D_STAT \
+  "SELECT " \
+    "(SELECT COUNT(*) FROM " FILE_TABLE      ") as 'file_records'"
+#endif
 
 /* DB REHASH */
 #define SQL_D_REHASH_SELECT \
