@@ -95,8 +95,11 @@
   "INSERT INTO " INFO_TABLE " (version, uuid_min) VALUES (" DB_VERSION ", abs(random() / 2));" \
   "INSERT INTO " FILE_TABLE " (file_id, filename) SELECT uuid_min, '' FROM " INFO_TABLE ";" \
 
-#define SQL_DB_CHECKVERSION \
+#define SQL_DB_CHECK_VERSION \
   "SELECT version == " DB_VERSION " FROM " INFO_TABLE ";"
+
+#define SQL_DB_CHECK_UNIQ \
+  "SELECT * FROM sqlite_master WHERE name = '" UNIQ_TAGS_TABLE "' AND type = 'table'"
 
 #define MAX_QUERY_LIMIT 250
 

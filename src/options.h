@@ -7,6 +7,7 @@ struct
 #endif
         char *path;
         bool readonly;
+        bool uniq_tags;
       }
     db;
     struct

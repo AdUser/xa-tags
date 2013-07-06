@@ -66,6 +66,14 @@ _db_check_version(void *unused, int columns, char **col_values, char **col_names
   return 0;
 }
 
+static int
+_db_check_uniq(void *unused, int columns, char **col_values, char **col_names)
+{
+  opts.db.uniq_tags = (columns > 0) ? true : false;
+
+  return 0;
+}
+
 static char *
 _db_get_fts_query(const search_t *search)
 {
@@ -136,7 +144,8 @@ db_open(void)
   if (sqlite3_open_v2(opts.db.path, &db_conn, flags, NULL) != SQLITE_OK)
     msg(msg_error, COMMON_ERR_FMTN, MSG_D_FAILOPEN, sqlite3_errmsg(db_conn));
 
-  sqlite3_exec(db_conn, SQL_DB_CHECKVERSION, _db_check_version, NULL, NULL);
+  sqlite3_exec(db_conn, SQL_DB_CHECK_VERSION, _db_check_version, NULL, NULL);
+  sqlite3_exec(db_conn, SQL_DB_CHECK_UNIQ,    _db_check_uniq,    NULL, NULL);
 
 #ifdef ASYNC_DB_WRITE
   sqlite3_exec(db_conn, "BEGIN  TRANSACTION;", NULL, NULL, NULL);
